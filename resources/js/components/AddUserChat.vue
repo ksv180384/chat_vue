@@ -30,7 +30,7 @@
 
         <template v-slot:footer>
             <button @click="joinUser" type="button" class="btn btn-primary">Добавить</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button ref="closeModalAddUserChat" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
         </template>
     </WModal>
 </template>
@@ -86,13 +86,12 @@ export default {
         changeActive(id){
             this.active = id;
         },
-        joinUser({ commit }){
-            console.log(this.chat);
+        joinUser(){
             api.post('/chat/join', { chat_id: this.chat.id, user_id: this.active })
                 .then(res => {
-                    commit('setChatUsers', res.chat.users);
+                    this.$store.commit('setChatUsers', res.chat.users);
+                    this.$refs.closeModalAddUserChat.click();
                     this.loading = false;
-                    //this.$store.commit('addChat', res.chat)
                 }).catch(error => {
                     // handle error
                     this.loading = false;

@@ -42,7 +42,6 @@ class ChatService extends Service{
             ->select('chat_rooms.*')
             ->list()
             ->leftJoin('chat_room_to_users', 'chat_rooms.id', '=', 'chat_room_to_users.chat_room_id')
-            ->where('creator_id', $userId)
             ->orWhere('chat_room_to_users.user_id', $userId)
             ->get();
 

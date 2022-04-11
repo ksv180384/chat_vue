@@ -2,7 +2,7 @@
     <h1 class="h1 mb-3 d-flex flex-row justify-content-between">
         <div>Чаты</div>
         <div>
-            <BtnModal modal="modalAddChat" variant="primary" size="sm">Добавить чат</BtnModal>
+            <BtnModal modal="modalCreateChat" variant="primary" size="sm">Добавить чат</BtnModal>
         </div>
     </h1>
 
@@ -12,18 +12,22 @@
         </template>
     </div>
 
-    <WModal id="modalAddChat">
+    <WModal id="modalCreateChat">
         <template v-slot:title>
             Добавить чат
         </template>
         <div class="mb-3">
             <label class="form-label">Название чата</label>
-            <input v-model="chatName" type="text" class="form-control" />
+            <input v-model="chatName"
+                   ref="input_title_chat"
+                   type="text"
+                   class="form-control"
+            />
         </div>
 
         <template v-slot:footer>
             <button @click="saveChat" type="button" class="btn btn-primary">Сохранить</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button ref="closeModalCreateChat" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
         </template>
     </WModal>
 </template>
@@ -56,16 +60,31 @@ export default {
             api.post('/chat/create', { title: this.chatName })
                 .then(res => {
                     this.request = false;
-                    this.$store.commit('addChat', res.chat)
+                    this.$store.commit('addChat', res.chat);
+                    this.$refs.closeModalCreateChat.click();
                 }).catch(error => {
                 // handle error
                 this.request = false;
                 this.error = error.response.data.message;
             });
+        },
+        focusAfterShownModal(){
+            this.$refs.input_title_chat.focus();
+        },
+        afterHideModal(){
+            this.chatName = '';
         }
     },
     mounted() {
         this.$store.dispatch('loadChats');
+
+        this.modalAddUserChat = document.getElementById('modalCreateChat');
+        this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
+        this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
+    },
+    unmounted() {
+        this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
+        this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
     }
 }
 </script>

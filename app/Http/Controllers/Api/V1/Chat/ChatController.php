@@ -56,7 +56,7 @@ class ChatController extends BaseController
 
     public function store(CreateChatRequest $request)
     {
-        $chat = $this->chatService->create($request->all());//ChatRoom::create($request->all());
+        $chat = $this->chatService->create($request->all());
 
         return new ChatResource($chat);
     }
