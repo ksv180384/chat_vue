@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Chat;
 
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Chat\JoinUserChatRequest;
 use App\Http\Resources\ChatCollection;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\MessageResource;
@@ -61,7 +62,7 @@ class ChatController extends BaseController
         return new ChatResource($chat);
     }
 
-    public function join(Request $request)
+    public function join(JoinUserChatRequest $request)
     {
         $chatRoom = ChatRoom::findOrFail($request->chat_id);
 
