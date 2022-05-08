@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-                <SendMessage/>
+                <SendMessage :chat_id="chat.id"/>
             </div>
         </div>
     </div>

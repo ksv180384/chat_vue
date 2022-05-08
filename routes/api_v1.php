@@ -32,7 +32,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'chat'], function (){
     Route::post('/create', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'store']);
     Route::post('/join', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'join']);
 
-    Route::post('/add-message', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'store']);
+    Route::post('/send-message', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'store']);
 });
 
 // Пользователи

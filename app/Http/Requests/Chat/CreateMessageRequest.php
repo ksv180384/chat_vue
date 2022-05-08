@@ -30,4 +30,16 @@ class CreateMessageRequest extends FormRequest
             'message' => 'required|min:3|max:255',
         ];
     }
+
+    /**
+     * Обработка данных запроса перед валидацией
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_id' => Auth::id(),
+        ]);
+    }
 }

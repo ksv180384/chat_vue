@@ -10283,8 +10283,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "SendMessage"
+  name: "SendMessage",
+  props: {
+    chat_id: {
+      type: Number,
+      required: true
+    }
+  },
+  data: function data() {
+    return {
+      message: ''
+    };
+  },
+  methods: {
+    send: function send() {
+      var _this = this;
+
+      if (this.message.length < 2) {
+        return true;
+      }
+
+      _helpers_api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/chat/send-message/', {
+        message: this.message,
+        chat_room_id: this.chat_id
+      }).then(function (res) {//this.users = res.users;
+        //this.loading = false;
+        //this.$store.commit('addChat', res.chat)
+      })["catch"](function (error) {
+        // handle error
+        _this.loading = false;
+        _this.error = error.response.data.message;
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -10755,22 +10789,25 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "flex-grow-0 py-3 px-4 border-top"
 };
-
-var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+var _hoisted_2 = {
   "class": "input-group"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-  type: "text",
-  "class": "form-control",
-  placeholder: "Type your message"
-}), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-  "class": "btn btn-primary"
-}, "Send")], -1
-/* HOISTED */
-);
-
-var _hoisted_3 = [_hoisted_2];
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _hoisted_3);
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control",
+    placeholder: "Введите сообщение",
+    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+      return $data.message = $event;
+    })
+  }, null, 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.message]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+      return $options.send && $options.send.apply($options, arguments);
+    }, ["prevent"])),
+    "class": "btn btn-primary"
+  }, "отправить")])]);
 }
 
 /***/ }),
@@ -11032,7 +11069,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* KEYED_FRAGMENT */
   ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512
   /* NEED_PATCH */
-  )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SendMessage)])])])], 64
+  )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SendMessage, {
+    chat_id: $options.chat.id
+  }, null, 8
+  /* PROPS */
+  , ["chat_id"])])])])], 64
   /* STABLE_FRAGMENT */
   );
 }
