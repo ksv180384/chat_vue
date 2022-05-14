@@ -6,7 +6,10 @@
              placeholder="Введите сообщение"
              v-model="message"
       />
-      <button @click.prevent="send" class="btn btn-primary">отправить</button>
+      <button @click.prevent="send"
+              class="btn btn-primary"
+              :disabled="send_loading"
+      >отправить</button>
     </div>
   </div>
 </template>
@@ -25,21 +28,23 @@ export default {
     data(){
         return {
             message: '',
+            send_loading: false,
         }
     },
     methods: {
         send(){
-            if(this.message.length < 2){
+            if(this.message.length < 2 && !this.send_loading){
                 return true;
             }
-            api.post('/chat/send-message/', { message: this.message, chat_room_id: this.chat_id })
+            this.send_loading = true;
+            api.post('/chat/send-message', { message: this.message, chat_room_id: this.chat_id })
                 .then(res => {
-                    //this.users = res.users;
-                    //this.loading = false;
-                    //this.$store.commit('addChat', res.chat)
+                    this.send_loading = false;
+                    this.$store.commit('setMessage', res);
+                    this.message = '';
                 }).catch(error => {
                 // handle error
-                this.loading = false;
+                this.send_loading = false;
                 this.error = error.response.data.message;
             });
         }

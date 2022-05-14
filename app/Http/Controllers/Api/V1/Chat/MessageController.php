@@ -14,11 +14,8 @@ class MessageController extends BaseController
 {
     public function store(CreateMessageRequest $request)
     {
-        dd($request->validated());
-
-
         $message = ChatMessage::create($request->validated());
-        $message->load(['room:id,title', 'room.users:users.id']);
+        $message = ChatMessage::list()->find($message->id);
 
         return new MessageResource($message);
     }

@@ -11,6 +11,7 @@ use App\Http\Resources\MessageResource;
 use App\Models\Chat\ChatMessage;
 use App\Models\Chat\ChatRoom;
 use App\Http\Requests\Chat\CreateChatRequest;
+use App\Services\ChatMessageService;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,13 +24,20 @@ class ChatController extends BaseController
      */
     private $chatService;
 
+    /**
+     * @var ChatMessageService
+     */
+    private $chatMessageService;
+
     public function __construct(
-        ChatService $chatService
+        ChatService $chatService,
+        ChatMessageService $chatMessageService
     )
     {
         parent::__construct();
 
         $this->chatService = $chatService;
+        $this->chatMessageService = $chatMessageService;
     }
 
     public function index()
@@ -43,11 +51,7 @@ class ChatController extends BaseController
     public function show($id)
     {
         $chat = $this->chatService->getById($id);
-
-        $messages = ChatMessage::list()
-            ->where('chat_room_id', $chat->id)
-            ->orderBy('created_at')
-            ->simplePaginate(20);
+        $messages = $this->chatMessageService->messagesByChatId($id);
 
         return response()->json([
             'chat' => new ChatResource($chat),

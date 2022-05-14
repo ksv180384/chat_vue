@@ -30,7 +30,11 @@
 
         <template v-slot:footer>
             <button @click="joinUser" type="button" class="btn btn-primary">Добавить</button>
-            <button ref="closeModalAddUserChat" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button ref="closeModalAddUserChat"
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+            >Отмена</button>
         </template>
     </WModal>
 </template>

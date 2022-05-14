@@ -14,4 +14,14 @@ class ChatMessageService extends Service{
         $this->model = new ChatMessage();
     }
 
+    public function messagesByChatId($chatId)
+    {
+        $messages = $this->model
+            ->list()
+            ->where('chat_room_id', $chatId)
+            ->orderByDesc('created_at')
+            ->simplePaginate(10);
+
+        return $messages;
+    }
 }

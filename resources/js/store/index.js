@@ -12,7 +12,6 @@ const store = createStore({
             chat_list: [],
             chat_users: [],
             messages: [],
-            messages_paginate: 1,
         }
     },
     actions: {
@@ -22,38 +21,43 @@ const store = createStore({
                     commit('setChats', res.chats)
                 })
         },
-        loadChat({ commit }, chat_id){
-            api.get('/chat/' + chat_id)
+        /*
+        loadChat({ commit, state }, chat_id){
+            commit('setLoadChat', true);
+            api.get('/chat/' + chat_id + '?page=' + state.messages_paginate)
                 .then(res => {
                     commit('setChat', res.chat);
                     commit('setChatUsers', res.chat.users);
-                    commit('setMessages', res.messages.data);
-                    commit('setMessagesPaginate', res.messages.curent_page);
+                    commit('setMessages', res.messages.data.reverse());
+                    commit('setMessagesPaginate', res.messages.current_page + 1);
+                    commit('setLoadChat', false);
+                    console.log(res.messages.current_page);
                 })
         }
+        */
     },
     mutations: {
-        setUser (state, user) {
+        setUser(state, user) {
             state.user = user
         },
-        setChats (state, chats) {
+        setChats(state, chats) {
             state.chat_list = chats
         },
         addChat(state, chat){
             state.chat_list = [...state.chat_list, chat]
         },
-        setChat (state, chat) {
+        setChat(state, chat) {
             state.chat = chat
         },
-        setChatUsers (state, users) {
+        setChatUsers(state, users) {
             state.chat_users = users
         },
-        setMessages (state, messages) {
-            state.messages = messages
+        setMessages(state, messages) {
+            state.messages = [...messages, ...state.messages];
         },
-        setMessagesPaginate (state, messages_paginate) {
-            state.messages_paginate = messages_paginate
-        }
+        setMessage(state, message) {
+            state.messages = [...state.messages, message];
+        },
     },
     getters: {
         user: state => {
@@ -70,9 +74,6 @@ const store = createStore({
         },
         messages: state => {
             return state.messages;
-        },
-        messagesPaginate: state => {
-            return state.messages_paginate;
         },
     }
 });
