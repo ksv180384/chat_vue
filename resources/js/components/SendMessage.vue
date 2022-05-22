@@ -1,7 +1,8 @@
 <template>
   <div class="flex-grow-0 py-3 px-4 border-top">
     <div class="input-group">
-      <input type="text"
+      <input @keyup.enter="send"
+             type="text"
              class="form-control"
              placeholder="Введите сообщение"
              v-model="message"

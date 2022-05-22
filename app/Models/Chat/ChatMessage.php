@@ -14,7 +14,11 @@ class ChatMessage extends Model
         'user_id',
         'chat_room_id',
         'message',
+        'updated_at',
+        'created_at',
     ];
+
+    protected $appends = ['created_at_humans'];
 
     public function room()
     {
@@ -29,5 +33,10 @@ class ChatMessage extends Model
     public function scopeList($query)
     {
         return $query->with(['user:id,name,avatar']);
+    }
+
+    public function getCreatedAtHumansAttribute()
+    {
+        return $this->created_at->diffForHumans();
     }
 }

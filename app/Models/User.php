@@ -71,4 +71,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(ChatRoomToUser::class);
     }
+
+    public function getAvatarAttribute($value)
+    {
+        return $value ?: 'https://bootdey.com/img/Content/avatar/avatar5.png';
+    }
 }

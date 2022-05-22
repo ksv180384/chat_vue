@@ -55,7 +55,7 @@ class ChatController extends BaseController
 
         return response()->json([
             'chat' => new ChatResource($chat),
-            'messages' => new MessageResource($messages),
+            'messages' => $messages,
         ]);
     }
 
