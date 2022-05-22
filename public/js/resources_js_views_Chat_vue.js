@@ -10523,7 +10523,8 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_5__.library.add(_fort
       var _ref2 = _slicedToArray(_ref, 1),
           entry = _ref2[0];
 
-      //console.log("1");
+      console.log("1");
+
       if (entry.isIntersecting && !this.loadChat) {
         console.log("подгружаем контент"); //this.$store.dispatch('loadChat', this.$route.params.id);
 

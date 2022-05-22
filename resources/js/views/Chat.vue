@@ -111,7 +111,7 @@ export default {
             this.listEndObserver.observe(this.$refs.sentinel);
         },
         handleIntersection([entry]) {
-            //console.log("1");
+            console.log("1");
             if (entry.isIntersecting && !this.loadChat) {
                 console.log("подгружаем контент");
                 //this.$store.dispatch('loadChat', this.$route.params.id);

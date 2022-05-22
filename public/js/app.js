@@ -19904,6 +19904,9 @@ var store = (0,vuex__WEBPACK_IMPORTED_MODULE_2__.createStore)({
       state.chat_users = users;
     },
     setMessages: function setMessages(state, messages) {
+      state.messages = messages;
+    },
+    pushMessages: function pushMessages(state, messages) {
       state.messages = [].concat(_toConsumableArray(messages), _toConsumableArray(state.messages));
     },
     setMessage: function setMessage(state, message) {
