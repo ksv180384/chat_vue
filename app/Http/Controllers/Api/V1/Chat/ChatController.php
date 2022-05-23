@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Chat;
 
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Chat\ChatLaveRequest;
 use App\Http\Requests\Chat\JoinUserChatRequest;
 use App\Http\Resources\ChatCollection;
 use App\Http\Resources\ChatResource;
@@ -68,11 +69,18 @@ class ChatController extends BaseController
 
     public function join(JoinUserChatRequest $request)
     {
-        $chatRoom = ChatRoom::findOrFail($request->chat_id);
+        $chatRoom = ChatRoom::findOrFail($request->chat_room_id);
 
         $chatRoom->users()->attach($request->user_id);
         $chatRoom->load('users');
 
         return new ChatResource($chatRoom);
+    }
+
+    public function lave(ChatLaveRequest $request)
+    {
+        $this->chatService->lave($request->validated());
+
+        return response()->json(['message' => 'Вы учпешно покинули чат.']);
     }
 }

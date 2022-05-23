@@ -47,4 +47,14 @@ class ChatService extends Service{
 
         return $chats;
     }
+
+    public function lave($data)
+    {
+        $chatRoom = ChatRoom::findOrFail($data['id']);
+        $chatRoom->users()->detach($data['user_id']);
+
+        if($chatRoom->users()->count() == 0){
+            $chatRoom->delete();
+        }
+    }
 }

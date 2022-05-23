@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'chat'], function (){
     Route::get('/{id}', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'show']);
     Route::post('/create', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'store']);
     Route::post('/join', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'join']);
+    Route::post('/lave', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'lave']);
 
     Route::post('/send-message', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'store']);
 });

@@ -1,19 +1,21 @@
 <template>
-    <h1 class="h3 my-3">
-        <span class="me-3">
-            <router-link to="/"><FontAwesomeIcon icon="caret-left" /></router-link>
-        </span>
-        <span v-if="chat">{{ chat.title }}</span>
-    </h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="h3 my-3">
+            <span class="me-3">
+                <router-link to="/"><FontAwesomeIcon icon="caret-left" /></router-link>
+            </span>
+            <span v-if="chat">{{ chat.title }}</span>
+        </h1>
+
+        <div>
+            <button @click="leaveChat" class="btn btn-sm btn-primary">Покинуть чат</button>
+        </div>
+    </div>
     <div class="card">
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
                 <SearchUserChat/>
-                <div class="chat-users-list">
-                    <template v-if="chatUsers">
-                        <UserItem v-for="user in chatUsers" :key="user.id" :user="user"/>
-                    </template>
-                </div>
+                <ChatUsersList/>
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
@@ -37,7 +39,7 @@
 
 import ChatMessage from "../components/ChatMessage";
 import ChatMessageLeft from "../components/ChatMessageLeft";
-import UserItem from "../components/UserItem";
+import ChatUsersList from "../components/ChatUsersList";
 import SearchUserChat from "../components/SearchUserChat";
 import SendMessage from "../components/SendMessage";
 
@@ -47,6 +49,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import api from "../helpers/api";
+import router from "../router";
 
 library.add(faCaretLeft)
 
@@ -55,13 +58,14 @@ export default {
     components: {
         SendMessage,
         SearchUserChat,
-        UserItem,
+        ChatUsersList,
         ChatMessageLeft,
         ChatMessage,
         FontAwesomeIcon
     },
     data(){
         return {
+            chat_id: this.$route.params.id,
             load_chat: false,
             page: 1,
         }
@@ -69,15 +73,14 @@ export default {
     computed: {
         ...mapGetters([
             'chat',
-            'chatUsers',
             'user',
             'messages',
         ])
     },
     methods: {
-        loadChat(chat_id){
+        loadChat(){
             this.load_chat = true;
-            api.get('/chat/' + chat_id + '?page=' + this.page)
+            api.get(`/chat/${this.chat_id}?page=${this.page}`)
                 .then(res => {
                     this.$store.commit('setChat', res.chat);
                     this.$store.commit('setChatUsers', res.chat.users);
@@ -85,6 +88,13 @@ export default {
 
                     this.load_chat = false;
                     this.page = this.page + 1;
+                })
+        },
+        leaveChat(){
+
+            api.post(`/chat/lave`, { id: this.chat_id })
+                .then(res => {
+                    router.push('/');
                 })
         },
         scrollToBottom(smooth) {
@@ -127,7 +137,7 @@ export default {
         },
     },
     mounted() {
-        this.loadChat(this.$route.params.id);
+        this.loadChat();
         //this.$store.dispatch('loadChat', this.$route.params.id);
         this.setUpInterSectionObserver();
     },

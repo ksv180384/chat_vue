@@ -91,7 +91,7 @@ export default {
             this.active = id;
         },
         joinUser(){
-            api.post('/chat/join', { chat_id: this.chat.id, user_id: this.active })
+            api.post('/chat/join', { chat_room_id: this.chat.id, user_id: this.active })
                 .then(res => {
                     this.$store.commit('setChatUsers', res.chat.users);
                     this.$refs.closeModalAddUserChat.click();
