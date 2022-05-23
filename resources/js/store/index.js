@@ -53,6 +53,9 @@ const store = createStore({
             state.chat_users = users
         },
         setMessages(state, messages) {
+            state.messages = messages;
+        },
+        pushMessages(state, messages) {
             state.messages = [...messages, ...state.messages];
         },
         setMessage(state, message) {

@@ -24,4 +24,17 @@ class ChatMessageService extends Service{
 
         return $messages;
     }
+
+    /**
+     *
+     * @param $message
+     * @return mixed
+     */
+    public function create($message)
+    {
+        $message = $this->model->create($message);
+        $message = ChatMessage::list()->find($message->id);
+
+        return $message;
+    }
 }
