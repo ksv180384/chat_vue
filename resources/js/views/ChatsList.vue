@@ -19,6 +19,7 @@
         <div class="mb-3">
             <label class="form-label">Название чата</label>
             <input v-model="chatName"
+                   @keydown.enter="saveChat"
                    ref="input_title_chat"
                    type="text"
                    class="form-control"
@@ -38,6 +39,7 @@ import BtnModal from "../components/modal/BtnModal";
 import WModal from "../components/modal/WModal";
 import ChatItem from "../components/ChatItem";
 import api from "../helpers/api";
+import router from "../router";
 
 export default {
     components: {
@@ -62,6 +64,7 @@ export default {
                     this.request = false;
                     this.$store.commit('addChat', res.chat);
                     this.$refs.closeModalCreateChat.click();
+                    router.push(`/chat/${res.chat.id}`);
                 }).catch(error => {
                 // handle error
                 this.request = false;
