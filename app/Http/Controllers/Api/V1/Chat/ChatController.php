@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api\V1\Chat;
 
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Chat\ChatLaveRequest;
+use App\Http\Requests\Chat\DeleteChatRequest;
+use App\Http\Requests\Chat\LaveChatRequest;
 use App\Http\Requests\Chat\JoinUserChatRequest;
 use App\Http\Resources\ChatCollection;
 use App\Http\Resources\ChatResource;
@@ -77,10 +78,17 @@ class ChatController extends BaseController
         return new ChatResource($chatRoom);
     }
 
-    public function lave(ChatLaveRequest $request)
+    public function lave(LaveChatRequest $request)
     {
         $this->chatService->lave($request->validated());
 
         return response()->json(['message' => 'Вы учпешно покинули чат.']);
+    }
+
+    public function delete(DeleteChatRequest $request)
+    {
+        $this->chatService->delete($request->id);
+
+        return response()->json(['message' => 'Вы учпешно удалили чат.']);
     }
 }
