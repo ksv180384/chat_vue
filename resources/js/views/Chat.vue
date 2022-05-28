@@ -18,6 +18,14 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                     <li><a @click.prevent="leaveChat" href="#" class="dropdown-item">Покинуть чат</a></li>
+                    <li>
+                        <a v-if="user.id === chat.creator_id" @click.prevent="deleteChat"
+                           href="#"
+                           class="dropdown-item"
+                        >
+                            Удалить чат
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -102,11 +110,16 @@ export default {
                 })
         },
         leaveChat(){
-
             api.post(`/chat/lave`, { id: this.chat_id })
                 .then(res => {
                     router.push('/');
-                })
+                });
+        },
+        deleteChat(){
+            api.post(`/chat/delete`, { id: this.chat_id })
+                .then(res => {
+                    router.push('/');
+                });
         },
         scrollToBottom(smooth) {
             const container = this.$refs.messages_container;
