@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends BaseController
 {
@@ -23,6 +25,16 @@ class UserController extends BaseController
     public function index()
     {
         return new UserCollection(User::all());
+    }
+
+    /**
+     * Профиль пользователя
+     * @return UserResource
+     */
+    public function profile()
+    {
+        $user = $this->userService->getById(Auth::id());
+        return new UserResource($user);
     }
 
     /**

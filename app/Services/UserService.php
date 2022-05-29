@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserService extends Service
 {
@@ -22,5 +23,11 @@ class UserService extends Service
             ->get();
 
         return $users;
+    }
+
+    public function getById($id)
+    {
+        $user = $this->model->find($id);
+        return $user;
     }
 }

@@ -1,4 +1,7 @@
 import { createStore } from 'vuex';
+import storeMessages from './store_messages';
+import storeProfile from "./store_profile";
+
 import api from '../helpers/api';
 import { userData } from '../helpers/helpers';
 
@@ -11,7 +14,6 @@ const store = createStore({
             chat: {},
             chat_list: [],
             chat_users: [],
-            messages: [],
         }
     },
     actions: {
@@ -21,20 +23,24 @@ const store = createStore({
                     commit('setChats', res.chats)
                 })
         },
-        /*
-        loadChat({ commit, state }, chat_id){
-            commit('setLoadChat', true);
-            api.get('/chat/' + chat_id + '?page=' + state.messages_paginate)
+        loadChat({ commit }, chat_id){
+            this.messages_load = true;
+            api.get(`/chat/${chat_id}?page=${this.state.messages_page}`)
                 .then(res => {
                     commit('setChat', res.chat);
                     commit('setChatUsers', res.chat.users);
                     commit('setMessages', res.messages.data.reverse());
-                    commit('setMessagesPaginate', res.messages.current_page + 1);
-                    commit('setLoadChat', false);
-                    console.log(res.messages.current_page);
+
+                    this.state.messages_load = false;
+
+                    if(res.messages.next_page_url){
+                        this.state.messages_page = this.state.messages_page + 1;
+                        this.state.messages_next = true;
+                    }else{
+                        this.state.messages_next = false;
+                    }
                 })
-        }
-        */
+        },
     },
     mutations: {
         setUser(state, user) {
@@ -52,15 +58,6 @@ const store = createStore({
         setChatUsers(state, users) {
             state.chat_users = users
         },
-        setMessages(state, messages) {
-            state.messages = messages;
-        },
-        pushMessages(state, messages) {
-            state.messages = [...messages, ...state.messages];
-        },
-        setMessage(state, message) {
-            state.messages = [...state.messages, message];
-        },
     },
     getters: {
         user: state => {
@@ -72,12 +69,13 @@ const store = createStore({
         chat: state => {
             return state.chat;
         },
-        chatUsers: state => {
+        chat_users: state => {
             return state.chat_users;
         },
-        messages: state => {
-            return state.messages;
-        },
+    },
+    modules: {
+        storeMessages: storeMessages,
+        storeProfile: storeProfile,
     }
 });
 

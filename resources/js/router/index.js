@@ -30,6 +30,15 @@ const routes = [
         name: 'Registration',
         component: () => import('./../views/Registration'),
     },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('./../views/Profile'),
+        meta: {
+            layout: DefaultLayout,
+            auth: true
+        },
+    },
 ];
 
 const router = createRouter({

@@ -26,15 +26,26 @@ Route::get('me', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'me']
 Route::get('/users', [\App\Http\Controllers\Api\V1\UserController::class, 'index']);
 
 // Чат
-Route::group(['middleware' => 'auth', 'prefix' => 'chat'], function (){
-    Route::get('/', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'index']);
-    Route::get('/{id}', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'show']);
-    Route::post('/create', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'store']);
-    Route::post('/join', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'join']);
-    Route::post('/lave', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'lave']);
-    Route::post('/delete', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'delete']);
+Route::group(['middleware' => 'auth'], function (){
 
-    Route::post('/send-message', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'store']);
+    // Пользователь
+    Route::group(['prefix' => 'user'], function (){
+        Route::get('/profile', [\App\Http\Controllers\Api\V1\UserController::class, 'profile']);
+    });
+
+    // Чат
+    Route::group(['prefix' => 'chat'], function (){
+        Route::get('/', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'index']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'show']);
+        Route::post('/create', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'store']);
+        Route::post('/join', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'join']);
+        Route::post('/lave', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'lave']);
+        Route::post('/delete', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'delete']);
+
+        Route::get('{id}/messages', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'messagesByChatId']);
+        Route::post('messages/send', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'store']);
+
+    });
 });
 
 // Пользователи

@@ -38,7 +38,7 @@ export default {
                 return true;
             }
             this.send_loading = true;
-            api.post('/chat/send-message', { message: this.message, chat_room_id: this.chat_id })
+            api.post('/chat/messages/send', { message: this.message, chat_room_id: this.chat_id })
                 .then(res => {
                     this.send_loading = false;
                     this.$store.commit('setMessage', res);

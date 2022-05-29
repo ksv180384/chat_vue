@@ -19446,8 +19446,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapGetters)(['user'])),
   methods: {
     logout: function logout() {
       var _this = this;
@@ -19500,13 +19509,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
-var _hoisted_1 = {
-  ref: "app"
-};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_router_view = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-view");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)((0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDynamicComponent)(this.$route.meta.layout || 'DefaultLayout'), null, {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)((0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDynamicComponent)(this.$route.meta.layout || 'DefaultLayout'), null, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_view, {
         layout: _ctx.layout
@@ -19517,9 +19523,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
     /* STABLE */
 
-  }))], 512
-  /* NEED_PATCH */
-  );
+  }))]);
 }
 
 /***/ }),
@@ -19543,40 +19547,46 @@ var _hoisted_1 = {
 var _hoisted_2 = {
   "class": "container-fluid"
 };
-
-var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
-  "class": "navbar-brand",
-  href: "#"
-}, "Navbar", -1
-/* HOISTED */
-);
-
-var _hoisted_4 = {
+var _hoisted_3 = {
   "class": "collapse navbar-collapse",
   id: "navbarSupportedContent"
 };
 
-var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", {
+var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", {
   "class": "navbar-nav me-auto mb-2 mb-lg-0"
 }, null, -1
 /* HOISTED */
 );
 
-var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   "class": "btn btn-outline-success",
   type: "submit"
 }, " Выход ", -1
 /* HOISTED */
 );
 
-var _hoisted_7 = [_hoisted_6];
+var _hoisted_6 = [_hoisted_5];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("nav", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
+
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("nav", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    "class": "navbar-brand",
+    to: "/profile"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.user.name), 1
+      /* TEXT */
+      )];
+    }),
+    _: 1
+    /* STABLE */
+
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
     onSubmit: _cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.logout && $options.logout.apply($options, arguments);
     }, ["prevent"])),
     "class": "d-flex"
-  }, _hoisted_7, 32
+  }, _hoisted_6, 32
   /* HYDRATE_EVENTS */
   )])])]);
 }
@@ -19799,6 +19809,16 @@ var routes = [{
   component: function component() {
     return __webpack_require__.e(/*! import() */ "resources_js_views_Registration_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./../views/Registration */ "./resources/js/views/Registration.vue"));
   }
+}, {
+  path: '/profile',
+  name: 'Profile',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_views_Profile_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./../views/Profile */ "./resources/js/views/Profile.vue"));
+  },
+  meta: {
+    layout: _views_layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_0__["default"],
+    auth: true
+  }
 }];
 var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_1__.createRouter)({
   history: (0,vue_router__WEBPACK_IMPORTED_MODULE_1__.createWebHistory)(),
@@ -19834,9 +19854,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
-/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
-/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+/* harmony import */ var _store_messages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store_messages */ "./resources/js/store/store_messages.js");
+/* harmony import */ var _store_profile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store_profile */ "./resources/js/store/store_profile.js");
+/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
+/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -19851,41 +19873,46 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 
+
+
  // Create a new store instance.
 
-var store = (0,vuex__WEBPACK_IMPORTED_MODULE_2__.createStore)({
+var store = (0,vuex__WEBPACK_IMPORTED_MODULE_4__.createStore)({
   state: function state() {
     return {
-      user: (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_1__.userData)(),
+      user: (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.userData)(),
       count: 0,
       chat: {},
       chat_list: [],
-      chat_users: [],
-      messages: []
+      chat_users: []
     };
   },
   actions: {
     loadChats: function loadChats(_ref) {
       var commit = _ref.commit;
-      _helpers_api__WEBPACK_IMPORTED_MODULE_0__["default"].get('/chat').then(function (res) {
+      _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].get('/chat').then(function (res) {
         commit('setChats', res.chats);
       });
-    }
-    /*
-    loadChat({ commit, state }, chat_id){
-        commit('setLoadChat', true);
-        api.get('/chat/' + chat_id + '?page=' + state.messages_paginate)
-            .then(res => {
-                commit('setChat', res.chat);
-                commit('setChatUsers', res.chat.users);
-                commit('setMessages', res.messages.data.reverse());
-                commit('setMessagesPaginate', res.messages.current_page + 1);
-                commit('setLoadChat', false);
-                console.log(res.messages.current_page);
-            })
-    }
-    */
+    },
+    loadChat: function loadChat(_ref2, chat_id) {
+      var _this = this;
 
+      var commit = _ref2.commit;
+      this.messages_load = true;
+      _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].get("/chat/".concat(chat_id, "?page=").concat(this.state.messages_page)).then(function (res) {
+        commit('setChat', res.chat);
+        commit('setChatUsers', res.chat.users);
+        commit('setMessages', res.messages.data.reverse());
+        _this.state.messages_load = false;
+
+        if (res.messages.next_page_url) {
+          _this.state.messages_page = _this.state.messages_page + 1;
+          _this.state.messages_next = true;
+        } else {
+          _this.state.messages_next = false;
+        }
+      });
+    }
   },
   mutations: {
     setUser: function setUser(state, user) {
@@ -19902,15 +19929,6 @@ var store = (0,vuex__WEBPACK_IMPORTED_MODULE_2__.createStore)({
     },
     setChatUsers: function setChatUsers(state, users) {
       state.chat_users = users;
-    },
-    setMessages: function setMessages(state, messages) {
-      state.messages = messages;
-    },
-    pushMessages: function pushMessages(state, messages) {
-      state.messages = [].concat(_toConsumableArray(messages), _toConsumableArray(state.messages));
-    },
-    setMessage: function setMessage(state, message) {
-      state.messages = [].concat(_toConsumableArray(state.messages), [message]);
     }
   },
   getters: {
@@ -19923,15 +19941,131 @@ var store = (0,vuex__WEBPACK_IMPORTED_MODULE_2__.createStore)({
     chat: function chat(state) {
       return state.chat;
     },
-    chatUsers: function chatUsers(state) {
+    chat_users: function chat_users(state) {
       return state.chat_users;
-    },
-    messages: function messages(state) {
-      return state.messages;
     }
+  },
+  modules: {
+    storeMessages: _store_messages__WEBPACK_IMPORTED_MODULE_0__["default"],
+    storeProfile: _store_profile__WEBPACK_IMPORTED_MODULE_1__["default"]
   }
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (store);
+
+/***/ }),
+
+/***/ "./resources/js/store/store_messages.js":
+/*!**********************************************!*\
+  !*** ./resources/js/store/store_messages.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+var storeMessages = {
+  state: {
+    messages: [],
+    messages_load: false,
+    messages_page: 1,
+    messages_next: false
+  },
+  actions: {
+    loadMessages: function loadMessages(_ref, chat_id) {
+      var _this = this;
+
+      var commit = _ref.commit;
+      this.messages_load = true;
+      _helpers_api__WEBPACK_IMPORTED_MODULE_0__["default"].get("/chat/".concat(chat_id, "/messages?page=").concat(this.state.messages_page)).then(function (res) {
+        commit('pushMessages', res.data.reverse());
+        _this.state.messages_load = false;
+
+        if (res.next_page_url) {
+          _this.state.messages_page = _this.state.messages_page + 1;
+          _this.state.messages_next = true;
+        } else {
+          _this.state.messages_next = false;
+        }
+      });
+    }
+  },
+  mutations: {
+    setMessages: function setMessages(state, messages) {
+      state.messages = messages;
+    },
+    pushMessages: function pushMessages(state, messages) {
+      state.messages = [].concat(_toConsumableArray(messages), _toConsumableArray(state.messages));
+    },
+    setMessage: function setMessage(state, message) {
+      state.messages = [].concat(_toConsumableArray(state.messages), [message]);
+    }
+  },
+  getters: {
+    messages: function messages(state) {
+      return state.messages;
+    },
+    messages_load: function messages_load(state) {
+      return state.messages_load;
+    },
+    messages_page: function messages_page(state) {
+      return state.messages_page;
+    },
+    messages_next: function messages_next(state) {
+      return state.messages_next;
+    }
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeMessages);
+
+/***/ }),
+
+/***/ "./resources/js/store/store_profile.js":
+/*!*********************************************!*\
+  !*** ./resources/js/store/store_profile.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var storeProfile = {
+  state: {
+    name: ''
+  },
+  actions: {},
+  mutations: {
+    setProfile: function setProfile(state, profile) {
+      state.name = profile.name;
+    },
+    setName: function setName(state, name) {
+      state.name = name;
+    }
+  },
+  getters: {
+    profile: function profile(state) {
+      return state.profile;
+    }
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeProfile);
 
 /***/ }),
 
@@ -43506,7 +43640,7 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames not based on template
-/******/ 			if ({"resources_js_views_ChatsList_vue":1,"resources_js_views_Chat_vue":1,"resources_js_views_Login_vue":1,"resources_js_views_Registration_vue":1}[chunkId]) return "js/" + chunkId + ".js";
+/******/ 			if ({"resources_js_views_ChatsList_vue":1,"resources_js_views_Chat_vue":1,"resources_js_views_Login_vue":1,"resources_js_views_Registration_vue":1,"resources_js_views_Profile_vue":1}[chunkId]) return "js/" + chunkId + ".js";
 /******/ 			// return url for filenames based on template
 /******/ 			return undefined;
 /******/ 		};

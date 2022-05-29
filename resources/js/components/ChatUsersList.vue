@@ -1,7 +1,7 @@
 <template>
     <div class="chat-users-list">
-        <template v-if="chatUsers">
-            <UserItem v-for="user in chatUsers" :key="user.id" :user="user"/>
+        <template v-if="chat_users">
+            <UserItem v-for="user in chat_users" :key="user.id" :user="user"/>
         </template>
     </div>
 </template>
@@ -18,7 +18,7 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'chatUsers',
+            'chat_users',
         ])
     },
 }

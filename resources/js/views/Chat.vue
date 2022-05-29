@@ -9,7 +9,6 @@
 
         <div>
 
-
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512" height="20px">
@@ -38,15 +37,7 @@
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
-                    <div class="chat-messages p-4" ref="messages_container">
-                        <div v-if="messages">
-                            <div ref="sentinel" class="text-center py-3">Загрузка...</div>
-                            <div v-for="message in messages" :key="message.id">
-                                <ChatMessage v-if="message.user.id === user.id" :message="message"/>
-                                <ChatMessageLeft v-else :message="message"/>
-                            </div>
-                        </div>
-                    </div>
+                    <ChatMessagesList />
                 </div>
                 <SendMessage :chat_id="chat.id"/>
             </div>
@@ -56,8 +47,7 @@
 
 <script>
 
-import ChatMessage from "../components/ChatMessage";
-import ChatMessageLeft from "../components/ChatMessageLeft";
+import ChatMessagesList from "../components/ChatMessagesList";
 import ChatUsersList from "../components/ChatUsersList";
 import SearchUserChat from "../components/SearchUserChat";
 import SendMessage from "../components/SendMessage";
@@ -75,11 +65,10 @@ library.add(faCaretLeft)
 export default {
     name: "chat",
     components: {
+        ChatMessagesList,
         SendMessage,
         SearchUserChat,
         ChatUsersList,
-        ChatMessageLeft,
-        ChatMessage,
         FontAwesomeIcon
     },
     data(){
@@ -87,28 +76,17 @@ export default {
             chat_id: this.$route.params.id,
             load_chat: false,
             page: 1,
+            next_page: false,
         }
     },
     computed: {
         ...mapGetters([
             'chat',
             'user',
-            'messages',
+            //'messages',
         ])
     },
     methods: {
-        loadChat(){
-            this.load_chat = true;
-            api.get(`/chat/${this.chat_id}?page=${this.page}`)
-                .then(res => {
-                    this.$store.commit('setChat', res.chat);
-                    this.$store.commit('setChatUsers', res.chat.users);
-                    this.$store.commit('setMessages', res.messages.data.reverse());
-
-                    this.load_chat = false;
-                    this.page = this.page + 1;
-                })
-        },
         leaveChat(){
             api.post(`/chat/lave`, { id: this.chat_id })
                 .then(res => {
@@ -121,52 +99,9 @@ export default {
                     router.push('/');
                 });
         },
-        scrollToBottom(smooth) {
-            const container = this.$refs.messages_container;
-
-            if (smooth){
-                container.scrollTo({
-                    top: container.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }else{
-                container.scrollTop = container.scrollHeight;
-            }
-        },
-        setUpInterSectionObserver() {
-            let options = {
-                root: this.$refs.app,
-                margin: "10px",
-            };
-            this.listEndObserver = new IntersectionObserver(
-                this.handleIntersection,
-                options
-            );
-            this.listEndObserver.observe(this.$refs.sentinel);
-        },
-        handleIntersection([entry]) {
-            console.log("1");
-            if (entry.isIntersecting && !this.loadChat) {
-                console.log("подгружаем контент");
-                //this.$store.dispatch('loadChat', this.$route.params.id);
-                this.loadChat(this.$route.params.id);
-            }
-            /*
-            if (entry.isIntersecting && this.canLoadMore && !this.isLoadingMore) {
-                //this.loadMore();
-                console.log('ok');
-                this.loadNextPosts();
-            }
-            */
-        },
     },
     mounted() {
-        this.loadChat();
-        //this.$store.dispatch('loadChat', this.$route.params.id);
-        this.setUpInterSectionObserver();
+        this.$store.dispatch('loadChat', this.$route.params.id);
     },
-    updated() {
-        this.scrollToBottom();
-    }
 }
 </script>
