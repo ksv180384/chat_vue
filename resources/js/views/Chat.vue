@@ -83,7 +83,6 @@ export default {
         ...mapGetters([
             'chat',
             'user',
-            //'messages',
         ])
     },
     methods: {

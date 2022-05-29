@@ -23,14 +23,15 @@ Route::get('me', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'me']
 
 
 // Пользователь
-Route::get('/users', [\App\Http\Controllers\Api\V1\UserController::class, 'index']);
+Route::get('/users', [\App\Http\Controllers\Api\V1\User\UserController::class, 'index']);
 
 // Чат
 Route::group(['middleware' => 'auth'], function (){
 
     // Пользователь
     Route::group(['prefix' => 'user'], function (){
-        Route::get('/profile', [\App\Http\Controllers\Api\V1\UserController::class, 'profile']);
+        Route::get('/profile', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'index']);
+        Route::put('/profile/update', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'update']);
     });
 
     // Чат

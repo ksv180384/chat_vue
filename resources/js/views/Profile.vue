@@ -4,21 +4,26 @@
             <router-link to="/"><FontAwesomeIcon icon="caret-left" /></router-link>
             Профиль
         </h1>
-        <div class="d-flex flex-column align-items-center mt-5">
-            <div class="w-75">
-                <div class="form-floating mb-3">
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Имя"
-                           v-model="name"
-                    />
-                    <label>Имя</label>
+        <form @submit.prevent="submit" action="">
+            <div class="d-flex flex-row mt-3">
+                <div class="load-file-block">
+                    <input type="file" @change="uploadImage" />
                 </div>
-                <div class="load-file-block mt-3">
-                    <input type="file"/>
+                <div class="flex-grow-1">
+                    <div class="form-floating mb-3">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Имя"
+                               v-model="name"
+                        />
+                        <label>Имя</label>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="mt-3 text-end">
+                <button type="submit" class="btn btn-outline-primary">Сохранить</button>
+            </div>
+        </form>
     </div>
 </template>
 
@@ -39,7 +44,7 @@ export default {
     },
     data(){
         return {
-
+            image_file: null,
         }
     },
     computed: {
@@ -59,6 +64,19 @@ export default {
                     this.$store.commit('setProfile', res.user);
                 })
         },
+        uploadImage(event){
+            this.image_file = event.target.files[0];
+        },
+        submit(event){
+            const formData = new FormData();
+            formData.append('_method', 'PUT');
+            formData.append('name', this.name);
+            formData.append('avatar', this.image_file);
+
+            api.post('/user/profile/update', formData).then(res => {
+                this.$store.dispatch('setProfile', res.user);
+            })
+        }
     },
     mounted() {
         this.loadProfile();
@@ -68,16 +86,17 @@ export default {
 
 <style scoped>
     .load-file-block{
-        width: 100%;
+        width: 200px;
         height: 200px;
         border: 2px dashed #ced4da;
         border-radius: 6px;
         position: relative;
         text-align: center;
+        margin-right: 10px;
     }
 
     .load-file-block:before{
-        content: 'Загрузить файл';
+        content: 'Загрузить аватар';
         position: absolute;
         top: 50%;
         left: 50%;

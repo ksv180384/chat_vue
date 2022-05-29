@@ -45,6 +45,8 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['avatar_src'];
+
     // Rest omitted for brevity
 
     /**
@@ -72,8 +74,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(ChatRoomToUser::class);
     }
 
-    public function getAvatarAttribute($value)
+    public function getAvatarSrcAttribute($value)
     {
-        return $value ?: 'https://bootdey.com/img/Content/avatar/avatar5.png';
+        return $this->avatar ?: 'https://bootdey.com/img/Content/avatar/avatar5.png';
     }
 }

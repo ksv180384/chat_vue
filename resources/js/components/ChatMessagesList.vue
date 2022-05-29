@@ -3,8 +3,8 @@
         <div v-if="messages">
             <div v-show="messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
             <div v-for="message in messages" :key="message.id">
-                <ChatMessage v-if="message.user.id === user.id" :message="message"/>
-                <ChatMessageLeft v-else :message="message"/>
+                <ChatMessageItemLeft v-if="message.user.id === user.id" :message="message"/>
+                <ChatMessageItemLeft v-else :message="message"/>
             </div>
         </div>
     </div>
@@ -12,8 +12,8 @@
 
 <script>
 
-import ChatMessage from "../components/ChatMessage";
-import ChatMessageLeft from "../components/ChatMessageLeft";
+import ChatMessageItem from "../components/ChatMessageItem";
+import ChatMessageItemLeft from "../components/ChatMessageItemLeft";
 import {mapGetters} from "vuex";
 //import store from "../store";
 //import api from "../helpers/api";
@@ -22,8 +22,8 @@ import {mapGetters} from "vuex";
 export default {
     name: "ChatMessagesList",
     components: {
-        ChatMessageLeft,
-        ChatMessage,
+        ChatMessageItemLeft,
+        ChatMessageItem,
     },
     data(){
         return {
