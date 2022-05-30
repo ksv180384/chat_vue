@@ -3,7 +3,7 @@
         <div v-if="messages">
             <div v-show="messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
             <div v-for="message in messages" :key="message.id">
-                <ChatMessageItemLeft v-if="message.user.id === user.id" :message="message"/>
+                <ChatMessageItem v-if="chat.creator_id === user.id" :message="message"/>
                 <ChatMessageItemLeft v-else :message="message"/>
             </div>
         </div>
@@ -28,11 +28,13 @@ export default {
     data(){
         return {
             next_page: false,
+            scroll_type: 'auto',
             //messages: this.messagesList
         }
     },
     computed: {
         ...mapGetters([
+            'chat',
             'messages',
             'messages_load',
             'messages_page',
@@ -66,7 +68,7 @@ export default {
             }
             */
         },
-        scrollToBottom(pos, type) {
+        scrollToBottom(type) {
             type = type || 'auto';
             const container = this.$refs.messages_container;
 
@@ -75,6 +77,7 @@ export default {
                 behavior: type
             });
 
+            this.scroll_type = 'smooth';
         },
     },
     mounted() {
@@ -84,8 +87,8 @@ export default {
         this.setUpInterSectionObserver();
     },
     updated() {
-        const pos = this.$refs.messages_container.scrollHeight;
-        this.scrollToBottom(pos, 'smooth');
+        //const pos = this.$refs.messages_container.scrollHeight;
+        this.scrollToBottom(this.scroll_type);
     }
 }
 </script>

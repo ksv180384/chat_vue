@@ -26,7 +26,7 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => 'required|min:2',
-            'avatar' => 'nullable|mimes:jpg,png,jpeg|max:5120'
+            'avatar' => 'nullable|sometimes|image|mimes:jpg,png,jpeg|max:5120'
         ];
     }
 
