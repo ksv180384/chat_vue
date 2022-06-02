@@ -10,6 +10,7 @@
                      :class="{ 'drag-enter': avatar_drag_enter }"
                 >
                     <img v-if="image_file" @click.stop="removeImg" ref="img_avatar" src="" />
+                    <img v-else-if="" @click.stop="removeImg" ref="img_avatar" src="" />
                     <input ref="inputImg"
                            @dragenter="dragEnter"
                            @dragleave="dragLeave"

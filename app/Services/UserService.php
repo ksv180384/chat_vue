@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserService extends Service
 {
@@ -34,14 +35,18 @@ class UserService extends Service
 
     public function update(User $user, UpdateUserRequest $request)
     {
-        $user->update([
-            'name' => $request->name,
-        ]);
-
+        $pathAvatar = null;
         $file = $request->file('avatar');
         if($file){
-
+            $avatarName = 'avatar.' . $file->extension();
+            $path = 'users/' . $user->id . '/' . $avatarName;
+            Storage::disk('public')->put($path, file_get_contents($file));
         }
+
+        $user->update([
+            'name' => $request->name,
+            'avatar' => $avatarName,
+        ]);
 
         return $user;
     }
