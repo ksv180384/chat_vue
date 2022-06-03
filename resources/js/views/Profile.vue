@@ -10,7 +10,7 @@
                      :class="{ 'drag-enter': avatar_drag_enter }"
                 >
                     <img v-if="image_file" @click.stop="removeImg" ref="img_avatar" src="" />
-                    <img v-else-if="" @click.stop="removeImg" ref="img_avatar" src="" />
+                    <img v-else-if="avatar" @click.stop="removeAvatar" ref="img_avatar" :src="avatar_src" />
                     <input ref="inputImg"
                            @dragenter="dragEnter"
                            @dragleave="dragLeave"
@@ -67,6 +67,22 @@ export default {
                 this.$store.commit('setName', val)
             }
         },
+        avatar: {
+            get(){
+                return this.$store.state.storeProfile.avatar
+            },
+            set(val){
+                this.$store.commit('setAvatar', val)
+            }
+        },
+        avatar_src: {
+            get(){
+                return this.$store.state.storeProfile.avatar_src
+            },
+            set(val){
+                this.$store.commit('setAvatarSrc', val)
+            }
+        },
     },
     methods: {
         loadProfile(){
@@ -106,6 +122,9 @@ export default {
         },
         drop(){
             this.avatar_drag_enter = false;
+        },
+        removeAvatar(){
+            alert('Удалить аватар');
         }
     },
     mounted() {
