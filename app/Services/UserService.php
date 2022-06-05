@@ -35,18 +35,21 @@ class UserService extends Service
 
     public function update(User $user, UpdateUserRequest $request)
     {
-        $pathAvatar = null;
+
+        $user->update([
+            'name' => $request->name,
+        ]);
+
+        $avatarName = null;
         $file = $request->file('avatar');
         if($file){
             $avatarName = 'avatar.' . $file->extension();
             $path = 'users/' . $user->id . '/' . $avatarName;
             Storage::disk('public')->put($path, file_get_contents($file));
+            $user->update([
+                'avatar' => $avatarName,
+            ]);
         }
-
-        $user->update([
-            'name' => $request->name,
-            'avatar' => $avatarName,
-        ]);
 
         return $user;
     }

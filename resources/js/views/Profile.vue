@@ -9,8 +9,14 @@
                 <div class="load-file-block"
                      :class="{ 'drag-enter': avatar_drag_enter }"
                 >
-                    <img v-if="image_file" @click.stop="removeImg" ref="img_avatar" src="" />
-                    <img v-else-if="avatar" @click.stop="removeAvatar" ref="img_avatar" :src="avatar_src" />
+                    <div v-if="avatar || image_file" class="loaded-avatar">
+                        <img ref="img_avatar"
+                             :src="avatar_src"
+                        />
+                        <div @click.stop="removeAvatar" class="avatar-delete">
+                            <FontAwesomeIcon icon="trash" />
+                        </div>
+                    </div>
                     <input ref="inputImg"
                            @dragenter="dragEnter"
                            @dragleave="dragLeave"
@@ -40,12 +46,12 @@
 <script>
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCaretLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {library} from "@fortawesome/fontawesome-svg-core";
 import api from "../helpers/api";
-import {mapGetters} from "vuex";
+import { mapGetters, mapState } from "vuex";
 
-library.add(faCaretLeft);
+library.add(faCaretLeft, faTrash);
 
 export default {
     name: "Profile",
@@ -54,41 +60,24 @@ export default {
     },
     data(){
         return {
+            name: this.$store.state.storeProfile.name,
+            avatar: this.$store.state.storeProfile.avatar,
+            avatar_src: this.$store.state.storeProfile.avatar_src,
             image_file: '',
             avatar_drag_enter: false
         }
     },
     computed: {
-        name: {
-            get(){
-                return this.$store.state.storeProfile.name
-            },
-            set(val){
-                this.$store.commit('setName', val)
-            }
-        },
-        avatar: {
-            get(){
-                return this.$store.state.storeProfile.avatar
-            },
-            set(val){
-                this.$store.commit('setAvatar', val)
-            }
-        },
-        avatar_src: {
-            get(){
-                return this.$store.state.storeProfile.avatar_src
-            },
-            set(val){
-                this.$store.commit('setAvatarSrc', val)
-            }
-        },
+        ...mapState([
+            'storeProfile'
+        ]),
+
     },
     methods: {
         loadProfile(){
             api.get(`/user/profile`)
                 .then(res => {
-                    this.$store.commit('setProfile', res.user);
+                    this.$store.commit('storeProfile/setProfile', res.user);
                 })
         },
         uploadImage(event){
@@ -107,7 +96,8 @@ export default {
             formData.append('avatar', this.image_file);
 
             api.post('/user/profile/update', formData).then(res => {
-                this.$store.dispatch('setProfile', res.user);
+                //this.name = res.user.name;
+                this.$store.commit('storeProfile/setProfile', res.user);
             })
         },
         removeImg(){
@@ -133,47 +123,3 @@ export default {
 }
 </script>
 
-<style scoped>
-    .load-file-block{
-        width: 200px;
-        height: 200px;
-        border: 2px dashed #ced4da;
-        border-radius: 6px;
-        position: relative;
-        text-align: center;
-        margin-right: 10px;
-        overflow: hidden;
-        transition: all .5s;
-    }
-
-    .load-file-block:before{
-        content: 'Загрузить аватар';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    .load-file-block>img{
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        object-fit: cover;
-        z-index: 1;
-    }
-
-    .load-file-block input[type="file"]{
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-    }
-
-    .load-file-block.drag-enter{
-        border-color: #00cd20;
-        background-color: #efefef;
-    }
-
-</style>

@@ -32,6 +32,11 @@ class ChatRoom extends Model
         return $this->hasOne(User::class, 'id', 'creator_id');
     }
 
+    public function messages()
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
+
     public function scopeOne($query)
     {
         return $query->with([

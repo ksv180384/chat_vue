@@ -62,6 +62,7 @@ class ChatService extends Service{
     {
         $chatRoom = ChatRoom::findOrFail($chatId);
         $chatRoom->users()->detach();
+        $chatRoom->messages()->delete();
 
         $chatRoom->delete();
     }

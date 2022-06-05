@@ -1,2 +1,78 @@
+.avatar-img{
+    width: 48px;
+    height: 48px;
+    -o-object-fit: cover;
+       object-fit: cover;
+    border-radius: 50%;
+}
+
+.load-file-block{
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #ced4da;
+    border-radius: 6px;
+    position: relative;
+    text-align: center;
+    margin-right: 10px;
+    overflow: hidden;
+    transition: all .5s;
+}
+
+.load-file-block:before{
+    content: 'Загрузить аватар';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.load-file-block img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    -o-object-fit: cover;
+       object-fit: cover;
+    z-index: 1;
+}
+
+.loaded-avatar{
+
+}
+
+.loaded-avatar .avatar-delete{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    background-color: #141414a1;
+    color: white;
+    border-radius: 6px 0 6px 0;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.load-file-block input[type="file"]{
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    z-index: 1;
+    position: absolute;
+}
+
+.load-file-block.drag-enter{
+    border-color: #00cd20;
+    background-color: #efefef;
+}
+
+
 
 

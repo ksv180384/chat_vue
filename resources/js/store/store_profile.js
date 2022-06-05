@@ -1,17 +1,22 @@
+import { setUserData, userData } from '../helpers/helpers';
+
 const storeProfile = {
+    namespaced: true,
     state: {
-        name: '',
-        avatar: '',
-        avatar_src: '',
+        name: userData().name,
+        avatar: userData().avatar,
+        avatar_src: userData().avatar_src,
+
     },
     actions: {
 
     },
     mutations: {
         setProfile(state, profile) {
+            setUserData(profile);
             state.name = profile.name;
             state.avatar = profile.avatar;
-            state.avatar_src = profile.avatar_src;
+            state.avatar_src = profile.avatar_src + '?r=' + Math.round(Math.random()*100);
         },
         setName(state, name){
             state.name = name;
@@ -24,8 +29,14 @@ const storeProfile = {
         }
     },
     getters: {
-        profile: state => {
-            return state.profile;
+        name: state => {
+            return state.name;
+        },
+        avatar_src: state => {
+            return state.avatar_src;
+        },
+        avatar: state => {
+            return state.avatar;
         },
     }
 }

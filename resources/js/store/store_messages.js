@@ -1,6 +1,7 @@
 import api from "../helpers/api";
 
 const storeMessages = {
+    namespace: true,
     state: {
         messages: [],
         messages_load: false,

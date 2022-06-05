@@ -7,5 +7,13 @@ export const userData = () => {
 
     }
 
-    return userData
+    return userData;
+}
+
+export const setUserData = (userData) => {
+    try{
+        localStorage.setItem('user', JSON.stringify(userData));
+    }catch (e) {
+
+    }
 }

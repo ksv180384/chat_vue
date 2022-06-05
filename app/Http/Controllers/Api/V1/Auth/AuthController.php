@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         return response()->json(array_merge(
             $this->respondWithToken($token)->getOriginalContent(),
-            ['user' => Auth::user()->only(['id', 'name', 'avatar'])]
+            ['user' => Auth::user()->only(['id', 'name', 'avatar', 'avatar_src'])]
         ));
     }
 

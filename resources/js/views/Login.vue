@@ -63,7 +63,7 @@ export default {
                     this.request = false;
                     localStorage.setItem('user_token', res.access_token);
                     localStorage.setItem('user', JSON.stringify(res.user));
-                    this.$store.commit('setUser', res.user)
+                    this.$store.commit('setUser', res.user);
                     api.defaults.headers.common['Authorization'] = 'Bearer ' + res.access_token;
                     this.$router.push('/');
                 }).catch(error => {

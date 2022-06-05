@@ -1,8 +1,8 @@
 <template>
     <div class="chat-messages p-4" ref="messages_container">
-        <div v-if="messages">
-            <div v-show="messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
-            <div v-for="message in messages" :key="message.id">
+        <div v-if="storeMessages.messages">
+            <div v-show="storeMessages.messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
+            <div v-for="message in storeMessages.messages" :key="message.id">
                 <ChatMessageItem v-if="chat.creator_id === user.id" :message="message"/>
                 <ChatMessageItemLeft v-else :message="message"/>
             </div>
@@ -14,7 +14,7 @@
 
 import ChatMessageItem from "../components/ChatMessageItem";
 import ChatMessageItemLeft from "../components/ChatMessageItemLeft";
-import {mapGetters} from "vuex";
+import {mapGetters, mapState} from "vuex";
 //import store from "../store";
 //import api from "../helpers/api";
 //import router from "../router";
@@ -33,12 +33,15 @@ export default {
         }
     },
     computed: {
+        ...mapState([
+            'storeMessages'
+        ]),
         ...mapGetters([
             'chat',
-            'messages',
-            'messages_load',
-            'messages_page',
-            'messages_next',
+            'storeMessages/messages',
+            'storeMessages/messages_load',
+            'storeMessages/messages_page',
+            'storeMessages/messages_next',
             'user'
         ])
     },
