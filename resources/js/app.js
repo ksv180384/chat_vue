@@ -3,6 +3,8 @@ import store from './store';
 import router from './router';
 import BootstrapVue3 from 'bootstrap-vue-3';
 
+import socket from "./helpers/socket";
+
 import App from './App.vue';
 
 import 'bootstrap/dist/css/bootstrap.css';

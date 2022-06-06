@@ -8,6 +8,7 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends BaseController
@@ -33,6 +34,13 @@ class ProfileController extends BaseController
     public function update(UpdateUserRequest $request)
     {
         $user = $this->userService->update(Auth::user(), $request);
+
+        return new UserResource($user);
+    }
+
+    public function removeAvatar()
+    {
+        $user = $this->userService->removeAvatar(Auth::user());
 
         return new UserResource($user);
     }

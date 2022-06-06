@@ -16,7 +16,7 @@ const storeProfile = {
             setUserData(profile);
             state.name = profile.name;
             state.avatar = profile.avatar;
-            state.avatar_src = profile.avatar_src + '?r=' + Math.round(Math.random()*100);
+            state.avatar_src = profile.avatar_src;
         },
         setName(state, name){
             state.name = name;

@@ -81,7 +81,11 @@ export default {
                 })
         },
         uploadImage(event){
+            if(!event.target.files || event.target.files.length === 0){
+                return true;
+            }
             this.image_file = event.target.files[0];
+            this.avatar_src = '';
 
             const reader = new FileReader();
             reader.readAsDataURL(this.image_file);
@@ -98,7 +102,7 @@ export default {
             api.post('/user/profile/update', formData).then(res => {
                 //this.name = res.user.name;
                 this.$store.commit('storeProfile/setProfile', res.user);
-            })
+            });
         },
         removeImg(){
             this.image_file = '';
@@ -114,7 +118,12 @@ export default {
             this.avatar_drag_enter = false;
         },
         removeAvatar(){
-            alert('Удалить аватар');
+            api.delete('/user/profile/remove-avatar').then(res => {
+                this.$store.commit('storeProfile/setProfile', res.user);
+                this.avatar = res.user.avatar;
+                this.avatar_src = res.user.avatar_src;
+                this.image_file = '';
+            });
         }
     },
     mounted() {

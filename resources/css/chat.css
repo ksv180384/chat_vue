@@ -71,5 +71,10 @@
     background-color: #efefef;
 }
 
+.user-item-img{
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 
 

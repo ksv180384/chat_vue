@@ -40,16 +40,29 @@ class UserService extends Service
             'name' => $request->name,
         ]);
 
-        $avatarName = null;
         $file = $request->file('avatar');
         if($file){
-            $avatarName = 'avatar.' . $file->extension();
+            $this->removeAvatar($user);
+            $avatarName = 'avatar_' . uniqid() . '.' . $file->extension();
             $path = 'users/' . $user->id . '/' . $avatarName;
             Storage::disk('public')->put($path, file_get_contents($file));
             $user->update([
                 'avatar' => $avatarName,
             ]);
         }
+
+        return $user;
+    }
+
+    /**
+     * Удаляем аватар пользователя
+     * @param User $user
+     */
+    public function removeAvatar(User $user)
+    {
+        $path = 'users/' . $user->id . '/' . $user->avatar;
+        Storage::disk('public')->delete($path);
+        $user->update(['avatar' => null]);
 
         return $user;
     }

@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth'], function (){
     Route::group(['prefix' => 'user'], function (){
         Route::get('/profile', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'index']);
         Route::put('/profile/update', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'update']);
+        Route::delete('/profile/remove-avatar', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'removeAvatar']);
     });
 
     // Чат

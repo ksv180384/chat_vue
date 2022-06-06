@@ -2,7 +2,7 @@
   <div class="chat-message-right pb-4">
     <div>
       <img :src="message.user.avatar_src"
-           class="rounded-circle mr-1"
+           class="user-item-img mr-1"
            :alt="message.user.name"
            width="40"
            height="40"
