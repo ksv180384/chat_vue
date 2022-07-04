@@ -18,7 +18,7 @@ class ChatMessage extends Model
         'created_at',
     ];
 
-    protected $appends = ['created_at_humans'];
+    protected $appends = ['created_at_time', 'created_at_date'];
 
     public function room()
     {
@@ -38,5 +38,15 @@ class ChatMessage extends Model
     public function getCreatedAtHumansAttribute()
     {
         return $this->created_at->diffForHumans();
+    }
+
+    public function getCreatedAtTimeAttribute()
+    {
+        return $this->created_at->format('H:i');
+    }
+
+    public function getCreatedAtDateAttribute()
+    {
+        return $this->created_at->translatedFormat('d F Y');
     }
 }

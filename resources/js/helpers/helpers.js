@@ -7,6 +7,14 @@ export const userData = () => {
 
     }
 
+    if(!userData){
+        userData = {
+            name: '',
+            avatar: '',
+            avatar_src: '',
+        };
+    }
+
     return userData;
 }
 

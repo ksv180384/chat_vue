@@ -78,16 +78,42 @@ export default {
             this.chatName = '';
         }
     },
+    watch: {
+        chats(newChats, oldChats){
+
+            console.log(newChats);
+
+            if (newChats.length)
+
+            for (let chat of newChats){
+
+                console.log(chat);
+            }
+            //console.log(oldChats);
+            //console.log(newChats);
+            //this.$store.state.socket.emit('countMessagesRooms', );
+        }
+    },
     mounted() {
         this.$store.dispatch('loadChats');
 
+        // bootstrap модальное окно
         this.modalAddUserChat = document.getElementById('modalCreateChat');
         this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
         this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
+
+        //Сокеты
+        this.$store.state.socket.on('countMessages', function(data){
+            console.log(data);
+            //this.pushMessage(data);
+        }.bind(this));
     },
     unmounted() {
+        // bootstrap модальное окно
         this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
         this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
+
+        console.log(this.$store.getters.chats);
     }
 }
 </script>

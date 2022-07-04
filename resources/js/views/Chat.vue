@@ -98,9 +98,25 @@ export default {
                     router.push('/');
                 });
         },
+        pushMessage(messageData){
+            this.$store.commit('setMessage', messageData);
+        }
     },
     mounted() {
         this.$store.dispatch('loadChat', this.$route.params.id);
+
+        this.$store.state.socket.on('message', function(data){
+            console.log(data);
+            this.pushMessage(data);
+        }.bind(this));
+
+        this.$store.state.socket.emit('enterRoom', `chat_${this.chat_id}`);
+
     },
+    unmounted() {
+        this.$store.state.socket.emit('leaveRoom', `chat_${this.chat_id}`);
+        this.$store.dispatch('loadChat', this.$route.params.id);
+        this.$store.commit('setMessagesPage', 1);
+    }
 }
 </script>

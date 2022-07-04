@@ -24,9 +24,19 @@ api.interceptors.response.use(function (response) {
 }, function (error) {
     // Если ошибка аворизации, то затираем токен и редирект на главную
     if(error.response.status === 401){
+
+        if(error.response.data.message === 'Token has expired'){
+            return api.post('refresh').then(res => {
+                localStorage.setItem('user_token', res.access_token);
+                api.defaults.headers.common['Authorization'] = 'Bearer ' + res.access_token;
+                return api.request(error.config);
+            });
+        }
+
         localStorage.removeItem('user_token');
         api.defaults.headers.common['Authorization'] = null;
         router.push('/login');
+
     }
     return Promise.reject(error);
 });

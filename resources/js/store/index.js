@@ -3,6 +3,7 @@ import storeMessages from './store_messages';
 import storeProfile from "./store_profile";
 
 import api from '../helpers/api';
+import socket from "../helpers/socket";
 import { userData } from '../helpers/helpers';
 
 // Create a new store instance.
@@ -14,6 +15,8 @@ const store = createStore({
             chat: {},
             chat_list: [],
             chat_users: [],
+            socket: socket,
+            messages_page: 1,
         }
     },
     actions: {
@@ -21,7 +24,7 @@ const store = createStore({
             api.get('/chat')
                 .then(res => {
                     commit('setChats', res.chats)
-                })
+                });
         },
         loadChat({ commit }, chat_id){
             this.messages_load = true;
@@ -34,7 +37,8 @@ const store = createStore({
                     this.state.messages_load = false;
 
                     if(res.messages.next_page_url){
-                        this.state.messages_page = this.state.messages_page + 1;
+                        const page = this.state.messages_page + 1;
+                        commit('setMessagesPage', page);
                         this.state.messages_next = true;
                     }else{
                         this.state.messages_next = false;
@@ -57,6 +61,9 @@ const store = createStore({
         },
         setChatUsers(state, users) {
             state.chat_users = users
+        },
+        setMessagesPage(state, page) {
+            state.messages_page = page
         },
     },
     getters: {

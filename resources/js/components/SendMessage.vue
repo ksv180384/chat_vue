@@ -43,6 +43,11 @@ export default {
                     this.send_loading = false;
                     this.$store.commit('setMessage', res);
                     this.message = '';
+
+                    this.$store.state.socket.emit(
+                        'message',
+                        {room: `chat_${this.chat_id}`, message: res}
+                    );
                 }).catch(error => {
                 // handle error
                 this.send_loading = false;

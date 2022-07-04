@@ -19645,11 +19645,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store */ "./resources/js/store/index.js");
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./router */ "./resources/js/router/index.js");
 /* harmony import */ var bootstrap_vue_3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap-vue-3 */ "./node_modules/bootstrap-vue-3/dist/bootstrap-vue-3.es.js");
-/* harmony import */ var _helpers_socket__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./helpers/socket */ "./resources/js/helpers/socket.js");
-/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue");
-/* harmony import */ var bootstrap_dist_css_bootstrap_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.css */ "./node_modules/bootstrap/dist/css/bootstrap.css");
-/* harmony import */ var bootstrap_vue_3_dist_bootstrap_vue_3_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! bootstrap-vue-3/dist/bootstrap-vue-3.css */ "./node_modules/bootstrap-vue-3/dist/bootstrap-vue-3.css");
-/* harmony import */ var _assets_css_styles_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/css/styles.css */ "./resources/js/assets/css/styles.css");
+/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue");
+/* harmony import */ var bootstrap_dist_css_bootstrap_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.css */ "./node_modules/bootstrap/dist/css/bootstrap.css");
+/* harmony import */ var bootstrap_vue_3_dist_bootstrap_vue_3_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! bootstrap-vue-3/dist/bootstrap-vue-3.css */ "./node_modules/bootstrap-vue-3/dist/bootstrap-vue-3.css");
+/* harmony import */ var _assets_css_styles_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/css/styles.css */ "./resources/js/assets/css/styles.css");
 
 
 
@@ -19658,8 +19657,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-(0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)(_App_vue__WEBPACK_IMPORTED_MODULE_5__["default"]).use(_store__WEBPACK_IMPORTED_MODULE_1__["default"]).use(_router__WEBPACK_IMPORTED_MODULE_2__["default"]).use(bootstrap_vue_3__WEBPACK_IMPORTED_MODULE_3__["default"]).mount('#app');
+(0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)(_App_vue__WEBPACK_IMPORTED_MODULE_4__["default"]).use(_store__WEBPACK_IMPORTED_MODULE_1__["default"]).use(_router__WEBPACK_IMPORTED_MODULE_2__["default"]).use(bootstrap_vue_3__WEBPACK_IMPORTED_MODULE_3__["default"]).mount('#app');
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 /*
@@ -19740,6 +19738,14 @@ api.interceptors.response.use(function (response) {
 }, function (error) {
   // Если ошибка аворизации, то затираем токен и редирект на главную
   if (error.response.status === 401) {
+    if (error.response.data.message === 'Token has expired') {
+      return api.post('refresh').then(function (res) {
+        localStorage.setItem('user_token', res.access_token);
+        api.defaults.headers.common['Authorization'] = 'Bearer ' + res.access_token;
+        return api.request(error.config);
+      });
+    }
+
     localStorage.removeItem('user_token');
     api.defaults.headers.common['Authorization'] = null;
     _router__WEBPACK_IMPORTED_MODULE_1__["default"].push('/login');
@@ -19770,6 +19776,14 @@ var userData = function userData() {
   try {
     userData = JSON.parse(localStorage.getItem('user'));
   } catch (e) {}
+
+  if (!userData) {
+    userData = {
+      name: '',
+      avatar: '',
+      avatar_src: ''
+    };
+  }
 
   return userData;
 };
@@ -19899,11 +19913,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
 /* harmony import */ var _store_messages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store_messages */ "./resources/js/store/store_messages.js");
 /* harmony import */ var _store_profile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store_profile */ "./resources/js/store/store_profile.js");
 /* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
-/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
+/* harmony import */ var _helpers_socket__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/socket */ "./resources/js/helpers/socket.js");
+/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -19920,16 +19935,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 
+
  // Create a new store instance.
 
-var store = (0,vuex__WEBPACK_IMPORTED_MODULE_4__.createStore)({
+var store = (0,vuex__WEBPACK_IMPORTED_MODULE_5__.createStore)({
   state: function state() {
     return {
-      user: (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.userData)(),
+      user: (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__.userData)(),
       count: 0,
       chat: {},
       chat_list: [],
-      chat_users: []
+      chat_users: [],
+      socket: _helpers_socket__WEBPACK_IMPORTED_MODULE_3__["default"],
+      messages_page: 1
     };
   },
   actions: {
@@ -19951,7 +19969,8 @@ var store = (0,vuex__WEBPACK_IMPORTED_MODULE_4__.createStore)({
         _this.state.messages_load = false;
 
         if (res.messages.next_page_url) {
-          _this.state.messages_page = _this.state.messages_page + 1;
+          var page = _this.state.messages_page + 1;
+          commit('setMessagesPage', page);
           _this.state.messages_next = true;
         } else {
           _this.state.messages_next = false;
@@ -19974,6 +19993,9 @@ var store = (0,vuex__WEBPACK_IMPORTED_MODULE_4__.createStore)({
     },
     setChatUsers: function setChatUsers(state, users) {
       state.chat_users = users;
+    },
+    setMessagesPage: function setMessagesPage(state, page) {
+      state.messages_page = page;
     }
   },
   getters: {

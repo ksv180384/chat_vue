@@ -3,7 +3,7 @@
         <div v-if="storeMessages.messages">
             <div v-show="storeMessages.messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
             <div v-for="message in storeMessages.messages" :key="message.id">
-                <ChatMessageItem v-if="chat.creator_id === user.id" :message="message"/>
+                <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
                 <ChatMessageItemLeft v-else :message="message"/>
             </div>
         </div>

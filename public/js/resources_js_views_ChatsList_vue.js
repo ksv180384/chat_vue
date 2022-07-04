@@ -111,6 +111,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_ChatItem__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/ChatItem */ "./resources/js/components/ChatItem.vue");
 /* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../router */ "./resources/js/router/index.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 
@@ -159,15 +165,46 @@ __webpack_require__.r(__webpack_exports__);
       this.chatName = '';
     }
   },
+  watch: {
+    chats: function chats(newChats, oldChats) {
+      console.log(newChats);
+
+      if (newChats.length) {
+        var _iterator = _createForOfIteratorHelper(newChats),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var chat = _step.value;
+            console.log(chat);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      } //console.log(oldChats);
+      //console.log(newChats);
+      //this.$store.state.socket.emit('countMessagesRooms', );
+
+    }
+  },
   mounted: function mounted() {
-    this.$store.dispatch('loadChats');
+    this.$store.dispatch('loadChats'); // bootstrap модальное окно
+
     this.modalAddUserChat = document.getElementById('modalCreateChat');
     this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
-    this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
+    this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal); //Сокеты
+
+    this.$store.state.socket.on('countMessages', function (data) {
+      console.log(data); //this.pushMessage(data);
+    }.bind(this));
   },
   unmounted: function unmounted() {
+    // bootstrap модальное окно
     this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
     this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
+    console.log(this.$store.getters.chats);
   }
 });
 

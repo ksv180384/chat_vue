@@ -14,25 +14,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+//Route::post('refresh', 'AuthController@refresh');
+//Route::get('me', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'me']);
+
+
 // Авторизация
 Route::post('login', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'login']);
-Route::post('logout', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'logout']);
 Route::post('registration', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'registration']);
-//Route::post('refresh', 'AuthController@refresh');
-Route::get('me', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'me']);
+Route::post('refresh', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'refresh']);
 
+//
+Route::group(['middleware' => 'jwt.auth:api_v1'], function (){
 
-// Пользователь
-Route::get('/users', [\App\Http\Controllers\Api\V1\User\UserController::class, 'index']);
+    Route::post('logout', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'logout']);
 
-// Чат
-Route::group(['middleware' => 'auth'], function (){
-
-    // Пользователь
+    // Профиль
     Route::group(['prefix' => 'user'], function (){
         Route::get('/profile', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'index']);
         Route::put('/profile/update', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'update']);
         Route::delete('/profile/remove-avatar', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'removeAvatar']);
+    });
+
+    // Пользователи
+    Route::group(['prefix' => 'users'], function (){
+        Route::get('/', [\App\Http\Controllers\Api\V1\User\UserController::class, 'index']);
+        Route::get('search/{user}', [\App\Http\Controllers\Api\V1\User\UserController::class, 'search']);
     });
 
     // Чат
@@ -50,8 +57,4 @@ Route::group(['middleware' => 'auth'], function (){
     });
 });
 
-// Пользователи
-Route::group(['middleware' => 'auth', 'prefix' => 'user'], function (){
-    Route::get('search/{user}', [\App\Http\Controllers\Api\V1\UserController::class, 'search']);
-});
 

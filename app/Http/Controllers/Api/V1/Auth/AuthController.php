@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegistrationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -17,7 +18,8 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api_v1', ['except' => ['login', 'logout', 'registration']]);
+        //$this->middleware('auth:api_v1', ['except' => ['login', 'logout', 'registration']]);
+        //$this->middleware('jwt.auth', ['except' => ['login', 'logout', 'registration']]);
     }
 
     public function login(Request $request)
@@ -25,7 +27,8 @@ class AuthController extends Controller
         $credentials = $request->only(['email', 'password']);
         $remember = $request->remember == 'true';
 
-        if (! $token = Auth::attempt($credentials, $remember) ) {
+        $token = JWTAuth::attempt($credentials, $remember);
+        if (!$token) {
             return response()->json(['message' => 'Неверный логин или пароль'], 401);
         }
 
