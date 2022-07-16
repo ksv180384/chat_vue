@@ -1,8 +1,8 @@
 <template>
     <div class="chat-messages p-4" ref="messages_container">
-        <div v-if="storeMessages.messages">
-            <div v-show="storeMessages.messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
-            <div v-for="message in storeMessages.messages" :key="message.id">
+        <div v-if="messages">
+            <div v-show="next_page" ref="sentinel" class="text-center py-3">Загрузка...</div>
+            <div v-for="message in messages" :key="message.id">
                 <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
                 <ChatMessageItemLeft v-else :message="message"/>
             </div>
@@ -25,25 +25,21 @@ export default {
         ChatMessageItemLeft,
         ChatMessageItem,
     },
+    props: ['messages', 'next_page'],
     data(){
         return {
-            next_page: false,
             scroll_type: 'auto',
-            //messages: this.messagesList
         }
     },
     computed: {
-        ...mapState([
-            'storeMessages'
-        ]),
         ...mapGetters([
-            'chat',
-            'storeMessages/messages',
-            'storeMessages/messages_load',
-            'storeMessages/messages_page',
-            'storeMessages/messages_next',
             'user'
         ])
+    },
+    watch: {
+        messages(){
+            console.log(this.messages.length);
+        }
     },
     methods: {
         setUpInterSectionObserver() {
@@ -59,9 +55,10 @@ export default {
         },
         handleIntersection([entry]) {
             if (entry.isIntersecting) {
-                console.log("подгружаем контент");
+                //console.log("подгружаем контент");
                 //this.$store.dispatch('loadChat', this.$route.params.id);
-                this.$store.dispatch('loadMessages', this.$route.params.id);
+                //this.$store.dispatch('loadMessages', this.$route.params.id);
+                this.$emit('onLoadMessages');
             }
             /*
             if (entry.isIntersecting && this.canLoadMore && !this.isLoadingMore) {
@@ -84,14 +81,13 @@ export default {
         },
     },
     mounted() {
-        //store.dispatch('loadChat', this.$route.params.id);
-        //this.loadChat();
-        //this.$store.dispatch('loadChat', this.$route.params.id);
+
         this.setUpInterSectionObserver();
+        this.scrollToBottom(this.scroll_type);
     },
     updated() {
         //const pos = this.$refs.messages_container.scrollHeight;
-        this.scrollToBottom(this.scroll_type);
+        //this.scrollToBottom(this.scroll_type);
     }
 }
 </script>

@@ -7,8 +7,7 @@
             <span v-if="chat">{{ chat.title }}</span>
         </h1>
 
-        <div>
-
+        <div v-if="chat">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512" height="20px">
@@ -18,7 +17,7 @@
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                     <li><a @click.prevent="leaveChat" href="#" class="dropdown-item">Покинуть чат</a></li>
                     <li>
-                        <a v-if="user.id === chat.creator_id" @click.prevent="deleteChat"
+                        <a v-if="user.id === chat.creator.id" @click.prevent="deleteChat"
                            href="#"
                            class="dropdown-item"
                         >
@@ -29,7 +28,7 @@
             </div>
         </div>
     </div>
-    <div class="card">
+    <div v-if="chat" class="card">
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
                 <SearchUserChat/>
@@ -37,7 +36,7 @@
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
-                    <ChatMessagesList />
+                    <ChatMessagesList :messages="messages" :next_page="next_page" @onLoadMessages="loadMessages"/>
                 </div>
                 <SendMessage :chat_id="chat.id"/>
             </div>
@@ -73,15 +72,18 @@ export default {
     },
     data(){
         return {
-            chat_id: this.$route.params.id,
+            chat: null,
+            chat_users: [],
             load_chat: false,
+            messages: [],
+            messages_load: false,
+            chat_id: this.$route.params.id,
             page: 1,
             next_page: false,
         }
     },
     computed: {
         ...mapGetters([
-            'chat',
             'user',
         ])
     },
@@ -99,14 +101,49 @@ export default {
                 });
         },
         pushMessage(messageData){
-            this.$store.commit('setMessage', messageData);
+            //this.$store.commit('setMessage', messageData);
+        },
+        loadChat(){
+            this.load_chat = true;
+            api.get(`/chat/${this.chat_id}?page=${this.page}`)
+                .then(res => {
+
+                    this.chat = res.chat;
+                    this.chat_users = res.chat.users;
+                    this.messages = [...this.messages, ...res.messages.data.reverse()];
+
+                    this.load_chat = false;
+
+                    if(res.messages.next_page_url){
+                        this.page = this.page + 1;
+                        this.next_page = true;
+                    }else{
+                        this.next_page = false;
+                    }
+                })
+        },
+        loadMessages(){
+
+            this.messages_load = true;
+            api.get(`/chat/${this.chat_id}/messages?page=${this.page}`)
+                .then(res => {
+                    this.messages = [...this.messages, ...res.data.reverse()];
+
+                    this.messages_load = false;
+
+                    if(res.next_page_url){
+                        this.page = this.page + 1;
+                        this.next_page = true;
+                    }else{
+                        this.next_page = false;
+                    }
+                })
         }
     },
     mounted() {
-        this.$store.dispatch('loadChat', this.$route.params.id);
+        this.loadChat();
 
         this.$store.state.socket.on('message', function(data){
-            console.log(data);
             this.pushMessage(data);
         }.bind(this));
 
@@ -115,8 +152,6 @@ export default {
     },
     unmounted() {
         this.$store.state.socket.emit('leaveRoom', `chat_${this.chat_id}`);
-        this.$store.dispatch('loadChat', this.$route.params.id);
-        this.$store.commit('setMessagesPage', 1);
     }
 }
 </script>

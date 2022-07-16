@@ -116,13 +116,13 @@ export default {
         },
     },
     mounted() {
-        this.modalAddUserChat = document.getElementById('modalAddUserChat');
-        this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
-        this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
+        //this.modalAddUserChat = document.getElementById('modalAddUserChat');
+        //this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
+        //this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
     },
     unmounted() {
-        this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
-        this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
+        //this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
+        //this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
     }
 }
 </script>

@@ -15,6 +15,6 @@
 import AddUserChat from "./AddUserChat";
 export default {
   name: "SearchUserChat",
-    components: {AddUserChat}
+    components: { AddUserChat }
 }
 </script>

@@ -26,6 +26,7 @@ const store = createStore({
                     commit('setChats', res.chats)
                 });
         },
+        /*
         loadChat({ commit }, chat_id){
             this.messages_load = true;
             api.get(`/chat/${chat_id}?page=${this.state.messages_page}`)
@@ -45,6 +46,7 @@ const store = createStore({
                     }
                 })
         },
+        */
     },
     mutations: {
         setUser(state, user) {

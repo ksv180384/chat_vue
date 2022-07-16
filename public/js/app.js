@@ -19956,27 +19956,27 @@ var store = (0,vuex__WEBPACK_IMPORTED_MODULE_5__.createStore)({
       _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].get('/chat').then(function (res) {
         commit('setChats', res.chats);
       });
-    },
-    loadChat: function loadChat(_ref2, chat_id) {
-      var _this = this;
-
-      var commit = _ref2.commit;
-      this.messages_load = true;
-      _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].get("/chat/".concat(chat_id, "?page=").concat(this.state.messages_page)).then(function (res) {
-        commit('setChat', res.chat);
-        commit('setChatUsers', res.chat.users);
-        commit('setMessages', res.messages.data.reverse());
-        _this.state.messages_load = false;
-
-        if (res.messages.next_page_url) {
-          var page = _this.state.messages_page + 1;
-          commit('setMessagesPage', page);
-          _this.state.messages_next = true;
-        } else {
-          _this.state.messages_next = false;
-        }
-      });
     }
+    /*
+    loadChat({ commit }, chat_id){
+        this.messages_load = true;
+        api.get(`/chat/${chat_id}?page=${this.state.messages_page}`)
+            .then(res => {
+                commit('setChat', res.chat);
+                commit('setChatUsers', res.chat.users);
+                commit('setMessages', res.messages.data.reverse());
+                 this.state.messages_load = false;
+                 if(res.messages.next_page_url){
+                    const page = this.state.messages_page + 1;
+                    commit('setMessagesPage', page);
+                    this.state.messages_next = true;
+                }else{
+                    this.state.messages_next = false;
+                }
+            })
+    },
+    */
+
   },
   mutations: {
     setUser: function setUser(state, user) {
