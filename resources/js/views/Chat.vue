@@ -36,9 +36,11 @@
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
-                    <ChatMessagesList :messages="messages" :next_page="next_page" @onLoadMessages="loadMessages"/>
+                    <ChatMessagesList :prop_messages_list="messages"
+                                      :prop_next_page="next_page"
+                    />
                 </div>
-                <SendMessage :chat_id="chat.id"/>
+                <SendMessage :chat_id="chat.id" @onSendMessage="pushMessage"/>
             </div>
         </div>
     </div>
@@ -76,9 +78,7 @@ export default {
             chat_users: [],
             load_chat: false,
             messages: [],
-            messages_load: false,
             chat_id: this.$route.params.id,
-            page: 1,
             next_page: false,
         }
     },
@@ -102,47 +102,28 @@ export default {
         },
         pushMessage(messageData){
             //this.$store.commit('setMessage', messageData);
+
+            console.log(messageData);
         },
         loadChat(){
             this.load_chat = true;
             api.get(`/chat/${this.chat_id}?page=${this.page}`)
                 .then(res => {
 
-                    this.chat = res.chat;
-                    this.chat_users = res.chat.users;
-                    this.messages = [...this.messages, ...res.messages.data.reverse()];
-
                     this.load_chat = false;
 
+                    this.chat = res.chat;
+                    this.chat_users = res.chat.users;
+                    this.messages = res.messages.data.reverse();
+
                     if(res.messages.next_page_url){
-                        this.page = this.page + 1;
                         this.next_page = true;
-                    }else{
-                        this.next_page = false;
                     }
                 })
         },
-        loadMessages(){
-
-            this.messages_load = true;
-            api.get(`/chat/${this.chat_id}/messages?page=${this.page}`)
-                .then(res => {
-                    this.messages = [...this.messages, ...res.data.reverse()];
-
-                    this.messages_load = false;
-
-                    if(res.next_page_url){
-                        this.page = this.page + 1;
-                        this.next_page = true;
-                    }else{
-                        this.next_page = false;
-                    }
-                })
-        }
     },
     mounted() {
         this.loadChat();
-
         this.$store.state.socket.on('message', function(data){
             this.pushMessage(data);
         }.bind(this));

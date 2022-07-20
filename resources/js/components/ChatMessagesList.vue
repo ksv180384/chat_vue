@@ -2,9 +2,11 @@
     <div class="chat-messages p-4" ref="messages_container">
         <div v-if="messages">
             <div v-show="next_page" ref="sentinel" class="text-center py-3">Загрузка...</div>
-            <div v-for="message in messages" :key="message.id">
-                <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
-                <ChatMessageItemLeft v-else :message="message"/>
+            <div ref="messages_list_container">
+                <div v-for="message in messages" :key="message.id">
+                    <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
+                    <ChatMessageItemLeft v-else :message="message"/>
+                </div>
             </div>
         </div>
     </div>
@@ -15,9 +17,7 @@
 import ChatMessageItem from "../components/ChatMessageItem";
 import ChatMessageItemLeft from "../components/ChatMessageItemLeft";
 import {mapGetters, mapState} from "vuex";
-//import store from "../store";
-//import api from "../helpers/api";
-//import router from "../router";
+import api from "../helpers/api";
 
 export default {
     name: "ChatMessagesList",
@@ -25,23 +25,47 @@ export default {
         ChatMessageItemLeft,
         ChatMessageItem,
     },
-    props: ['messages', 'next_page'],
+    props: ['prop_messages_list', 'prop_next_page'],
     data(){
         return {
-            scroll_type: 'auto',
+            messages: this.prop_messages_list,
+            messages_load: false,
+            page: 2,
+            next_page: this.prop_next_page,
+            scroll_top: 0,
+            message_block_height: 0,
         }
     },
     computed: {
         ...mapGetters([
             'user'
-        ])
+        ]),
     },
     watch: {
-        messages(){
-            console.log(this.messages.length);
+        messages(newVal, oldVal){
+            const countNewMessages = newVal.length - oldVal.length;
+            this.scroll_top = countNewMessages * this.message_block_height;
         }
     },
     methods: {
+        loadMessages(){
+            const chatId = this.$route.params.id
+            this.messages_load = true;
+            api.get(`/chat/${chatId}/messages?page=${this.page}`)
+                .then(res => {
+
+                    this.messages = [...res.data.reverse(), ...this.messages];
+
+                    this.messages_load = false;
+
+                    if(res.next_page_url){
+                        this.page = this.page + 1;
+                        this.next_page = true;
+                    }else{
+                        this.next_page = false;
+                    }
+                })
+        },
         setUpInterSectionObserver() {
             let options = {
                 root: this.$refs.messages_container,
@@ -55,10 +79,7 @@ export default {
         },
         handleIntersection([entry]) {
             if (entry.isIntersecting) {
-                //console.log("подгружаем контент");
-                //this.$store.dispatch('loadChat', this.$route.params.id);
-                //this.$store.dispatch('loadMessages', this.$route.params.id);
-                this.$emit('onLoadMessages');
+                this.loadMessages();
             }
             /*
             if (entry.isIntersecting && this.canLoadMore && !this.isLoadingMore) {
@@ -77,17 +98,28 @@ export default {
                 behavior: type
             });
 
-            this.scroll_type = 'smooth';
+
         },
+        loadMessagesScroll(){
+            const container = this.$refs.messages_container;
+
+            container.scrollTo({
+                top: this.scroll_top,
+            });
+        },
+        getMessageBlockHeight(){
+            const containerMessagesList = this.$refs.messages_list_container;
+
+            this.message_block_height = containerMessagesList.clientHeight / this.messages.length;
+        }
     },
     mounted() {
-
         this.setUpInterSectionObserver();
-        this.scrollToBottom(this.scroll_type);
+        this.scrollToBottom();
+        this.getMessageBlockHeight();
     },
     updated() {
-        //const pos = this.$refs.messages_container.scrollHeight;
-        //this.scrollToBottom(this.scroll_type);
+        this.loadMessagesScroll();
     }
 }
 </script>

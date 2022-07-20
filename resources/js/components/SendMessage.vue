@@ -41,8 +41,9 @@ export default {
             api.post('/chat/messages/send', { message: this.message, chat_room_id: this.chat_id })
                 .then(res => {
                     this.send_loading = false;
-                    this.$store.commit('setMessage', res);
                     this.message = '';
+
+                    this.$emit('onSendMessage', res);
 
                     this.$store.state.socket.emit(
                         'message',

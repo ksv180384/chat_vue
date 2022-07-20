@@ -10228,18 +10228,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _components_ChatMessageItem__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ChatMessageItem */ "./resources/js/components/ChatMessageItem.vue");
 /* harmony import */ var _components_ChatMessageItemLeft__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/ChatMessageItemLeft */ "./resources/js/components/ChatMessageItemLeft.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
@@ -10249,9 +10258,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
- //import store from "../store";
-//import api from "../helpers/api";
-//import router from "../router";
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "ChatMessagesList",
@@ -10259,19 +10266,42 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     ChatMessageItemLeft: _components_ChatMessageItemLeft__WEBPACK_IMPORTED_MODULE_1__["default"],
     ChatMessageItem: _components_ChatMessageItem__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['messages', 'next_page'],
+  props: ['prop_messages_list', 'prop_next_page'],
   data: function data() {
     return {
-      scroll_type: 'auto'
+      messages: this.prop_messages_list,
+      messages_load: false,
+      page: 2,
+      next_page: this.prop_next_page,
+      scroll_top: 0,
+      message_block_height: 0
     };
   },
-  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapGetters)(['user'])),
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['user'])),
   watch: {
-    messages: function messages() {
-      console.log(this.messages.length);
+    messages: function messages(newVal, oldVal) {
+      var countNewMessages = newVal.length - oldVal.length;
+      this.scroll_top = countNewMessages * this.message_block_height;
     }
   },
   methods: {
+    loadMessages: function loadMessages() {
+      var _this = this;
+
+      var chatId = this.$route.params.id;
+      this.messages_load = true;
+      _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].get("/chat/".concat(chatId, "/messages?page=").concat(this.page)).then(function (res) {
+        _this.messages = [].concat(_toConsumableArray(res.data.reverse()), _toConsumableArray(_this.messages));
+        _this.messages_load = false;
+
+        if (res.next_page_url) {
+          _this.page = _this.page + 1;
+          _this.next_page = true;
+        } else {
+          _this.next_page = false;
+        }
+      });
+    },
     setUpInterSectionObserver: function setUpInterSectionObserver() {
       var options = {
         root: this.$refs.messages_container,
@@ -10285,10 +10315,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           entry = _ref2[0];
 
       if (entry.isIntersecting) {
-        //console.log("подгружаем контент");
-        //this.$store.dispatch('loadChat', this.$route.params.id);
-        //this.$store.dispatch('loadMessages', this.$route.params.id);
-        this.$emit('onLoadMessages');
+        this.loadMessages();
       }
       /*
       if (entry.isIntersecting && this.canLoadMore && !this.isLoadingMore) {
@@ -10306,15 +10333,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         top: container.scrollHeight,
         behavior: type
       });
-      this.scroll_type = 'smooth';
+    },
+    loadMessagesScroll: function loadMessagesScroll() {
+      var container = this.$refs.messages_container;
+      container.scrollTo({
+        top: this.scroll_top
+      });
+    },
+    getMessageBlockHeight: function getMessageBlockHeight() {
+      var containerMessagesList = this.$refs.messages_list_container;
+      this.message_block_height = containerMessagesList.clientHeight / this.messages.length;
     }
   },
   mounted: function mounted() {
     this.setUpInterSectionObserver();
-    this.scrollToBottom(this.scroll_type);
+    this.scrollToBottom();
+    this.getMessageBlockHeight();
   },
-  updated: function updated() {//const pos = this.$refs.messages_container.scrollHeight;
-    //this.scrollToBottom(this.scroll_type);
+  updated: function updated() {
+    this.loadMessagesScroll();
   }
 });
 
@@ -10445,10 +10482,9 @@ __webpack_require__.r(__webpack_exports__);
         chat_room_id: this.chat_id
       }).then(function (res) {
         _this.send_loading = false;
-
-        _this.$store.commit('setMessage', res);
-
         _this.message = '';
+
+        _this.$emit('onSendMessage', res);
 
         _this.$store.state.socket.emit('message', {
           room: "chat_".concat(_this.chat_id),
@@ -10574,18 +10610,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fortawesome_vue_fontawesome__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fortawesome/vue-fontawesome */ "./node_modules/@fortawesome/vue-fontawesome/index.es.js");
 /* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../router */ "./resources/js/router/index.js");
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -10618,9 +10642,7 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_4__.library.add(_fort
       chat_users: [],
       load_chat: false,
       messages: [],
-      messages_load: false,
       chat_id: this.$route.params.id,
-      page: 1,
       next_page: false
     };
   },
@@ -10640,39 +10662,22 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_4__.library.add(_fort
         _router__WEBPACK_IMPORTED_MODULE_7__["default"].push('/');
       });
     },
-    pushMessage: function pushMessage(messageData) {//this.$store.commit('setMessage', messageData);
+    pushMessage: function pushMessage(messageData) {
+      //this.$store.commit('setMessage', messageData);
+      console.log(messageData);
     },
     loadChat: function loadChat() {
       var _this = this;
 
       this.load_chat = true;
       _helpers_api__WEBPACK_IMPORTED_MODULE_6__["default"].get("/chat/".concat(this.chat_id, "?page=").concat(this.page)).then(function (res) {
+        _this.load_chat = false;
         _this.chat = res.chat;
         _this.chat_users = res.chat.users;
-        _this.messages = [].concat(_toConsumableArray(_this.messages), _toConsumableArray(res.messages.data.reverse()));
-        _this.load_chat = false;
+        _this.messages = res.messages.data.reverse();
 
         if (res.messages.next_page_url) {
-          _this.page = _this.page + 1;
           _this.next_page = true;
-        } else {
-          _this.next_page = false;
-        }
-      });
-    },
-    loadMessages: function loadMessages() {
-      var _this2 = this;
-
-      this.messages_load = true;
-      _helpers_api__WEBPACK_IMPORTED_MODULE_6__["default"].get("/chat/".concat(this.chat_id, "/messages?page=").concat(this.page)).then(function (res) {
-        _this2.messages = [].concat(_toConsumableArray(_this2.messages), _toConsumableArray(res.data.reverse()));
-        _this2.messages_load = false;
-
-        if (res.next_page_url) {
-          _this2.page = _this2.page + 1;
-          _this2.next_page = true;
-        } else {
-          _this2.next_page = false;
         }
       });
     }
@@ -10926,14 +10931,17 @@ var _hoisted_3 = {
   ref: "sentinel",
   "class": "text-center py-3"
 };
+var _hoisted_4 = {
+  ref: "messages_list_container"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_ChatMessageItem = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("ChatMessageItem");
 
   var _component_ChatMessageItemLeft = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("ChatMessageItemLeft");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$props.messages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, "Загрузка...", 512
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$data.messages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, "Загрузка...", 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $props.next_page]]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.messages, function (message) {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.next_page]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.messages, function (message) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       key: message.id
     }, [message.user.id === _ctx.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_ChatMessageItem, {
@@ -10949,7 +10957,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     , ["message"]))]);
   }), 128
   /* KEYED_FRAGMENT */
-  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512
+  ))], 512
+  /* NEED_PATCH */
+  )])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512
   /* NEED_PATCH */
   );
 }
@@ -11381,16 +11391,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     href: "#",
     "class": "dropdown-item"
   }, " Удалить чат ")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), $data.chat ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SearchUserChat), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ChatUsersList)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ChatMessagesList, {
-    messages: $data.messages,
-    next_page: $data.next_page,
-    onOnLoadMessages: $options.loadMessages
+    prop_messages_list: $data.messages,
+    prop_next_page: $data.next_page
   }, null, 8
   /* PROPS */
-  , ["messages", "next_page", "onOnLoadMessages"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SendMessage, {
-    chat_id: $data.chat.id
+  , ["prop_messages_list", "prop_next_page"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SendMessage, {
+    chat_id: $data.chat.id,
+    onOnSendMessage: $options.pushMessage
   }, null, 8
   /* PROPS */
-  , ["chat_id"])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 64
+  , ["chat_id", "onOnSendMessage"])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 64
   /* STABLE_FRAGMENT */
   );
 }
