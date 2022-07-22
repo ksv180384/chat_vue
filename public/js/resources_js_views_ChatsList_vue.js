@@ -106,16 +106,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _components_modal_BtnModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/modal/BtnModal */ "./resources/js/components/modal/BtnModal.vue");
-/* harmony import */ var _components_modal_WModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/modal/WModal */ "./resources/js/components/modal/WModal.vue");
-/* harmony import */ var _components_ChatItem__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/ChatItem */ "./resources/js/components/ChatItem.vue");
-/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
-/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../router */ "./resources/js/router/index.js");
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../router */ "./resources/js/router/index.js");
+/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
+/* harmony import */ var _components_modal_BtnModal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/modal/BtnModal */ "./resources/js/components/modal/BtnModal.vue");
+/* harmony import */ var _components_modal_WModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/modal/WModal */ "./resources/js/components/modal/WModal.vue");
+/* harmony import */ var _components_ChatItem__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/ChatItem */ "./resources/js/components/ChatItem.vue");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -124,38 +126,53 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    ChatItem: _components_ChatItem__WEBPACK_IMPORTED_MODULE_2__["default"],
-    WModal: _components_modal_WModal__WEBPACK_IMPORTED_MODULE_1__["default"],
-    BtnModal: _components_modal_BtnModal__WEBPACK_IMPORTED_MODULE_0__["default"]
+    ChatItem: _components_ChatItem__WEBPACK_IMPORTED_MODULE_4__["default"],
+    WModal: _components_modal_WModal__WEBPACK_IMPORTED_MODULE_3__["default"],
+    BtnModal: _components_modal_BtnModal__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
       chatName: ''
     };
   },
-  computed: {
-    chats: function chats() {
-      return this.$store.getters.chats;
-    }
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_5__.mapGetters)('storeChatsList', ['chats'])),
+  mounted: function mounted() {
+    this.loadChats(); // bootstrap модальное окно
+
+    this.modalAddUserChat = document.getElementById('modalCreateChat');
+    this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
+    this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal); //Сокеты
+
+    this.$store.state.socket.on('countMessages', function (data) {
+      console.log(data);
+      this.$store.commit('pushChats', data); //this.pushMessage(data);
+    }.bind(this));
   },
-  methods: {
-    saveChat: function saveChat() {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_5__.mapMutations)('storeChatsList', ['setChats'])), {}, {
+    loadChats: function loadChats() {
       var _this = this;
 
-      _helpers_api__WEBPACK_IMPORTED_MODULE_3__["default"].post('/chat/create', {
+      _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].get('/chat').then(function (res) {
+        _this.setChats(res.chats);
+      });
+    },
+    saveChat: function saveChat() {
+      var _this2 = this;
+
+      _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/create', {
         title: this.chatName
       }).then(function (res) {
-        _this.request = false;
+        _this2.request = false;
 
-        _this.$store.commit('addChat', res.chat);
+        _this2.$store.commit('pushChats', res.chat);
 
-        _this.$refs.closeModalCreateChat.click();
+        _this2.$refs.closeModalCreateChat.click();
 
-        _router__WEBPACK_IMPORTED_MODULE_4__["default"].push("/chat/".concat(res.chat.id));
+        _router__WEBPACK_IMPORTED_MODULE_0__["default"].push("/chat/".concat(res.chat.id));
       })["catch"](function (error) {
         // handle error
-        _this.request = false;
-        _this.error = error.response.data.message;
+        _this2.request = false;
+        _this2.error = error.response.data.message;
       });
     },
     focusAfterShownModal: function focusAfterShownModal() {
@@ -164,47 +181,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     afterHideModal: function afterHideModal() {
       this.chatName = '';
     }
-  },
-  watch: {
-    chats: function chats(newChats, oldChats) {
-      console.log(newChats);
-
-      if (newChats.length) {
-        var _iterator = _createForOfIteratorHelper(newChats),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var chat = _step.value;
-            console.log(chat);
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-      } //console.log(oldChats);
-      //console.log(newChats);
-      //this.$store.state.socket.emit('countMessagesRooms', );
-
-    }
-  },
-  mounted: function mounted() {
-    this.$store.dispatch('loadChats'); // bootstrap модальное окно
-
-    this.modalAddUserChat = document.getElementById('modalCreateChat');
-    this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
-    this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal); //Сокеты
-
-    this.$store.state.socket.on('countMessages', function (data) {
-      console.log(data); //this.pushMessage(data);
-    }.bind(this));
-  },
+  }),
   unmounted: function unmounted() {
     // bootstrap модальное окно
     this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
     this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
-    console.log(this.$store.getters.chats);
   }
 });
 
@@ -416,7 +397,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
     /* STABLE */
 
-  })])]), $options.chats ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_4, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($options.chats, function (chat) {
+  })])]), _ctx.chats ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_4, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.chats, function (chat) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_ChatItem, {
       key: chat.id,
       chat: chat

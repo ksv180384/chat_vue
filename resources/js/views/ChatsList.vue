@@ -35,11 +35,15 @@
 
 <script>
 
+import {mapGetters, mapMutations} from "vuex";
+
+import router from "../router";
+import api from "../helpers/api";
+
 import BtnModal from "../components/modal/BtnModal";
 import WModal from "../components/modal/WModal";
 import ChatItem from "../components/ChatItem";
-import api from "../helpers/api";
-import router from "../router";
+
 
 export default {
     components: {
@@ -53,49 +57,10 @@ export default {
         }
     },
     computed: {
-        chats(){
-            return this.$store.getters.chats;
-        }
-    },
-    methods: {
-        saveChat(){
-            api.post('/chat/create', { title: this.chatName })
-                .then(res => {
-                    this.request = false;
-                    this.$store.commit('addChat', res.chat);
-                    this.$refs.closeModalCreateChat.click();
-                    router.push(`/chat/${res.chat.id}`);
-                }).catch(error => {
-                // handle error
-                this.request = false;
-                this.error = error.response.data.message;
-            });
-        },
-        focusAfterShownModal(){
-            this.$refs.input_title_chat.focus();
-        },
-        afterHideModal(){
-            this.chatName = '';
-        }
-    },
-    watch: {
-        chats(newChats, oldChats){
-
-            console.log(newChats);
-
-            if (newChats.length)
-
-            for (let chat of newChats){
-
-                console.log(chat);
-            }
-            //console.log(oldChats);
-            //console.log(newChats);
-            //this.$store.state.socket.emit('countMessagesRooms', );
-        }
+        ...mapGetters('storeChatsList', ['chats']),
     },
     mounted() {
-        this.$store.dispatch('loadChats');
+        this.loadChats();
 
         // bootstrap модальное окно
         this.modalAddUserChat = document.getElementById('modalCreateChat');
@@ -105,15 +70,42 @@ export default {
         //Сокеты
         this.$store.state.socket.on('countMessages', function(data){
             console.log(data);
+            this.$store.commit('pushChats', data);
             //this.pushMessage(data);
         }.bind(this));
+    },
+    methods: {
+        ...mapMutations('storeChatsList', ['setChats']),
+        loadChats(){
+            api.get('/chat')
+                .then(res => {
+                    this.setChats(res.chats);
+                });
+        },
+        saveChat(){
+            api.post('/chat/create', { title: this.chatName })
+                .then(res => {
+                    this.request = false;
+                    this.$store.commit('pushChats', res.chat);
+                    this.$refs.closeModalCreateChat.click();
+                    router.push(`/chat/${res.chat.id}`);
+                }).catch(error => {
+                    // handle error
+                    this.request = false;
+                    this.error = error.response.data.message;
+                });
+        },
+        focusAfterShownModal(){
+            this.$refs.input_title_chat.focus();
+        },
+        afterHideModal(){
+            this.chatName = '';
+        }
     },
     unmounted() {
         // bootstrap модальное окно
         this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
         this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
-
-        console.log(this.$store.getters.chats);
     }
 }
 </script>

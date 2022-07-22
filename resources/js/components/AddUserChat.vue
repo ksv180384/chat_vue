@@ -41,10 +41,14 @@
 
 <script>
 
+import {mapMutations} from "vuex";
+
+import api from "./../helpers/api";
+
 import BtnModal from "./modal/BtnModal";
 import WModal from "./modal/WModal";
-import api from "./../helpers/api";
 import SearchUserItem from "./SearchUserItem";
+
 
 export default {
     name: 'AddUserChat',
@@ -55,6 +59,7 @@ export default {
     },
     data(){
         return {
+            chat_id: this.$route.params.id,
             modalAddUserChat: null,
             showM: false,
             users: [],
@@ -65,6 +70,7 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('storeChatsList', ['pushChats']),
         search(){
             clearTimeout(this.searchTimeout);
 
@@ -76,11 +82,11 @@ export default {
             if(this.searchUser.length < 2){
                 return true;
             }
-            api.get('/user/search/' + this.searchUser)
+            api.get('/users/search/' + this.searchUser)
                 .then(res => {
                     this.users = res.users;
                     this.loading = false;
-                    //this.$store.commit('addChat', res.chat)
+                    this.pushChats(res.chat)
                 }).catch(error => {
                 // handle error
                 this.loading = false;
@@ -91,7 +97,7 @@ export default {
             this.active = id;
         },
         joinUser(){
-            api.post('/chat/join', { chat_room_id: this.chat.id, user_id: this.active })
+            api.post('/chat/join', { chat_room_id: this.chat_id, user_id: this.active })
                 .then(res => {
                     this.$store.commit('setChatUsers', res.chat.users);
                     this.$refs.closeModalAddUserChat.click();
@@ -116,13 +122,13 @@ export default {
         },
     },
     mounted() {
-        //this.modalAddUserChat = document.getElementById('modalAddUserChat');
-        //this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
-        //this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
+        this.modalAddUserChat = document.getElementById('modalAddUserChat');
+        this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
+        this.modalAddUserChat.addEventListener('hide.bs.modal', this.afterHideModal);
     },
     unmounted() {
-        //this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
-        //this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
+        this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
+        this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
     }
 }
 </script>

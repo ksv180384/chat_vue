@@ -41,6 +41,7 @@
 <script>
 
 import api from '../helpers/api';
+import {mapMutations} from "vuex";
 
 export default {
     name: "Login",
@@ -54,6 +55,7 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('storeUser', ['setUser']),
         login(){
             this.error = null;
             this.request = true;
@@ -63,15 +65,15 @@ export default {
                     this.request = false;
                     localStorage.setItem('user_token', res.access_token);
                     localStorage.setItem('user', JSON.stringify(res.user));
-                    this.$store.commit('setUser', res.user);
+                    this.setUser(res.user);
                     api.defaults.headers.common['Authorization'] = 'Bearer ' + res.access_token;
                     this.$router.push('/');
                 }).catch(error => {
-                // handle error
-                this.password = '';
-                this.request = false;
-                this.error = error.response.data.message;
-            });
+                    // handle error
+                    this.password = '';
+                    this.request = false;
+                    this.error = error.response.data.message;
+                });
         },
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="chat-messages p-4" ref="messages_container">
         <div v-if="messages">
-            <div v-show="next_page" ref="sentinel" class="text-center py-3">Загрузка...</div>
+            <div v-show="next" ref="sentinel" class="text-center py-3">Загрузка...</div>
             <div ref="messages_list_container">
                 <div v-for="message in messages" :key="message.id">
                     <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
@@ -16,7 +16,7 @@
 
 import ChatMessageItem from "../components/ChatMessageItem";
 import ChatMessageItemLeft from "../components/ChatMessageItemLeft";
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import api from "../helpers/api";
 
 export default {
@@ -25,21 +25,19 @@ export default {
         ChatMessageItemLeft,
         ChatMessageItem,
     },
-    props: ['prop_messages_list', 'prop_next_page'],
     data(){
         return {
-            messages: this.prop_messages_list,
-            messages_load: false,
-            page: 2,
-            next_page: this.prop_next_page,
+            //messages: this.prop_messages_list,
+            //messages_load: false,
+            //page: 2,
+            //next_page: this.prop_next_page,
             scroll_top: 0,
             message_block_height: 0,
         }
     },
     computed: {
-        ...mapGetters([
-            'user'
-        ]),
+        ...mapGetters('storeChat', ['messages', 'page', 'next', 'load', 'add_messages_type']),
+        ...mapGetters('storeUser', ['user']),
     },
     watch: {
         messages(newVal, oldVal){
@@ -48,21 +46,21 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('storeChat', ['unshiftMessages', 'setPage', 'setNext', 'setLoad', 'setAddMessagesType']),
         loadMessages(){
             const chatId = this.$route.params.id
-            this.messages_load = true;
+            this.setLoad(true);
             api.get(`/chat/${chatId}/messages?page=${this.page}`)
                 .then(res => {
-
-                    this.messages = [...res.data.reverse(), ...this.messages];
-
-                    this.messages_load = false;
+                    this.setAddMessagesType('load');
+                    this.unshiftMessages(res.data.reverse());
+                    this.setLoad(false);
 
                     if(res.next_page_url){
-                        this.page = this.page + 1;
-                        this.next_page = true;
+                        this.setPage(this.page + 1);
+                        this.setNext(true);
                     }else{
-                        this.next_page = false;
+                        this.setNext(false);
                     }
                 })
         },
@@ -101,6 +99,12 @@ export default {
 
         },
         loadMessagesScroll(){
+
+            if(this.add_messages_type === 'send'){
+                this.scrollToBottom('smooth');
+                return true;
+            }
+
             const container = this.$refs.messages_container;
 
             container.scrollTo({

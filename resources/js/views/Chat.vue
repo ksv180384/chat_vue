@@ -32,15 +32,13 @@
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
                 <SearchUserChat/>
-                <ChatUsersList/>
+                <ChatUsersList :chat_users="users"/>
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
-                    <ChatMessagesList :prop_messages_list="messages"
-                                      :prop_next_page="next_page"
-                    />
+                    <ChatMessagesList/>
                 </div>
-                <SendMessage :chat_id="chat.id" @onSendMessage="pushMessage"/>
+                <SendMessage :chat_id="chat.id"/>
             </div>
         </div>
     </div>
@@ -48,18 +46,20 @@
 
 <script>
 
+import {mapGetters, mapMutations} from 'vuex';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import api from "../helpers/api";
+import router from "../router";
+
 import ChatMessagesList from "../components/ChatMessagesList";
 import ChatUsersList from "../components/ChatUsersList";
 import SearchUserChat from "../components/SearchUserChat";
 import SendMessage from "../components/SendMessage";
 
-import { mapGetters } from 'vuex'
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import api from "../helpers/api";
-import router from "../router";
 
 library.add(faCaretLeft)
 
@@ -74,20 +74,16 @@ export default {
     },
     data(){
         return {
-            chat: null,
-            chat_users: [],
-            load_chat: false,
-            messages: [],
             chat_id: this.$route.params.id,
-            next_page: false,
+            load_page: false,
         }
     },
     computed: {
-        ...mapGetters([
-            'user',
-        ])
+        ...mapGetters('storeUser', ['user']),
+        ...mapGetters('storeChat', ['chat', 'users', 'page']),
     },
     methods: {
+        ...mapMutations('storeChat', ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType']),
         leaveChat(){
             api.post(`/chat/lave`, { id: this.chat_id })
                 .then(res => {
@@ -100,24 +96,39 @@ export default {
                     router.push('/');
                 });
         },
+        /*
         pushMessage(messageData){
             //this.$store.commit('setMessage', messageData);
 
-            console.log(messageData);
+            //console.log(messageData);
+            this.add_messages_type = 'send';
+            this.messages = [...this.messages, messageData];
         },
+        pushMessagesList(messagesList){
+            this.add_messages_type = 'load';
+            this.messages = [...messagesList, ...this.messages];
+        },
+        */
         loadChat(){
             this.load_chat = true;
-            api.get(`/chat/${this.chat_id}?page=${this.page}`)
+            api.get(`/chat/${this.chat_id}`)
                 .then(res => {
 
-                    this.load_chat = false;
+                    //this.load_chat = false;
 
-                    this.chat = res.chat;
-                    this.chat_users = res.chat.users;
-                    this.messages = res.messages.data.reverse();
+                    //this.chat = res.chat;
+                    //this.chat_users = res.chat.users;
+                    //this.messages = res.messages.data.reverse();
+
+                    this.setChat(res.chat);
+                    this.setUsers(res.chat.users);
+                    this.setAddMessagesType('load');
+                    this.setMessages(res.messages.data.reverse());
+                    this.setPage(this.page + 1);
+
 
                     if(res.messages.next_page_url){
-                        this.next_page = true;
+                        this.setNext(true);
                     }
                 })
         },
@@ -125,7 +136,7 @@ export default {
     mounted() {
         this.loadChat();
         this.$store.state.socket.on('message', function(data){
-            this.pushMessage(data);
+            this.pushMessages(data);
         }.bind(this));
 
         this.$store.state.socket.emit('enterRoom', `chat_${this.chat_id}`);

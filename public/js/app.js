@@ -19914,117 +19914,41 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
-/* harmony import */ var _store_messages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store_messages */ "./resources/js/store/store_messages.js");
-/* harmony import */ var _store_profile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store_profile */ "./resources/js/store/store_profile.js");
-/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
-/* harmony import */ var _helpers_socket__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/socket */ "./resources/js/helpers/socket.js");
-/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+/* harmony import */ var _helpers_socket__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/socket */ "./resources/js/helpers/socket.js");
+/* harmony import */ var _store_user__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store_user */ "./resources/js/store/store_user.js");
+/* harmony import */ var _store_chats_list__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./store_chats_list */ "./resources/js/store/store_chats_list.js");
+/* harmony import */ var _store_chat__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./store_chat */ "./resources/js/store/store_chat.js");
+/* harmony import */ var _store_profile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./store_profile */ "./resources/js/store/store_profile.js");
 
 
 
 
 
-
- // Create a new store instance.
 
 var store = (0,vuex__WEBPACK_IMPORTED_MODULE_5__.createStore)({
   state: function state() {
     return {
-      user: (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__.userData)(),
-      count: 0,
-      chat: {},
-      chat_list: [],
-      chat_users: [],
-      socket: _helpers_socket__WEBPACK_IMPORTED_MODULE_3__["default"],
-      messages_page: 1
+      socket: _helpers_socket__WEBPACK_IMPORTED_MODULE_0__["default"]
     };
   },
-  actions: {
-    loadChats: function loadChats(_ref) {
-      var commit = _ref.commit;
-      _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].get('/chat').then(function (res) {
-        commit('setChats', res.chats);
-      });
-    }
-    /*
-    loadChat({ commit }, chat_id){
-        this.messages_load = true;
-        api.get(`/chat/${chat_id}?page=${this.state.messages_page}`)
-            .then(res => {
-                commit('setChat', res.chat);
-                commit('setChatUsers', res.chat.users);
-                commit('setMessages', res.messages.data.reverse());
-                 this.state.messages_load = false;
-                 if(res.messages.next_page_url){
-                    const page = this.state.messages_page + 1;
-                    commit('setMessagesPage', page);
-                    this.state.messages_next = true;
-                }else{
-                    this.state.messages_next = false;
-                }
-            })
-    },
-    */
-
-  },
-  mutations: {
-    setUser: function setUser(state, user) {
-      state.user = user;
-    },
-    setChats: function setChats(state, chats) {
-      state.chat_list = chats;
-    },
-    addChat: function addChat(state, chat) {
-      state.chat_list = [].concat(_toConsumableArray(state.chat_list), [chat]);
-    },
-    setChat: function setChat(state, chat) {
-      state.chat = chat;
-    },
-    setChatUsers: function setChatUsers(state, users) {
-      state.chat_users = users;
-    },
-    setMessagesPage: function setMessagesPage(state, page) {
-      state.messages_page = page;
-    }
-  },
-  getters: {
-    user: function user(state) {
-      return state.user;
-    },
-    chats: function chats(state) {
-      return state.chat_list;
-    },
-    chat: function chat(state) {
-      return state.chat;
-    },
-    chat_users: function chat_users(state) {
-      return state.chat_users;
-    }
-  },
+  actions: {},
+  mutations: {},
+  getters: {},
   modules: {
-    storeMessages: _store_messages__WEBPACK_IMPORTED_MODULE_0__["default"],
-    storeProfile: _store_profile__WEBPACK_IMPORTED_MODULE_1__["default"]
+    storeUser: _store_user__WEBPACK_IMPORTED_MODULE_1__["default"],
+    storeChatsList: _store_chats_list__WEBPACK_IMPORTED_MODULE_2__["default"],
+    storeChat: _store_chat__WEBPACK_IMPORTED_MODULE_3__["default"],
+    storeProfile: _store_profile__WEBPACK_IMPORTED_MODULE_4__["default"]
   }
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (store);
 
 /***/ }),
 
-/***/ "./resources/js/store/store_messages.js":
-/*!**********************************************!*\
-  !*** ./resources/js/store/store_messages.js ***!
-  \**********************************************/
+/***/ "./resources/js/store/store_chat.js":
+/*!******************************************!*\
+  !*** ./resources/js/store/store_chat.js ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -20032,7 +19956,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -20045,61 +19968,152 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+var storeChat = {
+  namespaced: true,
+  state: function state() {
+    return {
+      chat: null,
+      users: [],
+      messages: [],
+      page: 1,
+      next: false,
+      load: false,
+      // Тип добавления сообщения.
+      // load - подгрузка сообщений при прокрутке вверх (скролл остается на месте)
+      // send - отправка сообщения (скролл плавно прокручивается вниз)
+      add_messages_type: 'load' //[load, send]
 
-var storeMessages = {
-  namespace: true,
-  state: {
-    messages: [],
-    messages_load: false,
-    messages_page: 1,
-    messages_next: false
+    };
   },
-  actions: {
-    loadMessages: function loadMessages(_ref, chat_id) {
-      var _this = this;
-
-      var commit = _ref.commit;
-      this.messages_load = true;
-      _helpers_api__WEBPACK_IMPORTED_MODULE_0__["default"].get("/chat/".concat(chat_id, "/messages?page=").concat(this.state.messages_page)).then(function (res) {
-        commit('pushMessages', res.data.reverse());
-        _this.state.messages_load = false;
-
-        if (res.next_page_url) {
-          _this.state.messages_page = _this.state.messages_page + 1;
-          _this.state.messages_next = true;
-        } else {
-          _this.state.messages_next = false;
-        }
-      });
-    }
-  },
+  actions: {},
   mutations: {
+    setChat: function setChat(state, chat) {
+      state.chat = chat;
+    },
+    setUsers: function setUsers(state, users) {
+      state.users = users;
+    },
+    pushUsers: function pushUsers(state, users) {
+      if (Array.isArray(users)) {
+        state.users = [].concat(_toConsumableArray(users), _toConsumableArray(state.users));
+      } else {
+        state.users = [users].concat(_toConsumableArray(state.users));
+      }
+    },
     setMessages: function setMessages(state, messages) {
       state.messages = messages;
     },
-    pushMessages: function pushMessages(state, messages) {
-      state.messages = [].concat(_toConsumableArray(messages), _toConsumableArray(state.messages));
+    unshiftMessages: function unshiftMessages(state, messages) {
+      if (Array.isArray(messages)) {
+        state.messages = [].concat(_toConsumableArray(messages), _toConsumableArray(state.messages));
+      } else {
+        state.messages = [messages].concat(_toConsumableArray(state.messages));
+      }
     },
-    setMessage: function setMessage(state, message) {
-      state.messages = [].concat(_toConsumableArray(state.messages), [message]);
+    pushMessages: function pushMessages(state, messages) {
+      if (Array.isArray(messages)) {
+        state.messages = [].concat(_toConsumableArray(state.messages), _toConsumableArray(messages));
+      } else {
+        state.messages = [].concat(_toConsumableArray(state.messages), [messages]);
+      }
+    },
+    setPage: function setPage(state, page) {
+      state.page = page;
+    },
+    setNext: function setNext(state, next) {
+      state.next = next;
+    },
+    setLoad: function setLoad(state, load) {
+      state.load = load;
+    },
+    setAddMessagesType: function setAddMessagesType(state, val) {
+      state.add_messages_type = val;
     }
   },
   getters: {
+    chat: function chat(state) {
+      return state.chat;
+    },
+    users: function users(state) {
+      return state.users;
+    },
     messages: function messages(state) {
       return state.messages;
     },
-    messages_load: function messages_load(state) {
-      return state.messages_load;
+    page: function page(state) {
+      return state.page;
     },
-    messages_page: function messages_page(state) {
-      return state.messages_page;
+    next: function next(state) {
+      return state.next;
     },
-    messages_next: function messages_next(state) {
-      return state.messages_next;
+    load: function load(state) {
+      return state.load;
+    },
+    add_messages_type: function add_messages_type(state) {
+      return state.add_messages_type;
     }
   }
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeMessages);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeChat);
+
+/***/ }),
+
+/***/ "./resources/js/store/store_chats_list.js":
+/*!************************************************!*\
+  !*** ./resources/js/store/store_chats_list.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var storeChatsList = {
+  namespaced: true,
+  state: function state() {
+    return {
+      chats: [],
+      load_chats: false
+    };
+  },
+  mutations: {
+    setChats: function setChats(state, chats) {
+      state.chats = chats;
+    },
+    pushChats: function pushChats(state, chats) {
+      if (Array.isArray(chats)) {
+        state.chats = [].concat(_toConsumableArray(state.chats), _toConsumableArray(chats));
+      } else {
+        state.chats = [].concat(_toConsumableArray(state.chats), [chats]);
+      }
+    },
+    setLoad: function setLoad(state, load) {
+      state.load_chats = load;
+    }
+  },
+  getters: {
+    chats: function chats(state) {
+      return state.chats;
+    },
+    load_chats: function load_chats(state) {
+      return state.load_chats;
+    }
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeChatsList);
 
 /***/ }),
 
@@ -20154,6 +20168,42 @@ var storeProfile = {
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeProfile);
+
+/***/ }),
+
+/***/ "./resources/js/store/store_user.js":
+/*!******************************************!*\
+  !*** ./resources/js/store/store_user.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
+
+var storeUser = {
+  namespaced: true,
+  state: function state() {
+    return {
+      user: (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_0__.userData)()
+    };
+  },
+  actions: {},
+  mutations: {
+    setUser: function setUser(state, user) {
+      state.user = user;
+    }
+  },
+  getters: {
+    user: function user(state) {
+      return state.user;
+    }
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storeUser);
 
 /***/ }),
 
