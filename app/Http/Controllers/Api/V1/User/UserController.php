@@ -29,13 +29,13 @@ class UserController extends BaseController
     }
 
     /**
-     * Поис пользователя
-     * @param $user
+     * Поиск пользователя
+     * @param $userName
      * @return mixed
      */
-    public function search($user)
+    public function search($userName)
     {
-        $user = $this->userService->search($user);
+        $user = $this->userService->search($userName);
         return new UserCollection($user);
     }
 }

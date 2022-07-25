@@ -9,7 +9,7 @@
       />
       <button @click.prevent="send"
               class="btn btn-primary"
-              :disabled="send_loading"
+              :disabled="load_send"
       >отправить</button>
     </div>
   </div>
@@ -17,6 +17,7 @@
 
 <script>
 import api from "../helpers/api";
+import {mapMutations} from "vuex";
 
 export default {
     name: "SendMessage",
@@ -29,30 +30,33 @@ export default {
     data(){
         return {
             message: '',
-            send_loading: false,
+            load_send: false,
         }
     },
     methods: {
+        ...mapMutations('storeChat', ['pushMessages', 'setAddMessagesType']),
         send(){
             if(this.message.length < 2 && !this.send_loading){
                 return true;
             }
-            this.send_loading = true;
+            this.load_send = true;
             api.post('/chat/messages/send', { message: this.message, chat_room_id: this.chat_id })
                 .then(res => {
-                    this.send_loading = false;
-                    this.$store.commit('setMessage', res);
+                    this.load_send = false;
                     this.message = '';
+
+                    this.setAddMessagesType('send');
+                    this.pushMessages(res);
 
                     this.$store.state.socket.emit(
                         'message',
                         {room: `chat_${this.chat_id}`, message: res}
                     );
                 }).catch(error => {
-                // handle error
-                this.send_loading = false;
-                this.error = error.response.data.message;
-            });
+                    // handle error
+                    this.load_send = false;
+                    this.error = error.response.data.message;
+                });
         }
     }
 }

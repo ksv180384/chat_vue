@@ -20,7 +20,7 @@ class ChatMessageService extends Service{
             ->list()
             ->where('chat_room_id', $chatId)
             ->orderByDesc('created_at')
-            ->simplePaginate(20);
+            ->simplePaginate(10);
 
         return $messages;
     }

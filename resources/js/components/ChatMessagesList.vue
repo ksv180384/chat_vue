@@ -1,10 +1,12 @@
 <template>
     <div class="chat-messages p-4" ref="messages_container">
-        <div v-if="storeMessages.messages">
-            <div v-show="storeMessages.messages_next" ref="sentinel" class="text-center py-3">Загрузка...</div>
-            <div v-for="message in storeMessages.messages" :key="message.id">
-                <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
-                <ChatMessageItemLeft v-else :message="message"/>
+        <div v-if="messages">
+            <div v-show="next" ref="sentinel" class="text-center py-3">Загрузка...</div>
+            <div ref="messages_list_container">
+                <div v-for="message in messages" :key="message.id">
+                    <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
+                    <ChatMessageItemLeft v-else :message="message"/>
+                </div>
             </div>
         </div>
     </div>
@@ -14,10 +16,8 @@
 
 import ChatMessageItem from "../components/ChatMessageItem";
 import ChatMessageItemLeft from "../components/ChatMessageItemLeft";
-import {mapGetters, mapState} from "vuex";
-//import store from "../store";
-//import api from "../helpers/api";
-//import router from "../router";
+import {mapGetters, mapMutations, mapState} from "vuex";
+import api from "../helpers/api";
 
 export default {
     name: "ChatMessagesList",
@@ -27,25 +27,43 @@ export default {
     },
     data(){
         return {
-            next_page: false,
-            scroll_type: 'auto',
-            //messages: this.messagesList
+            //messages: this.prop_messages_list,
+            //messages_load: false,
+            //page: 2,
+            //next_page: this.prop_next_page,
+            scroll_top: 0,
+            message_block_height: 0,
         }
     },
     computed: {
-        ...mapState([
-            'storeMessages'
-        ]),
-        ...mapGetters([
-            'chat',
-            'storeMessages/messages',
-            'storeMessages/messages_load',
-            'storeMessages/messages_page',
-            'storeMessages/messages_next',
-            'user'
-        ])
+        ...mapGetters('storeChat', ['messages', 'page', 'next', 'load', 'add_messages_type']),
+        ...mapGetters('storeUser', ['user']),
+    },
+    watch: {
+        messages(newVal, oldVal){
+            const countNewMessages = newVal.length - oldVal.length;
+            this.scroll_top = countNewMessages * this.message_block_height;
+        }
     },
     methods: {
+        ...mapMutations('storeChat', ['unshiftMessages', 'setPage', 'setNext', 'setLoad', 'setAddMessagesType']),
+        loadMessages(){
+            const chatId = this.$route.params.id
+            this.setLoad(true);
+            api.get(`/chat/${chatId}/messages?page=${this.page}`)
+                .then(res => {
+                    this.setAddMessagesType('load');
+                    this.unshiftMessages(res.data.reverse());
+                    this.setLoad(false);
+
+                    if(res.next_page_url){
+                        this.setPage(this.page + 1);
+                        this.setNext(true);
+                    }else{
+                        this.setNext(false);
+                    }
+                })
+        },
         setUpInterSectionObserver() {
             let options = {
                 root: this.$refs.messages_container,
@@ -59,9 +77,7 @@ export default {
         },
         handleIntersection([entry]) {
             if (entry.isIntersecting) {
-                console.log("подгружаем контент");
-                //this.$store.dispatch('loadChat', this.$route.params.id);
-                this.$store.dispatch('loadMessages', this.$route.params.id);
+                this.loadMessages();
             }
             /*
             if (entry.isIntersecting && this.canLoadMore && !this.isLoadingMore) {
@@ -80,18 +96,34 @@ export default {
                 behavior: type
             });
 
-            this.scroll_type = 'smooth';
+
         },
+        loadMessagesScroll(){
+
+            if(this.add_messages_type === 'send'){
+                this.scrollToBottom('smooth');
+                return true;
+            }
+
+            const container = this.$refs.messages_container;
+
+            container.scrollTo({
+                top: this.scroll_top,
+            });
+        },
+        getMessageBlockHeight(){
+            const containerMessagesList = this.$refs.messages_list_container;
+
+            this.message_block_height = containerMessagesList.clientHeight / this.messages.length;
+        }
     },
     mounted() {
-        //store.dispatch('loadChat', this.$route.params.id);
-        //this.loadChat();
-        //this.$store.dispatch('loadChat', this.$route.params.id);
         this.setUpInterSectionObserver();
+        this.scrollToBottom();
+        this.getMessageBlockHeight();
     },
     updated() {
-        //const pos = this.$refs.messages_container.scrollHeight;
-        this.scrollToBottom(this.scroll_type);
+        this.loadMessagesScroll();
     }
 }
 </script>

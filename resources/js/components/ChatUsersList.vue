@@ -13,13 +13,9 @@ import UserItem from "../components/UserItem";
 
 export default {
     name: "ChatUsersList",
+    props: ['chat_users'],
     components: {
         UserItem
-    },
-    computed: {
-        ...mapGetters([
-            'chat_users',
-        ])
     },
 }
 </script>

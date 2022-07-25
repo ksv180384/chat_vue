@@ -7,8 +7,7 @@
             <span v-if="chat">{{ chat.title }}</span>
         </h1>
 
-        <div>
-
+        <div v-if="chat">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512" height="20px">
@@ -16,9 +15,9 @@
                     </svg>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <li><a @click.prevent="leaveChat" href="#" class="dropdown-item">Покинуть чат</a></li>
+                    <li><a @click.prevent="leave" href="#" class="dropdown-item">Покинуть чат</a></li>
                     <li>
-                        <a v-if="user.id === chat.creator_id" @click.prevent="deleteChat"
+                        <a v-if="user.id === chat.creator.id" @click.prevent="del"
                            href="#"
                            class="dropdown-item"
                         >
@@ -29,15 +28,15 @@
             </div>
         </div>
     </div>
-    <div class="card">
+    <div v-if="chat" class="card">
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
                 <SearchUserChat/>
-                <ChatUsersList/>
+                <ChatUsersList :chat_users="users"/>
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
-                    <ChatMessagesList />
+                    <ChatMessagesList/>
                 </div>
                 <SendMessage :chat_id="chat.id"/>
             </div>
@@ -47,18 +46,18 @@
 
 <script>
 
+import {mapGetters, mapMutations} from 'vuex';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import router from "../router";
+
 import ChatMessagesList from "../components/ChatMessagesList";
 import ChatUsersList from "../components/ChatUsersList";
 import SearchUserChat from "../components/SearchUserChat";
 import SendMessage from "../components/SendMessage";
-
-import { mapGetters } from 'vuex'
-
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import api from "../helpers/api";
-import router from "../router";
+import {deleteChat, loadChatPage, laveChat} from "../services/chat_service";
 
 library.add(faCaretLeft)
 
@@ -74,40 +73,45 @@ export default {
     data(){
         return {
             chat_id: this.$route.params.id,
-            load_chat: false,
-            page: 1,
-            next_page: false,
         }
     },
     computed: {
-        ...mapGetters([
-            'chat',
-            'user',
-        ])
+        ...mapGetters('storeUser', ['user']),
+        ...mapGetters(
+            'storeChat',
+            ['chat', 'users', 'page']
+        ),
     },
     methods: {
-        leaveChat(){
-            api.post(`/chat/lave`, { id: this.chat_id })
-                .then(res => {
-                    router.push('/');
-                });
+        ...mapMutations(
+            'storeChat',
+            ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType']
+        ),
+        async leave(){
+            await laveChat(this.chat_id);
+            router.push('/');
         },
-        deleteChat(){
-            api.post(`/chat/delete`, { id: this.chat_id })
-                .then(res => {
-                    router.push('/');
-                });
+        async del(){
+            await deleteChat(this.chat_id);
+            router.push('/');
         },
-        pushMessage(messageData){
-            this.$store.commit('setMessage', messageData);
-        }
+        async loadChat(){
+            const pageData = await loadChatPage(this.chat_id);
+            this.setChat(pageData.chat);
+            this.setUsers(pageData.chat.users);
+            this.setAddMessagesType('load');
+            this.setMessages(pageData.messages.data.reverse());
+            this.setPage(this.page + 1);
+
+            if(pageData.messages.next_page_url){
+                this.setNext(true);
+            }
+        },
     },
     mounted() {
-        this.$store.dispatch('loadChat', this.$route.params.id);
-
+        this.loadChat();
         this.$store.state.socket.on('message', function(data){
-            console.log(data);
-            this.pushMessage(data);
+            this.pushMessages(data);
         }.bind(this));
 
         this.$store.state.socket.emit('enterRoom', `chat_${this.chat_id}`);
@@ -115,8 +119,6 @@ export default {
     },
     unmounted() {
         this.$store.state.socket.emit('leaveRoom', `chat_${this.chat_id}`);
-        this.$store.dispatch('loadChat', this.$route.params.id);
-        this.$store.commit('setMessagesPage', 1);
     }
 }
 </script>
