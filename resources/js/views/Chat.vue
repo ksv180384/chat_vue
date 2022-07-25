@@ -15,9 +15,9 @@
                     </svg>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <li><a @click.prevent="leaveChat" href="#" class="dropdown-item">Покинуть чат</a></li>
+                    <li><a @click.prevent="leave" href="#" class="dropdown-item">Покинуть чат</a></li>
                     <li>
-                        <a v-if="user.id === chat.creator.id" @click.prevent="deleteChat"
+                        <a v-if="user.id === chat.creator.id" @click.prevent="del"
                            href="#"
                            class="dropdown-item"
                         >
@@ -51,15 +51,13 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import api from "../helpers/api";
 import router from "../router";
 
 import ChatMessagesList from "../components/ChatMessagesList";
 import ChatUsersList from "../components/ChatUsersList";
 import SearchUserChat from "../components/SearchUserChat";
 import SendMessage from "../components/SendMessage";
-
-
+import {deleteChat, loadChatPage, laveChat} from "../services/chat_service";
 
 library.add(faCaretLeft)
 
@@ -75,62 +73,39 @@ export default {
     data(){
         return {
             chat_id: this.$route.params.id,
-            load_page: false,
         }
     },
     computed: {
         ...mapGetters('storeUser', ['user']),
-        ...mapGetters('storeChat', ['chat', 'users', 'page']),
+        ...mapGetters(
+            'storeChat',
+            ['chat', 'users', 'page']
+        ),
     },
     methods: {
-        ...mapMutations('storeChat', ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType']),
-        leaveChat(){
-            api.post(`/chat/lave`, { id: this.chat_id })
-                .then(res => {
-                    router.push('/');
-                });
+        ...mapMutations(
+            'storeChat',
+            ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType']
+        ),
+        async leave(){
+            await laveChat(this.chat_id);
+            router.push('/');
         },
-        deleteChat(){
-            api.post(`/chat/delete`, { id: this.chat_id })
-                .then(res => {
-                    router.push('/');
-                });
+        async del(){
+            await deleteChat(this.chat_id);
+            router.push('/');
         },
-        /*
-        pushMessage(messageData){
-            //this.$store.commit('setMessage', messageData);
+        async loadChat(){
+            const pageData = await loadChatPage(this.chat_id);
+            this.setChat(pageData.chat);
+            this.setUsers(pageData.chat.users);
+            this.setAddMessagesType('load');
+            this.setMessages(pageData.messages.data.reverse());
+            this.setPage(this.page + 1);
 
-            //console.log(messageData);
-            this.add_messages_type = 'send';
-            this.messages = [...this.messages, messageData];
-        },
-        pushMessagesList(messagesList){
-            this.add_messages_type = 'load';
-            this.messages = [...messagesList, ...this.messages];
-        },
-        */
-        loadChat(){
-            this.load_chat = true;
-            api.get(`/chat/${this.chat_id}`)
-                .then(res => {
-
-                    //this.load_chat = false;
-
-                    //this.chat = res.chat;
-                    //this.chat_users = res.chat.users;
-                    //this.messages = res.messages.data.reverse();
-
-                    this.setChat(res.chat);
-                    this.setUsers(res.chat.users);
-                    this.setAddMessagesType('load');
-                    this.setMessages(res.messages.data.reverse());
-                    this.setPage(this.page + 1);
-
-
-                    if(res.messages.next_page_url){
-                        this.setNext(true);
-                    }
-                })
+            if(pageData.messages.next_page_url){
+                this.setNext(true);
+            }
         },
     },
     mounted() {

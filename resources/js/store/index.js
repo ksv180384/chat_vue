@@ -11,11 +11,18 @@ const store = createStore({
     state () {
         return {
             socket: socket,
+            load_page: false,
         }
     },
     actions: {},
-    mutations: {},
-    getters: {},
+    mutations: {
+        setLoadPage(state, load){
+            state.load_page = load;
+        }
+    },
+    getters: {
+        load_page: state => state.load_page,
+    },
     modules: {
         storeUser: storeUser,
         storeChatsList: storeChatsList,

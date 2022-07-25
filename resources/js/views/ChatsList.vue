@@ -43,6 +43,7 @@ import api from "../helpers/api";
 import BtnModal from "../components/modal/BtnModal";
 import WModal from "../components/modal/WModal";
 import ChatItem from "../components/ChatItem";
+import {loadChatListPage, addChat} from "../services/chat_service";
 
 
 export default {
@@ -69,31 +70,20 @@ export default {
 
         //Сокеты
         this.$store.state.socket.on('countMessages', function(data){
-            console.log(data);
             this.$store.commit('pushChats', data);
-            //this.pushMessage(data);
         }.bind(this));
     },
     methods: {
         ...mapMutations('storeChatsList', ['setChats']),
-        loadChats(){
-            api.get('/chat')
-                .then(res => {
-                    this.setChats(res.chats);
-                });
+        async loadChats(){
+            const resChatsList = await loadChatListPage();
+            this.setChats(resChatsList.chats);
         },
-        saveChat(){
-            api.post('/chat/create', { title: this.chatName })
-                .then(res => {
-                    this.request = false;
-                    this.$store.commit('pushChats', res.chat);
-                    this.$refs.closeModalCreateChat.click();
-                    router.push(`/chat/${res.chat.id}`);
-                }).catch(error => {
-                    // handle error
-                    this.request = false;
-                    this.error = error.response.data.message;
-                });
+        async saveChat(){
+            const resAddChat = await addChat({ title: this.chatName });
+            this.$store.commit('pushChats', resAddChat.chat);
+            this.$refs.closeModalCreateChat.click();
+            router.push(`/chat/${resAddChat.chat.id}`);
         },
         focusAfterShownModal(){
             this.$refs.input_title_chat.focus();
