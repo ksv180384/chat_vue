@@ -85,7 +85,7 @@ export default {
     methods: {
         ...mapMutations(
             'storeChat',
-            ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType']
+            ['setChat', 'setUsers', 'setMessages', 'pushMessages', 'setPage', 'setNext', 'setAddMessagesType']
         ),
         async leave(){
             await laveChat(this.chat_id);

@@ -21,7 +21,7 @@
                            @dragenter="dragEnter"
                            @dragleave="dragLeave"
                            @drop="drop"
-                           @change="uploadImage"
+                           @change="loadImage"
                            type="file"
                     />
                 </div>
@@ -45,11 +45,12 @@
 
 <script>
 
+import {mapMutations, mapState} from "vuex";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faCaretLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {library} from "@fortawesome/fontawesome-svg-core";
 import api from "../helpers/api";
-import { mapGetters, mapState } from "vuex";
+import { loadProfileData, saveProfile, deleteAvatar } from '../services/user_service';
 
 library.add(faCaretLeft, faTrash);
 
@@ -71,16 +72,14 @@ export default {
         ...mapState([
             'storeProfile'
         ]),
-
     },
     methods: {
-        loadProfile(){
-            api.get(`/user/profile`)
-                .then(res => {
-                    this.$store.commit('storeProfile/setProfile', res.user);
-                })
+        ...mapMutations('storeProfile', ['setProfile']),
+        async loadProfile(){
+            const profileData = await loadProfileData();
+            this.setProfile(profileData);
         },
-        uploadImage(event){
+        loadImage(event){
             if(!event.target.files || event.target.files.length === 0){
                 return true;
             }
@@ -93,16 +92,14 @@ export default {
                 this.$refs.img_avatar.setAttribute('src', reader.result);
             }.bind(this);
         },
-        submit(event){
+        async submit(event){
             const formData = new FormData();
             formData.append('_method', 'PUT');
             formData.append('name', this.name);
             formData.append('avatar', this.image_file);
 
-            api.post('/user/profile/update', formData).then(res => {
-                //this.name = res.user.name;
-                this.$store.commit('storeProfile/setProfile', res.user);
-            });
+            const resSaveProfile = await saveProfile(formData);
+            this.setProfile(resSaveProfile.user);
         },
         removeImg(){
             this.image_file = '';
@@ -117,13 +114,12 @@ export default {
         drop(){
             this.avatar_drag_enter = false;
         },
-        removeAvatar(){
-            api.delete('/user/profile/remove-avatar').then(res => {
-                this.$store.commit('storeProfile/setProfile', res.user);
-                this.avatar = res.user.avatar;
-                this.avatar_src = res.user.avatar_src;
-                this.image_file = '';
-            });
+        async removeAvatar(){
+            const resDeleteAvatar = await deleteAvatar();
+            this.setProfile(resDeleteAvatar.user);
+            this.avatar = resDeleteAvatar.user.avatar;
+            this.avatar_src = resDeleteAvatar.user.avatar_src;
+            this.image_file = '';
         }
     },
     mounted() {

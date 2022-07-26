@@ -10479,8 +10479,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _services_chat_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/chat_service */ "./resources/js/services/chat_service.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -10499,39 +10507,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      message: '',
-      load_send: false
+      message: ''
     };
   },
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapMutations)('storeChat', ['pushMessages', 'setAddMessagesType'])), {}, {
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapGetters)('storeChat', ['load_send'])),
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapMutations)('storeChat', ['pushMessages', 'setAddMessagesType'])), {}, {
     send: function send() {
       var _this = this;
 
-      if (this.message.length < 2 && !this.send_loading) {
-        return true;
-      }
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+        var messageData, resSendMessage;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(_this.message.length < 2 && !_this.send_loading)) {
+                  _context.next = 2;
+                  break;
+                }
 
-      this.load_send = true;
-      _helpers_api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/chat/messages/send', {
-        message: this.message,
-        chat_room_id: this.chat_id
-      }).then(function (res) {
-        _this.load_send = false;
-        _this.message = '';
+                return _context.abrupt("return", true);
 
-        _this.setAddMessagesType('send');
+              case 2:
+                messageData = {
+                  message: _this.message,
+                  chat_room_id: _this.chat_id
+                };
+                _context.next = 5;
+                return (0,_services_chat_service__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageData);
 
-        _this.pushMessages(res);
+              case 5:
+                resSendMessage = _context.sent;
+                _this.message = '';
 
-        _this.$store.state.socket.emit('message', {
-          room: "chat_".concat(_this.chat_id),
-          message: res
-        });
-      })["catch"](function (error) {
-        // handle error
-        _this.load_send = false;
-        _this.error = error.response.data.message;
-      });
+                _this.pushMessages(resSendMessage);
+
+              case 8:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     }
   })
 });
@@ -10691,7 +10708,7 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_1__.library.add(_fort
     };
   },
   computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_10__.mapGetters)('storeUser', ['user'])), (0,vuex__WEBPACK_IMPORTED_MODULE_10__.mapGetters)('storeChat', ['chat', 'users', 'page'])),
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_10__.mapMutations)('storeChat', ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType'])), {}, {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_10__.mapMutations)('storeChat', ['setChat', 'setUsers', 'setMessages', 'pushMessages', 'setPage', 'setNext', 'setAddMessagesType'])), {}, {
     leave: function leave() {
       var _this = this;
 
@@ -11222,8 +11239,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $options.send && $options.send.apply($options, arguments);
     }, ["prevent"])),
     "class": "btn btn-primary",
-    disabled: $data.load_send
-  }, "отправить", 8
+    disabled: _ctx.load_send
+  }, " отправить ", 8
   /* PROPS */
   , _hoisted_3)])]);
 }
@@ -11520,7 +11537,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "loadChatListPage": () => (/* binding */ loadChatListPage),
 /* harmony export */   "laveChat": () => (/* binding */ laveChat),
 /* harmony export */   "deleteChat": () => (/* binding */ deleteChat),
-/* harmony export */   "addChat": () => (/* binding */ addChat)
+/* harmony export */   "addChat": () => (/* binding */ addChat),
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
@@ -11645,9 +11663,7 @@ var addChat = /*#__PURE__*/function () {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.next = 2;
-            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/create', {
-              title: chatData.title
-            });
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/create', chatData);
 
           case 2:
             return _context5.abrupt("return", _context5.sent);
@@ -11664,24 +11680,24 @@ var addChat = /*#__PURE__*/function () {
     return _ref5.apply(this, arguments);
   };
 }();
-
-var pageLoad = /*#__PURE__*/function () {
-  var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(url) {
+var sendMessage = /*#__PURE__*/function () {
+  var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(messageData) {
     var res;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', true);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('storeChat/setLoadSend', true);
             _context6.next = 3;
-            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].get(url);
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/messages/send', messageData);
 
           case 3:
             res = _context6.sent;
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', false);
+            sendMessageSocket(messageData.chat_room_id, res);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('storeChat/setLoadSend', false);
             return _context6.abrupt("return", res);
 
-          case 6:
+          case 7:
           case "end":
             return _context6.stop();
         }
@@ -11689,10 +11705,46 @@ var pageLoad = /*#__PURE__*/function () {
     }, _callee6);
   }));
 
-  return function pageLoad(_x5) {
+  return function sendMessage(_x5) {
     return _ref6.apply(this, arguments);
   };
 }();
+
+var pageLoad = /*#__PURE__*/function () {
+  var _ref7 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee7(url) {
+    var res;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', true);
+            _context7.next = 3;
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].get(url);
+
+          case 3:
+            res = _context7.sent;
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', false);
+            return _context7.abrupt("return", res);
+
+          case 6:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+
+  return function pageLoad(_x6) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+var sendMessageSocket = function sendMessageSocket(chatId, messageData) {
+  _store__WEBPACK_IMPORTED_MODULE_2__["default"].state.socket.emit('message', {
+    room: "chat_".concat(chatId),
+    message: messageData
+  });
+};
 
 /***/ }),
 

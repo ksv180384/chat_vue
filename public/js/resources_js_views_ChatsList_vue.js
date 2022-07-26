@@ -518,7 +518,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "loadChatListPage": () => (/* binding */ loadChatListPage),
 /* harmony export */   "laveChat": () => (/* binding */ laveChat),
 /* harmony export */   "deleteChat": () => (/* binding */ deleteChat),
-/* harmony export */   "addChat": () => (/* binding */ addChat)
+/* harmony export */   "addChat": () => (/* binding */ addChat),
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
@@ -643,9 +644,7 @@ var addChat = /*#__PURE__*/function () {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.next = 2;
-            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/create', {
-              title: chatData.title
-            });
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/create', chatData);
 
           case 2:
             return _context5.abrupt("return", _context5.sent);
@@ -662,24 +661,24 @@ var addChat = /*#__PURE__*/function () {
     return _ref5.apply(this, arguments);
   };
 }();
-
-var pageLoad = /*#__PURE__*/function () {
-  var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(url) {
+var sendMessage = /*#__PURE__*/function () {
+  var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(messageData) {
     var res;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', true);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('storeChat/setLoadSend', true);
             _context6.next = 3;
-            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].get(url);
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/messages/send', messageData);
 
           case 3:
             res = _context6.sent;
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', false);
+            sendMessageSocket(messageData.chat_room_id, res);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('storeChat/setLoadSend', false);
             return _context6.abrupt("return", res);
 
-          case 6:
+          case 7:
           case "end":
             return _context6.stop();
         }
@@ -687,10 +686,46 @@ var pageLoad = /*#__PURE__*/function () {
     }, _callee6);
   }));
 
-  return function pageLoad(_x5) {
+  return function sendMessage(_x5) {
     return _ref6.apply(this, arguments);
   };
 }();
+
+var pageLoad = /*#__PURE__*/function () {
+  var _ref7 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee7(url) {
+    var res;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', true);
+            _context7.next = 3;
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].get(url);
+
+          case 3:
+            res = _context7.sent;
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setLoadPage', false);
+            return _context7.abrupt("return", res);
+
+          case 6:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+
+  return function pageLoad(_x6) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+var sendMessageSocket = function sendMessageSocket(chatId, messageData) {
+  _store__WEBPACK_IMPORTED_MODULE_2__["default"].state.socket.emit('message', {
+    room: "chat_".concat(chatId),
+    message: messageData
+  });
+};
 
 /***/ }),
 

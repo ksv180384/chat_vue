@@ -10,14 +10,16 @@
       <button @click.prevent="send"
               class="btn btn-primary"
               :disabled="load_send"
-      >отправить</button>
+      >
+          отправить
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import api from "../helpers/api";
-import {mapMutations} from "vuex";
+import { sendMessage } from '../services/chat_service';
+import {mapGetters, mapMutations} from "vuex";
 
 export default {
     name: "SendMessage",
@@ -30,33 +32,21 @@ export default {
     data(){
         return {
             message: '',
-            load_send: false,
         }
+    },
+    computed: {
+        ...mapGetters('storeChat', ['load_send']),
     },
     methods: {
         ...mapMutations('storeChat', ['pushMessages', 'setAddMessagesType']),
-        send(){
+        async send(){
             if(this.message.length < 2 && !this.send_loading){
                 return true;
             }
-            this.load_send = true;
-            api.post('/chat/messages/send', { message: this.message, chat_room_id: this.chat_id })
-                .then(res => {
-                    this.load_send = false;
-                    this.message = '';
-
-                    this.setAddMessagesType('send');
-                    this.pushMessages(res);
-
-                    this.$store.state.socket.emit(
-                        'message',
-                        {room: `chat_${this.chat_id}`, message: res}
-                    );
-                }).catch(error => {
-                    // handle error
-                    this.load_send = false;
-                    this.error = error.response.data.message;
-                });
+            const messageData = { message: this.message, chat_room_id: this.chat_id };
+            const resSendMessage = await sendMessage(messageData);
+            this.message = '';
+            this.pushMessages(resSendMessage);
         }
     }
 }

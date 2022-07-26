@@ -12,6 +12,7 @@ const storeChat = {
             // load - подгрузка сообщений при прокрутке вверх (скролл остается на месте)
             // send - отправка сообщения (скролл плавно прокручивается вниз)
             add_messages_type: 'load', //[load, send]
+            load_send: false,
         }
     },
     actions: {
@@ -43,6 +44,7 @@ const storeChat = {
 
         },
         pushMessages(state, messages){
+            state.add_messages_type = 'send';
             if(Array.isArray(messages)) {
                 state.messages = [...state.messages, ...messages];
             }else{
@@ -60,7 +62,10 @@ const storeChat = {
         },
         setAddMessagesType(state, val){
             state.add_messages_type = val;
-        }
+        },
+        setLoadSend(state, loadSend){
+            state.load_send = loadSend;
+        },
     },
     getters: {
         chat: state => state.chat,
@@ -70,6 +75,7 @@ const storeChat = {
         next: state => state.next,
         load: state => state.load,
         add_messages_type: state => state.add_messages_type,
+        load_send: state => state.load_send,
     }
 };
 
