@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class UserService extends Service
 {
-    private $model;
-
     public function __construct()
     {
         parent::__construct();

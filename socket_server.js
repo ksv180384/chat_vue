@@ -9,9 +9,12 @@ io.on('connection', (socket) => {
 
 const io = require('socket.io')(3077);
 io.on("connect", socket => {
-    console.log('user connect');
+    console.log('user connect: ' + socket.id);
+    console.log(socket.handshake.query);
 
     socket.on('enterRoom', function(room) {
+
+        console.log('enter rom: ' + room);
 
         socket.join(room);
     });
@@ -23,9 +26,26 @@ io.on("connect", socket => {
 
     socket.on('message', (data) => {
 
-        console.log(data);
+        //console.log(data);
 
         socket.to(data.room).emit('message', data.message);
+    });
+
+    socket.on('userConnect', (userId) => {
+        socket.rooms.forEach((item) => {
+            socket.to(item).emit('userConnect', userId);
+        });
+    });
+
+    socket.on('disconnect', function(rr) {
+        console.log('user disconnect: ' + socket.handshake.query.user_id);
+
+        console.log(socket.adapter.rooms);
+
+        socket.rooms.forEach((item) => {
+            console.log(item);
+            socket.to(item).emit('userDisconnect', socket.handshake.query.user_id);
+        });
     });
 
     /*

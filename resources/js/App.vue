@@ -1,9 +1,10 @@
 <template>
     <div>
-        <component :is="this.$route.meta.layout || 'DefaultLayout'">
-            <router-view :layout="layout" />
+        <component :is="layout">
+            <router-view :layout="layout"/>
         </component>
         <LoadPage :load="load_page"/>
+        <MessageNotification/>
     </div>
 </template>
 
@@ -12,13 +13,19 @@
 import {mapGetters} from "vuex";
 
 import LoadPage from './components/LoadPage';
+import MessageNotification from "./components/MessageNotification";
 
 export default {
     components: {
-        LoadPage
+        MessageNotification,
+        LoadPage,
     },
     computed: {
         ...mapGetters(['load_page']),
+        layout(){
+            //return this.$route.meta.layout || 'DefaultLayout'
+            return this.$route.meta.layout;
+        }
     }
 }
 </script>

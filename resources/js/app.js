@@ -18,10 +18,3 @@ createApp(App)
 
 require('./bootstrap');
 
-/*
-Vue.component('Home', require('./Vue.vue').default);
-
-const app = new Vue({
-    el: "#app"
-});
-*/

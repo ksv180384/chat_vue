@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Chat;
 
 use App\Models\Chat\ChatRoom;
+use App\Models\Chat\ChatUserSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,12 +49,9 @@ class DeleteChatRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $data = $this->all();
-
-        $id = $data['id'];
         $userId = Auth::id();
 
-        $chatRoomToUser = ChatRoom::where('id', $id)->where('creator_id', $userId)->exists();
+        $chatRoomToUser = ChatUserSettings::where('chat_room_id', $userId)->where('user_id', $userId)->exists();
 
         $this->merge([
             'creator_id' => $userId,

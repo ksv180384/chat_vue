@@ -51,8 +51,14 @@ Route::group(['middleware' => 'jwt.auth:api_v1'], function (){
         Route::post('/lave', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'lave']);
         Route::post('/delete', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'delete']);
 
+        // Settings
+        Route::get('/{chatId}/settings', [\App\Http\Controllers\Api\V1\Chat\ChatUserSettingsController::class, 'settingsByUser']);
+        Route::post('/{chatId}/setting-change', [\App\Http\Controllers\Api\V1\Chat\ChatUserSettingsController::class, 'settingChangeByUser']);
+
+        // Messages
         Route::get('{id}/messages', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'messagesByChatId']);
         Route::post('messages/send', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'store']);
+        Route::post('messages/read', [\App\Http\Controllers\Api\V1\Chat\MessageController::class, 'read']);
 
     });
 });

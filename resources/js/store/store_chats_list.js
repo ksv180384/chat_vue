@@ -17,6 +17,14 @@ const storeChatsList = {
                 state.chats = [...state.chats, chats]
             }
         },
+        changeChat(state, chat){
+            state.chats = state.chats.map((chatItem) => {
+                chatItem = chatItem.id === chat.id ? chat : chatItem;
+                return chatItem;
+            });
+
+            console.log(state.chats);
+        },
         setLoad(state, load){
             state.load_chats = load;
         }

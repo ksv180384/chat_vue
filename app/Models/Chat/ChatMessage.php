@@ -11,6 +11,7 @@ class ChatMessage extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'user_id',
         'chat_room_id',
         'message',
@@ -19,6 +20,8 @@ class ChatMessage extends Model
     ];
 
     protected $appends = ['created_at_time', 'created_at_date'];
+
+    // Relationships
 
     public function room()
     {
@@ -30,10 +33,14 @@ class ChatMessage extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
+    // Scopes
+
     public function scopeList($query)
     {
         return $query->with(['user:id,name,avatar']);
     }
+
+    // Attributes
 
     public function getCreatedAtHumansAttribute()
     {

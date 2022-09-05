@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegistrationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -51,7 +52,7 @@ class AuthController extends Controller
             $this->respondWithToken($token)->getOriginalContent(),
             [
                 'message' => 'Вы успешно зарегистрировались.',
-                'user' => Auth::user()->only(['id', 'name', 'avatar'])
+                'user' => Auth::user()->only(['id', 'name', 'avatar', 'avatar_src'])
             ]
         ));
     }
@@ -76,7 +77,13 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        try {
+            return $this->respondWithToken(auth()->refresh());
+        }catch (JWTException $exception){
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 401);
+        }
     }
 
     /**

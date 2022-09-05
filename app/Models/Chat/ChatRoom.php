@@ -5,6 +5,7 @@ namespace App\Models\Chat;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class ChatRoom extends Model
 {
@@ -27,15 +28,25 @@ class ChatRoom extends Model
             'id');
     }
 
+    // Relationships
+
     public function creator()
     {
-        return $this->hasOne(User::class, 'id', 'creator_id');
+        return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
     public function messages()
     {
-        return $this->hasMany(ChatMessage::class);
+        return $this->belongsTo(ChatMessage::class, 'chat_room_id', 'id');
     }
+
+    public function settings()
+    {
+        return $this->hasOne(ChatUserSettings::class)
+            ->where('user_id', Auth::id());
+    }
+
+    // Scopes
 
     public function scopeOne($query)
     {

@@ -35,15 +35,14 @@
 
 <script>
 
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters} from "vuex";
 
-import router from "../router";
-import api from "../helpers/api";
+import router from "../../router";
 
-import BtnModal from "../components/modal/BtnModal";
-import WModal from "../components/modal/WModal";
-import ChatItem from "../components/ChatItem";
-import {loadChatListPage, addChat} from "../services/chat_service";
+import BtnModal from "../../components/modal/BtnModal";
+import WModal from "../../components/modal/WModal";
+import ChatItem from "../../components/ChatItem";
+import { addChat } from "../../services/chat_service";
 
 
 export default {
@@ -61,7 +60,7 @@ export default {
         ...mapGetters('storeChatsList', ['chats']),
     },
     mounted() {
-        this.loadChats();
+        //this.loadChats();
 
         // bootstrap модальное окно
         this.modalAddUserChat = document.getElementById('modalCreateChat');
@@ -73,15 +72,15 @@ export default {
             this.$store.commit('pushChats', data);
         }.bind(this));
     },
+    unmounted() {
+        // bootstrap модальное окно
+        this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
+        this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
+    },
     methods: {
-        ...mapMutations('storeChatsList', ['setChats']),
-        async loadChats(){
-            const resChatsList = await loadChatListPage();
-            this.setChats(resChatsList.chats);
-        },
         async saveChat(){
             const resAddChat = await addChat({ title: this.chatName });
-            this.$store.commit('pushChats', resAddChat.chat);
+            this.pushChats(resAddChat.chat);
             this.$refs.closeModalCreateChat.click();
             router.push(`/chat/${resAddChat.chat.id}`);
         },
@@ -92,10 +91,5 @@ export default {
             this.chatName = '';
         }
     },
-    unmounted() {
-        // bootstrap модальное окно
-        this.modalAddUserChat.removeEventListener('shown.bs.modal', this.focusAfterShownModal);
-        this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
-    }
 }
 </script>

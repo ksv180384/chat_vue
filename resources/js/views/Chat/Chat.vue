@@ -15,9 +15,11 @@
                     </svg>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    <li><a :href="`/chat/${chat_id}/settings`" class="dropdown-item">Настройки</a></li>
+                    <li class="dropdown-divider"></li>
                     <li><a @click.prevent="leave" href="#" class="dropdown-item">Покинуть чат</a></li>
                     <li>
-                        <a v-if="user.id === chat.creator.id" @click.prevent="del"
+                        <a v-if="user_id === chat.creator.id" @click.prevent="del"
                            href="#"
                            class="dropdown-item"
                         >
@@ -31,8 +33,8 @@
     <div v-if="chat" class="card">
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
-                <SearchUserChat/>
-                <ChatUsersList :chat_users="users"/>
+                <SearchUserChat @on-key-up="searchUser"/>
+                <ChatUsersList :chat_users="users_list"/>
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
@@ -51,18 +53,18 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import router from "../router";
+import router from "../../router";
 
-import ChatMessagesList from "../components/ChatMessagesList";
-import ChatUsersList from "../components/ChatUsersList";
-import SearchUserChat from "../components/SearchUserChat";
-import SendMessage from "../components/SendMessage";
-import {deleteChat, loadChatPage, laveChat} from "../services/chat_service";
+import ChatMessagesList from "../../components/ChatMessagesList";
+import ChatUsersList from "../../components/ChatUsersList";
+import SearchUserChat from "../../components/SearchUserChat";
+import SendMessage from "../../components/SendMessage";
+import {deleteChat, loadChatPage, laveChat} from "../../services/chat_service";
 
 library.add(faCaretLeft)
 
 export default {
-    name: "chat",
+    name: 'Chat',
     components: {
         ChatMessagesList,
         SendMessage,
@@ -73,20 +75,29 @@ export default {
     data(){
         return {
             chat_id: this.$route.params.id,
+            users_list: [],
         }
     },
     computed: {
-        ...mapGetters('storeUser', ['user']),
+        ...mapGetters({ user_id: 'storeUser/id' }),
         ...mapGetters(
             'storeChat',
             ['chat', 'users', 'page']
         ),
+    },
+    watch: {
+        users(newVal, oldVal){
+            this.users_list = newVal;
+        }
     },
     methods: {
         ...mapMutations(
             'storeChat',
             ['setChat', 'setUsers', 'setMessages', 'pushMessages', 'setPage', 'setNext', 'setAddMessagesType']
         ),
+        searchUser(userName){
+            this.users_list = this.users.filter((item) => item.name.toLowerCase().includes(userName.toLowerCase()));
+        },
         async leave(){
             await laveChat(this.chat_id);
             router.push('/');
@@ -111,14 +122,18 @@ export default {
     mounted() {
         this.loadChat();
         this.$store.state.socket.on('message', function(data){
-            this.pushMessages(data);
-        }.bind(this));
 
-        this.$store.state.socket.emit('enterRoom', `chat_${this.chat_id}`);
+            if(+data.chat_room_id === +this.chat_id){
+                this.pushMessages(data);
+            }
+        }.bind(this));
 
     },
     unmounted() {
-        this.$store.state.socket.emit('leaveRoom', `chat_${this.chat_id}`);
+        this.setChat(null);
+        this.setUsers([]);
+        this.setMessages([]);
+        this.setPage(1);
     }
 }
 </script>

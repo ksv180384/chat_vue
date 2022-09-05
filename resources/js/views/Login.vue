@@ -40,8 +40,9 @@
 
 <script>
 
-import api from '../helpers/api';
 import {mapMutations} from "vuex";
+import api from '../helpers/api';
+import { setUserDataToLocalStorage } from './../helpers/helpers';
 
 export default {
     name: "Login",
@@ -64,7 +65,8 @@ export default {
                 .then(res => {
                     this.request = false;
                     localStorage.setItem('user_token', res.access_token);
-                    localStorage.setItem('user', JSON.stringify(res.user));
+                    //localStorage.setItem('user', JSON.stringify(res.user));
+                    setUserDataToLocalStorage(res.user);
                     this.setUser(res.user);
                     api.defaults.headers.common['Authorization'] = 'Bearer ' + res.access_token;
                     this.$router.push('/');

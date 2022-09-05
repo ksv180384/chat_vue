@@ -2,9 +2,9 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <img class="avatar-img me-2" :src="storeProfile.avatar_src" />
+                <img class="avatar-img me-2" :src="avatar_src" />
                 <router-link class="navbar-brand" to="/profile">
-                    {{ storeProfile.name }}
+                    {{ name }}
                 </router-link>
             </div>
 
@@ -25,27 +25,25 @@
 <script>
 
 import api from '../helpers/api';
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 export default {
     computed: {
-        ...mapState([
-            'storeProfile'
-        ]),
-        ...mapGetters([
-            'storeProfile/name',
-            'storeProfile/avatar',
-            'storeProfile/avatar_src',
+        ...mapGetters('storeUser', [
+            'name',
+            'avatar',
+            'avatar_src',
         ])
     },
     methods: {
+        ...mapMutations('storeUser', ['setUser']),
         logout(){
             api.post('logout')
                 .then(() => {
                     localStorage.removeItem('user_token');
                     localStorage.removeItem('user');
                     api.defaults.headers.common['Authorization'] = null;
-                    this.$store.commit('setUser', null);
+                    this.setUser(null);
                     this.$router.push('/login');
                 })
                 .catch(() => {

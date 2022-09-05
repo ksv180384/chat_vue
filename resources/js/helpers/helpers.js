@@ -18,7 +18,7 @@ export const userData = () => {
     return userData;
 }
 
-export const setUserData = (userData) => {
+export const setUserDataToLocalStorage = (userData) => {
     try{
         localStorage.setItem('user', JSON.stringify(userData));
     }catch (e) {

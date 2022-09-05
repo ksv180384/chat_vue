@@ -1,4 +1,4 @@
-import { setUserData, userData } from '../helpers/helpers';
+import { setUserDataToLocalStorage, userData } from '../helpers/helpers';
 
 const storeProfile = {
     namespaced: true,
@@ -13,7 +13,7 @@ const storeProfile = {
     },
     mutations: {
         setProfile(state, profile) {
-            setUserData(profile);
+            setUserDataToLocalStorage(profile);
             state.name = profile.name;
             state.avatar = profile.avatar;
             state.avatar_src = profile.avatar_src;

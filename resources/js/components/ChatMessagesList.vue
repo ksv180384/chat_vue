@@ -4,7 +4,7 @@
             <div v-show="next" ref="sentinel" class="text-center py-3">Загрузка...</div>
             <div ref="messages_list_container">
                 <div v-for="message in messages" :key="message.id">
-                    <ChatMessageItem v-if="message.user.id === user.id" :message="message"/>
+                    <ChatMessageItem v-if="message.user.id === current_user_id" :message="message"/>
                     <ChatMessageItemLeft v-else :message="message"/>
                 </div>
             </div>
@@ -14,10 +14,12 @@
 
 <script>
 
+import {mapGetters, mapMutations} from "vuex";
+
 import ChatMessageItem from "../components/ChatMessageItem";
 import ChatMessageItemLeft from "../components/ChatMessageItemLeft";
-import {mapGetters, mapMutations, mapState} from "vuex";
-import api from "../helpers/api";
+
+import { loadChatMessages } from '../services/chat_service';
 
 export default {
     name: "ChatMessagesList",
@@ -27,17 +29,13 @@ export default {
     },
     data(){
         return {
-            //messages: this.prop_messages_list,
-            //messages_load: false,
-            //page: 2,
-            //next_page: this.prop_next_page,
             scroll_top: 0,
             message_block_height: 0,
         }
     },
     computed: {
         ...mapGetters('storeChat', ['messages', 'page', 'next', 'load', 'add_messages_type']),
-        ...mapGetters('storeUser', ['user']),
+        ...mapGetters({current_user_id: 'storeUser/id'}),
     },
     watch: {
         messages(newVal, oldVal){
@@ -47,22 +45,19 @@ export default {
     },
     methods: {
         ...mapMutations('storeChat', ['unshiftMessages', 'setPage', 'setNext', 'setLoad', 'setAddMessagesType']),
-        loadMessages(){
+        async loadMessages(){
             const chatId = this.$route.params.id
-            this.setLoad(true);
-            api.get(`/chat/${chatId}/messages?page=${this.page}`)
-                .then(res => {
-                    this.setAddMessagesType('load');
-                    this.unshiftMessages(res.data.reverse());
-                    this.setLoad(false);
 
-                    if(res.next_page_url){
-                        this.setPage(this.page + 1);
-                        this.setNext(true);
-                    }else{
-                        this.setNext(false);
-                    }
-                })
+            const resLoadMessages = await loadChatMessages(chatId, this.page);
+            this.setAddMessagesType('load');
+            this.unshiftMessages(resLoadMessages.data.reverse());
+
+            if(resLoadMessages.next_page_url){
+                this.setPage(this.page + 1);
+                this.setNext(true);
+            }else{
+                this.setNext(false);
+            }
         },
         setUpInterSectionObserver() {
             let options = {

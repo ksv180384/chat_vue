@@ -11,6 +11,7 @@
                 >
                     <div v-if="avatar || image_file" class="loaded-avatar">
                         <img ref="img_avatar"
+                             :alt="name"
                              :src="avatar_src"
                         />
                         <div @click.stop="removeAvatar" class="avatar-delete">
@@ -45,12 +46,12 @@
 
 <script>
 
-import {mapMutations, mapState} from "vuex";
+import {mapMutations, mapGetters} from "vuex";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faCaretLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {library} from "@fortawesome/fontawesome-svg-core";
-import api from "../helpers/api";
-import { loadProfileData, saveProfile, deleteAvatar } from '../services/user_service';
+
+import { loadProfileData, saveProfile, deleteAvatar } from '../../services/user_service';
 
 library.add(faCaretLeft, faTrash);
 
@@ -69,12 +70,15 @@ export default {
         }
     },
     computed: {
-        ...mapState([
-            'storeProfile'
+        ...mapGetters('storeProfile', [
+            'name',
+            'avatar',
+            'avatar_src',
         ]),
     },
     methods: {
         ...mapMutations('storeProfile', ['setProfile']),
+        ...mapMutations('storeUser', ['setUser']),
         async loadProfile(){
             const profileData = await loadProfileData();
             this.setProfile(profileData);
@@ -100,6 +104,7 @@ export default {
 
             const resSaveProfile = await saveProfile(formData);
             this.setProfile(resSaveProfile.user);
+            this.setUser(resSaveProfile.user);
         },
         removeImg(){
             this.image_file = '';
@@ -117,6 +122,7 @@ export default {
         async removeAvatar(){
             const resDeleteAvatar = await deleteAvatar();
             this.setProfile(resDeleteAvatar.user);
+            this.setUser(resDeleteAvatar.user);
             this.avatar = resDeleteAvatar.user.avatar;
             this.avatar_src = resDeleteAvatar.user.avatar_src;
             this.image_file = '';
