@@ -2,8 +2,8 @@
     <div class="px-4 d-none d-md-block">
         <div class="d-flex align-items-center">
             <div class="flex-grow-1">
-                <input v-model="input_text"
-                       @keyup="inputKeyUp"
+                <input @input="handleInput"
+                       :value="modelValue"
                        type="text"
                        class="form-control my-3"
                        placeholder="Поиск..."
@@ -21,14 +21,10 @@ import AddUserChat from "./AddUserChat";
 export default {
     name: "SearchUserChat",
     components: { AddUserChat },
-    data(){
-        return {
-            input_text: '',
-        }
-    },
+    props: ['modelValue'],
     methods: {
-        inputKeyUp(){
-            this.$emit('onKeyUp', this.input_text);
+        handleInput(e){
+            this.$emit('update:modelValue', e.target.value);
         }
     }
 }

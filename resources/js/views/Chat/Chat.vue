@@ -33,8 +33,8 @@
     <div v-if="chat" class="card">
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
-                <SearchUserChat @on-key-up="searchUser"/>
-                <ChatUsersList :chat_users="users_list"/>
+                <SearchUserChat v-model="search_user_text"/>
+                <ChatUsersList :chat_users="usersList"/>
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
@@ -75,7 +75,8 @@ export default {
     data(){
         return {
             chat_id: this.$route.params.id,
-            users_list: [],
+            //users_list: [],
+            search_user_text: '',
         }
     },
     computed: {
@@ -84,10 +85,11 @@ export default {
             'storeChat',
             ['chat', 'users', 'page']
         ),
-    },
-    watch: {
-        users(newVal, oldVal){
-            this.users_list = newVal;
+        usersList(){
+            if(this.search_user_text.trim().length === 0){
+                return this.users;
+            }
+            return this.users.filter((item) => item.name.toLowerCase().includes(this.search_user_text.toLowerCase()));
         }
     },
     methods: {
@@ -95,9 +97,6 @@ export default {
             'storeChat',
             ['setChat', 'setUsers', 'setMessages', 'pushMessages', 'setPage', 'setNext', 'setAddMessagesType']
         ),
-        searchUser(userName){
-            this.users_list = this.users.filter((item) => item.name.toLowerCase().includes(userName.toLowerCase()));
-        },
         async leave(){
             await laveChat(this.chat_id);
             router.push('/');
