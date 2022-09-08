@@ -1,15 +1,16 @@
 <template>
   <div class="flex-grow-0 py-3 px-4 border-top">
     <div class="input-group">
-      <input @keyup.enter="send"
+      <input v-model="message"
+             @keyup.enter="send"
              type="text"
              class="form-control"
              placeholder="Введите сообщение"
-             v-model="message"
+             :disabled="send_loading"
       />
       <button @click.prevent="send"
               class="btn btn-primary"
-              :disabled="load_send"
+              :disabled="send_loading"
       >
           отправить
       </button>
@@ -32,6 +33,7 @@ export default {
     data(){
         return {
             message: '',
+            send_loading: false
         }
     },
     computed: {
@@ -40,12 +42,14 @@ export default {
     methods: {
         ...mapMutations('storeChat', ['pushMessages', 'setAddMessagesType']),
         async send(){
-            if(this.message.length < 2 && !this.send_loading){
+            this.send_loading = true;
+            if(this.message.length < 2){
                 return true;
             }
             const messageData = { message: this.message, chat_room_id: this.chat_id };
             const resSendMessage = await sendMessage(messageData);
             this.message = '';
+            this.send_loading = false;
             this.pushMessages(resSendMessage);
         }
     }

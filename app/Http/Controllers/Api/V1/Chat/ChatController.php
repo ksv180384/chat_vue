@@ -96,6 +96,7 @@ class ChatController extends BaseController
 
         $chatRoom->users()->attach($request->user_id);
         $chatRoom->load('users');
+        $chatRoom->load('settings');
 
         return new ChatResource($chatRoom);
     }
@@ -107,8 +108,10 @@ class ChatController extends BaseController
      */
     public function lave(LaveChatRequest $request)
     {
-        [$id, $user_id] = $request->validated();
-        $this->chatService->lave($id, $user_id);
+
+        ['id' => $chat_room_id, 'user_id' => $user_id] = $request->validated();
+
+        $this->chatService->lave($chat_room_id, $user_id);
 
         return response()->json(['message' => 'Вы учпешно покинули чат.']);
     }
@@ -120,6 +123,7 @@ class ChatController extends BaseController
      */
     public function delete(DeleteChatRequest $request)
     {
+
         $this->chatService->delete($request->id);
 
         return response()->json(['message' => 'Вы учпешно удалили чат.']);

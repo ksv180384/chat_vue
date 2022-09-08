@@ -22,11 +22,12 @@ const storeChatsList = {
                 chatItem = chatItem.id === chat.id ? chat : chatItem;
                 return chatItem;
             });
-
-            console.log(state.chats);
         },
         setLoad(state, load){
             state.load_chats = load;
+        },
+        deleteChat(state, chatId){
+            state.chats = state.chats.filter(item => +item.id !== +chatId);
         }
     },
     getters: {

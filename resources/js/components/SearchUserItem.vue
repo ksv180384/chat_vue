@@ -30,12 +30,9 @@ export default {
             default: false
         }
     },
-    data(){
-        return {}
-    },
     methods: {
         setActive(){
-            this.$emit('change-active', this.user.id);
+            this.$emit('on-change-active', this.user.id);
         }
     }
 }

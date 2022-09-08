@@ -9,7 +9,7 @@
                        placeholder="Поиск..."
                 />
             </div>
-            <div class="ms-2">
+            <div v-if="show_btn_join_user" class="ms-2">
                 <AddUserChat/>
             </div>
         </div>
@@ -21,7 +21,15 @@ import AddUserChat from "./AddUserChat";
 export default {
     name: "SearchUserChat",
     components: { AddUserChat },
-    props: ['modelValue'],
+    props: {
+        modelValue: {
+            type: String,
+        },
+        show_btn_join_user: {
+            type: Boolean,
+            default: false,
+        }
+    },
     methods: {
         handleInput(e){
             this.$emit('update:modelValue', e.target.value);

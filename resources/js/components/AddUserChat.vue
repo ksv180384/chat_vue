@@ -20,34 +20,46 @@
         </div>
 
         <div>
-            <SearchUserItem v-for="user in users"
-                      :key="user.id"
-                      :user="user"
-                      :active="user.id === active"
-                      v-on:change-active="changeActive"
+            <div v-if="loading" class="text-center p-5">
+                Поиск пользователей...
+            </div>
+            <SearchUserItem v-else
+                            v-for="user in users"
+                            :key="user.id"
+                            :user="user"
+                            :active="user.id === select_user"
+                            @on-change-active="changeSelectUser"
             />
         </div>
 
         <template v-slot:footer>
-            <button @click="joinUser" type="button" class="btn btn-primary">Добавить</button>
+            <button @click="joinUser"
+                    type="button"
+                    class="btn btn-primary"
+                    :disabled="btn_join_is_disabled || select_user === 0"
+            >
+                Добавить
+            </button>
             <button ref="closeModalAddUserChat"
                     type="button"
                     class="btn btn-secondary"
                     data-bs-dismiss="modal"
-            >Отмена</button>
+            >
+                Отмена
+            </button>
         </template>
     </WModal>
 </template>
 
 <script>
 
-import {mapMutations} from "vuex";
-
-import api from "./../helpers/api";
+import { mapMutations } from "vuex";
 
 import BtnModal from "./modal/BtnModal";
 import WModal from "./modal/WModal";
 import SearchUserItem from "./SearchUserItem";
+
+import { joinUserToChat, searchUserToChat } from "../services/chat_service";
 
 
 export default {
@@ -63,50 +75,52 @@ export default {
             modalAddUserChat: null,
             showM: false,
             users: [],
-            active: 0,
+            select_user: 0,
             searchUser: '',
             searchTimeout: null,
             loading: false,
+            btn_join_is_disabled: false,
         }
     },
     methods: {
         ...mapMutations('storeChatsList', ['pushChats']),
+        ...mapMutations('storeChat', ['setUsers']),
         search(){
+            this.loading = true;
+
             clearTimeout(this.searchTimeout);
 
             this.searchTimeout = setTimeout(function () {
                 this.searchUserRequest();
             }.bind(this), 1000);
         },
-        searchUserRequest(){
+        async searchUserRequest(){
             if(this.searchUser.length < 2){
+                this.loading = false;
                 return true;
             }
-            api.get('/users/search/' + this.searchUser)
-                .then(res => {
-                    this.users = res.users;
-                    this.loading = false;
-                    this.pushChats(res.chat)
-                }).catch(error => {
-                // handle error
+            try {
+                const resSearchUserToChat = await searchUserToChat(this.searchUser);
+                this.users = resSearchUserToChat.users;
+                this.pushChats(resSearchUserToChat.chat);
                 this.loading = false;
-                this.error = error.response.data.message;
-            });
+            }catch (e) {
+                this.loading = false;
+            }
         },
-        changeActive(id){
-            this.active = id;
+        async joinUser(){
+            try {
+                this.btn_join_is_disabled = true;
+                const resJoinUserToChat =  await joinUserToChat({ chat_room_id: this.chat_id, user_id: this.select_user });
+                this.setUsers(resJoinUserToChat.chat.users);
+                this.$refs.closeModalAddUserChat.click();
+                this.btn_join_is_disabled = false;
+            }catch (e) {
+                this.btn_join_is_disabled = false;
+            }
         },
-        joinUser(){
-            api.post('/chat/join', { chat_room_id: this.chat_id, user_id: this.active })
-                .then(res => {
-                    this.$store.commit('setChatUsers', res.chat.users);
-                    this.$refs.closeModalAddUserChat.click();
-                    this.loading = false;
-                }).catch(error => {
-                    // handle error
-                    this.loading = false;
-                    this.error = error.response.data.message;
-                });
+        changeSelectUser(id){
+            this.select_user = id;
         },
         focusAfterShownModal(){
             this.$refs.input_search.focus();
@@ -114,12 +128,8 @@ export default {
         afterHideModal(){
             this.users = [];
             this.searchUser = '';
+            this.select_user = 0;
         }
-    },
-    computed: {
-        chat(){
-            return this.$store.getters.chat;
-        },
     },
     mounted() {
         this.modalAddUserChat = document.getElementById('modalAddUserChat');
@@ -132,7 +142,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-</style>

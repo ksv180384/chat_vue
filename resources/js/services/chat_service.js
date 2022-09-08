@@ -1,5 +1,11 @@
 import api from "../helpers/api";
 import store from "../store";
+import {
+    joinUserToChatSocket,
+    laveUserToChatSocket,
+    sendMessageSocket
+} from "./socket_service";
+import {userData} from "../helpers/helpers";
 
 export const loadChatList = async () => {
     return await api.get(`/chat`);
@@ -26,7 +32,20 @@ export const loadChatMessages = async (chatId, page) => {
 };
 
 export const laveChat = async (chatId) => {
-    return await api.post(`/chat/lave`, { id: chatId });
+    const res = await api.post(`/chat/lave`, { id: chatId });
+    const userId = userData().id;
+    laveUserToChatSocket(userId, chatId);
+    return res;
+}
+
+export const joinUserToChat = async (data) => {
+    const res = await api.post('/chat/join', data); // data = {chat_room_id: int, user_id: int}
+    joinUserToChatSocket(data.user_id, res.chat);
+    return res;
+}
+
+export const searchUserToChat = async (userName) => {
+    return await api.get('/users/search/' + userName)
 }
 
 export const deleteChat = async (chatId) => {
@@ -42,10 +61,8 @@ export const changeSettingsChat = async (chatId, chatData) => {
 }
 
 export const sendMessage = async (messageData) => {
-    store.commit('storeChat/setLoadSend', true);
     const res = await api.post('/chat/messages/send', messageData);
     sendMessageSocket(messageData.chat_room_id, res);
-    store.commit('storeChat/setLoadSend', false);
     return res;
 }
 
@@ -54,11 +71,4 @@ const pageLoad = async (url) => {
     const res = await api.get(url);
     store.commit('setLoadPage', false);
     return res;
-}
-
-const sendMessageSocket = (chatId, messageData) => {
-    store.state.socket.emit(
-        'message',
-        {room: `chat_${chatId}`, message: messageData}
-    );
 }

@@ -8,9 +8,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class MessagesPaginateResource extends JsonResource
 {
-
-    public $collects = ChatMessage::class;
-
     /**
      * Transform the resource into an array.
      *

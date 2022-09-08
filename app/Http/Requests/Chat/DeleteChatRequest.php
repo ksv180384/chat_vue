@@ -4,6 +4,7 @@ namespace App\Http\Requests\Chat;
 
 use App\Models\Chat\ChatRoom;
 use App\Models\Chat\ChatUserSettings;
+use App\Rules\IsCurrentUserCreatorChat;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,18 +28,20 @@ class DeleteChatRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required',
-            'creator_id' => 'required',
-            'creator' => 'required',
+            'id' => [
+                'required',
+                'exists:chat_rooms,id',
+                new IsCurrentUserCreatorChat() // Проверка является текущий авторизованный пользователь создателем чата
+            ]
         ];
+
     }
 
     public function messages()
     {
         return [
             'id.required' => 'неверный чат.',
-            'creator_id.required' => 'Неверный пользователь.',
-            'creator.required' => 'У вас недостаточно прав для удаления.',
+            'id.exists' => 'неверный чат.',
         ];
     }
 
@@ -49,14 +52,5 @@ class DeleteChatRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $userId = Auth::id();
-
-        $chatRoomToUser = ChatUserSettings::where('chat_room_id', $userId)->where('user_id', $userId)->exists();
-
-        $this->merge([
-            'creator_id' => $userId,
-            // Является ли пользователь создателем чата
-            'creator' => $chatRoomToUser ? 'ok' : null,
-        ]);
     }
 }

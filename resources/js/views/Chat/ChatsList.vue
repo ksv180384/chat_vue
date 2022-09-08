@@ -23,11 +23,18 @@
                    ref="input_title_chat"
                    type="text"
                    class="form-control"
+                   :disabled="btn_add_chat_is_disabled"
             />
         </div>
 
         <template v-slot:footer>
-            <button @click="saveChat" type="button" class="btn btn-primary">Сохранить</button>
+            <button @click="saveChat"
+                    type="button"
+                    class="btn btn-primary"
+                    :disabled="btn_add_chat_is_disabled"
+            >
+                Сохранить
+            </button>
             <button ref="closeModalCreateChat" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
         </template>
     </WModal>
@@ -35,7 +42,7 @@
 
 <script>
 
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 
 import router from "../../router";
 
@@ -54,6 +61,7 @@ export default {
     data(){
         return {
             chatName: '',
+            btn_add_chat_is_disabled: false
         }
     },
     computed: {
@@ -78,9 +86,12 @@ export default {
         this.modalAddUserChat.removeEventListener('hide.bs.modal', this.afterHideModal);
     },
     methods: {
+        ...mapMutations('storeChatsList', ['pushChats']),
         async saveChat(){
+            this.btn_add_chat_is_disabled = true;
             const resAddChat = await addChat({ title: this.chatName });
             this.pushChats(resAddChat.chat);
+            this.btn_add_chat_is_disabled = false;
             this.$refs.closeModalCreateChat.click();
             router.push(`/chat/${resAddChat.chat.id}`);
         },

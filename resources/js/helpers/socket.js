@@ -28,11 +28,35 @@ socket.on('connect', async () => {
     socket.emit('userConnect', userId);
 });
 
-socket.on('userConnect', async (userId) => {
+socket.on('message', function(data){
 
-    console.log('user connect: ' + userId);
+    const chatId = +data.chat_room_id;
+    const selectChat = +store.state.storeChat.chat.id;
 
-    store.commit('addUserOnline', userId);
+    console.log('message chat id: ' + chatId);
+
+    if(chatId === selectChat){
+        store.commit('storeChat/pushMessages', data);
+    }
+});
+
+socket.on('joinUserChat', async (chatData) => {
+    store.commit('storeChatsList/pushChats', chatData);
+});
+
+socket.on('laveUserChat', async (data) => {
+    //console.log('lave chat id: ' + store.state.storeChat.chat.id);
+    if(+store.state.storeChat.chat.id === +data.chat_id){
+        store.commit('storeChat/removeUser', data.user_id);
+    }
+});
+
+socket.on('userConnect', async (usersIds) => {
+
+    console.log('user connect:');
+    console.log(usersIds);
+
+    //store.commit('addUserOnline', userId);
 });
 
 socket.on('userDisconnect', async (userId) => {

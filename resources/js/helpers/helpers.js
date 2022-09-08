@@ -9,6 +9,7 @@ export const userData = () => {
 
     if(!userData){
         userData = {
+            id: 0,
             name: '',
             avatar: '',
             avatar_src: '',

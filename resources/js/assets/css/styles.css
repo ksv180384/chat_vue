@@ -9,12 +9,6 @@ body{
 .chat-offline {
     color: #e4606d
 }
-
-.chat-users-list{
-    height: calc(100vh - 230px);
-    overflow-y: auto
-}
-
 .chat-messages {
     display: flex;
     flex-direction: column;

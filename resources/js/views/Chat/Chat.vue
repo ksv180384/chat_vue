@@ -15,9 +15,13 @@
                     </svg>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <li><a :href="`/chat/${chat_id}/settings`" class="dropdown-item">Настройки</a></li>
+                    <li>
+                        <a :href="`/chat/${chat_id}/settings`" class="dropdown-item">Настройки</a>
+                    </li>
                     <li class="dropdown-divider"></li>
-                    <li><a @click.prevent="leave" href="#" class="dropdown-item">Покинуть чат</a></li>
+                    <li>
+                        <a @click.prevent="leave" href="#" class="dropdown-item">Покинуть чат</a>
+                    </li>
                     <li>
                         <a v-if="user_id === chat.creator.id" @click.prevent="del"
                            href="#"
@@ -33,8 +37,10 @@
     <div v-if="chat" class="card">
         <div class="row g-0">
             <div class="col-12 col-lg-3 col-xl-3 border-right">
-                <SearchUserChat v-model="search_user_text"/>
-                <ChatUsersList :chat_users="usersList"/>
+                <SearchUserChat v-model="search_user_text" :show_btn_join_user="user_id === chat.creator_id"/>
+                <ChatUsersList :chat_users="usersList"
+                               :chat_creator_id="chat.creator_id"
+                />
             </div>
             <div class="col-12 col-lg-9 col-xl-9">
                 <div class="position-relative">
@@ -61,7 +67,7 @@ import SearchUserChat from "../../components/SearchUserChat";
 import SendMessage from "../../components/SendMessage";
 import {deleteChat, loadChatPage, laveChat} from "../../services/chat_service";
 
-library.add(faCaretLeft)
+library.add(faCaretLeft);
 
 export default {
     name: 'Chat',
@@ -75,7 +81,6 @@ export default {
     data(){
         return {
             chat_id: this.$route.params.id,
-            //users_list: [],
             search_user_text: '',
         }
     },
@@ -95,14 +100,17 @@ export default {
     methods: {
         ...mapMutations(
             'storeChat',
-            ['setChat', 'setUsers', 'setMessages', 'pushMessages', 'setPage', 'setNext', 'setAddMessagesType']
+            ['setChat', 'setUsers', 'setMessages', 'setPage', 'setNext', 'setAddMessagesType']
         ),
+        ...mapMutations('storeChatsList', ['deleteChat']),
         async leave(){
             await laveChat(this.chat_id);
+            this.deleteChat(this.chat_id);
             router.push('/');
         },
         async del(){
             await deleteChat(this.chat_id);
+            this.deleteChat(this.chat_id);
             router.push('/');
         },
         async loadChat(){
@@ -120,12 +128,6 @@ export default {
     },
     mounted() {
         this.loadChat();
-        this.$store.state.socket.on('message', function(data){
-
-            if(+data.chat_room_id === +this.chat_id){
-                this.pushMessages(data);
-            }
-        }.bind(this));
 
     },
     unmounted() {

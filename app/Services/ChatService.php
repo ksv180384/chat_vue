@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Chat\ChatUserSettings;
 use App\Models\Chat\ChatRoom;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ChatService extends Service{
 
@@ -31,8 +32,10 @@ class ChatService extends Service{
      */
     public function create($data)
     {
+        $userId = Auth::id();
         $chatRoom = ChatRoom::create($data);
-        $chatRoom->users()->attach(Auth::id());
+        $chatRoom->users()->attach($userId);
+        (new ChatUserSettingsService())->initSettings($chatRoom->id, $userId);
         return $chatRoom;
     }
 
@@ -50,6 +53,13 @@ class ChatService extends Service{
             ->orWhere('chat_room_to_users.user_id', $userId)
             ->get();
 
+        // Добавляем настройки чата пользователю если их нет
+        foreach ($chats as $k => $chat){
+            if(!$chat->settings){
+                $chats[$k]->settings = (new ChatUserSettingsService())->initSettings($chat->id, $userId);
+            }
+        }
+
         return $chats;
     }
 
@@ -60,12 +70,15 @@ class ChatService extends Service{
      */
     public function lave($chatId, $userId)
     {
-        $chatRoom = ChatRoom::findOrFail($chatId);
-        $chatRoom->users()->detach($userId);
+        DB::transaction(function () use ($chatId, $userId) {
+            $chatRoom = ChatRoom::findOrFail($chatId);
+            $chatRoom->users()->detach($userId);
+            $chatRoom->settings()->delete();
 
-        if($chatRoom->users()->count() == 0){
-            $chatRoom->delete();
-        }
+            if($chatRoom->users()->count() == 0){
+                $chatRoom->delete();
+            }
+        });
     }
 
     /**
@@ -74,10 +87,13 @@ class ChatService extends Service{
      */
     public function delete($chatId)
     {
-        $chatRoom = ChatRoom::findOrFail($chatId);
-        $chatRoom->users()->detach();
-        $chatRoom->messages()->delete();
+        DB::transaction(function () use ($chatId) {
+            $chatRoom = ChatRoom::findOrFail($chatId);
+            $chatRoom->users()->detach();
+            $chatRoom->settings()->delete();
+            $chatRoom->messages()->delete();
 
-        $chatRoom->delete();
+            $chatRoom->delete();
+        });
     }
 }
