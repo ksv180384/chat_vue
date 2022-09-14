@@ -9,7 +9,13 @@
           <div class="">
             <div class="form-group mt-3">
               <label class="form-label">Email</label>
-              <input type="email" class="form-control" :class="{ 'border-danger': error}" placeholder="Введите ваш email" v-model="email">
+              <input ref="input_email"
+                     type="email"
+                     class="form-control"
+                     :class="{ 'border-danger': error}"
+                     placeholder="Введите ваш email"
+                     v-model="email"
+              />
               <div v-if="error" class="form-text text-danger">{{ error }}</div>
             </div>
             <div class="form-group mt-3">
@@ -54,6 +60,9 @@ export default {
             request: false,
             error: null
         }
+    },
+    mounted() {
+        this.$refs.input_email.focus();
     },
     methods: {
         ...mapMutations('storeUser', ['setUser']),

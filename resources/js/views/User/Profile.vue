@@ -2,14 +2,14 @@
     <div>
         <h1>
             <router-link to="/"><FontAwesomeIcon icon="caret-left" /></router-link>
-            Профиль
+            Профиль <small>{{ email }}</small>
         </h1>
         <form @submit.prevent="submit" action="">
             <div class="d-flex flex-row mt-3">
                 <div class="load-file-block"
                      :class="{ 'drag-enter': avatar_drag_enter }"
                 >
-                    <div v-if="avatar || image_file" class="loaded-avatar">
+                    <div v-if="avatar" class="loaded-avatar">
                         <img ref="img_avatar"
                              :alt="name"
                              :src="avatar_src"
@@ -28,13 +28,10 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="form-floating mb-3">
-
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="text"
+                        <input v-model="name"
+                               type="text"
                                class="form-control"
                                placeholder="Имя"
-                               v-model="name"
                         />
                         <label>Имя</label>
                     </div>
@@ -49,10 +46,10 @@
 
 <script>
 
-import {mapMutations, mapGetters} from "vuex";
+import { mapMutations } from "vuex";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faCaretLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
-import {library} from "@fortawesome/fontawesome-svg-core";
+import { library } from "@fortawesome/fontawesome-svg-core";
 
 import { loadProfileData, saveProfile, deleteAvatar } from '../../services/user_service';
 
@@ -65,26 +62,25 @@ export default {
     },
     data(){
         return {
-            name: this.$store.state.storeProfile.name,
-            avatar: this.$store.state.storeProfile.avatar,
-            avatar_src: this.$store.state.storeProfile.avatar_src,
+            email: '',
+            name: '',
+            avatar: '',
+            avatar_src: '',
             image_file: '',
             avatar_drag_enter: false
         }
     },
-    computed: {
-        ...mapGetters('storeProfile', [
-            'name',
-            'avatar',
-            'avatar_src',
-        ]),
+    mounted() {
+        this.loadProfile();
     },
     methods: {
-        ...mapMutations('storeProfile', ['setProfile']),
         ...mapMutations('storeUser', ['setUser']),
         async loadProfile(){
             const profileData = await loadProfileData();
-            this.setProfile(profileData);
+            this.email = profileData.email;
+            this.name = profileData.name;
+            this.avatar = profileData.avatar;
+            this.avatar_src = profileData.avatar_src;
         },
         loadImage(event){
             if(!event.target.files || event.target.files.length === 0){
@@ -96,7 +92,8 @@ export default {
             const reader = new FileReader();
             reader.readAsDataURL(this.image_file);
             reader.onload = function () {
-                this.$refs.img_avatar.setAttribute('src', reader.result);
+                this.avatar = reader.result;
+                this.avatar_src = reader.result;
             }.bind(this);
         },
         async submit(event){
@@ -106,12 +103,8 @@ export default {
             formData.append('avatar', this.image_file);
 
             const resSaveProfile = await saveProfile(formData);
-            this.setProfile(resSaveProfile.user);
             this.setUser(resSaveProfile.user);
-        },
-        removeImg(){
             this.image_file = '';
-            this.$refs.inputImg.value = '';
         },
         dragEnter(){
             this.avatar_drag_enter = true;
@@ -124,16 +117,22 @@ export default {
         },
         async removeAvatar(){
             const resDeleteAvatar = await deleteAvatar();
-            this.setProfile(resDeleteAvatar.user);
             this.setUser(resDeleteAvatar.user);
-            this.avatar = resDeleteAvatar.user.avatar;
-            this.avatar_src = resDeleteAvatar.user.avatar_src;
+            this.avatar = '';
             this.image_file = '';
+            this.$refs.inputImg.value = '';
         }
-    },
-    mounted() {
-        this.loadProfile();
     }
 }
 </script>
+
+<style scoped>
+h1>small{
+    font-size: 16px;
+}
+.drag-enter .loaded-avatar{
+    opacity: .2;
+    transition: all .5s;
+}
+</style>
 

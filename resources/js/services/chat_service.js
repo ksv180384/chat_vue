@@ -1,11 +1,10 @@
 import api from "../helpers/api";
-import store from "../store";
 import {
     joinUserToChatSocket,
     laveUserToChatSocket,
     sendMessageSocket
 } from "./socket_service";
-import {userData} from "../helpers/helpers";
+import { userData, pageLoad } from "../helpers/helpers";
 
 export const loadChatList = async () => {
     return await api.get(`/chat`);
@@ -63,12 +62,5 @@ export const changeSettingsChat = async (chatId, chatData) => {
 export const sendMessage = async (messageData) => {
     const res = await api.post('/chat/messages/send', messageData);
     sendMessageSocket(messageData.chat_room_id, res);
-    return res;
-}
-
-const pageLoad = async (url) => {
-    store.commit('setLoadPage', true);
-    const res = await api.get(url);
-    store.commit('setLoadPage', false);
     return res;
 }

@@ -1,6 +1,6 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
+        <div class="d-flex align-items-center w-100">
             <div class="d-flex align-items-center">
                 <img class="avatar-img me-2" :src="avatar_src" />
                 <router-link class="navbar-brand" to="/profile">
@@ -8,11 +8,8 @@
                 </router-link>
             </div>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                </ul>
-                <form @submit.prevent="logout" class="d-flex">
+            <div class="flex-grow-1 text-end pe-2" id="navbarSupportedContent">
+                <form @submit.prevent="logout">
                     <button class="btn btn-outline-success" type="submit">
                         Выход
                     </button>
@@ -37,18 +34,14 @@ export default {
     },
     methods: {
         ...mapMutations('storeUser', ['setUser']),
-        logout(){
-            api.post('logout')
-                .then(() => {
-                    localStorage.removeItem('user_token');
-                    localStorage.removeItem('user');
-                    api.defaults.headers.common['Authorization'] = null;
-                    this.setUser(null);
-                    this.$router.push('/login');
-                })
-                .catch(() => {
+        async logout(){
 
-                });
+            const resLogout = await api.post('logout');
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('user');
+            api.defaults.headers.common['Authorization'] = null;
+            this.setUser(null);
+            this.$router.push('/login');
         }
     }
 }

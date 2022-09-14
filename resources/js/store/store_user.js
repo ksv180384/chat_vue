@@ -1,4 +1,4 @@
-import { userData } from '../helpers/helpers';
+import { setUserDataToLocalStorage, userData } from '../helpers/helpers';
 
 const storeUser = {
     namespaced: true,
@@ -15,10 +15,12 @@ const storeUser = {
     },
     mutations: {
         setUser(state, user){
-            state.id = user.id;
-            state.name = user.name;
-            state.avatar = user.avatar;
-            state.avatar_src = user.avatar_src;
+            state.id = user?.id;
+            state.name = user?.name;
+            state.avatar = user?.avatar;
+            state.avatar_src = user?.avatar_src;
+            // Обновляем данные пользователя в localStorage
+            setUserDataToLocalStorage(state);
         }
     },
     getters: {

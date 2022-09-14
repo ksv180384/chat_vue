@@ -5,7 +5,6 @@ import socket from "../helpers/socket";
 import storeUser from "./store_user";
 import storeChatsList from "./store_chats_list";
 import storeChat from "./store_chat";
-import storeProfile from "./store_profile";
 import storeMessageNotifications from "./store_message_notifications";
 
 const store = createStore({
@@ -36,7 +35,6 @@ const store = createStore({
         storeUser: storeUser,
         storeChatsList: storeChatsList,
         storeChat: storeChat,
-        storeProfile: storeProfile,
         storeMessageNotifications: storeMessageNotifications,
     }
 });
