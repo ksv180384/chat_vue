@@ -47,15 +47,17 @@ io.on("connect", socket => {
                 //console.log('send user code: ' + key);
 
                 socket.to(key).emit('joinUserChat', chatData);
+                io.sockets.sockets.get(key).join(`chat_${chatData.id}`)
                 return true;
             }
         });
     });
 
     // Пользователь отписался от чата
-    socket.on('laveUserChat', function (data) {
-        const chatId = data.chat_id;
-        socket.to(`chat_${chatId}`).emit('laveUserChat', data);
+    socket.on('laveUserChat', function (chatData) {
+        const chatId = chatData.chat_id;
+        socket.to(`chat_${chatId}`).emit('laveUserChat', chatData);
+        socket.leave(`chat_${chatData.chat_id}`)
     });
 
     socket.on('leaveRoom', function(room) {

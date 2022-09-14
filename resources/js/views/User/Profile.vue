@@ -28,6 +28,9 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="form-floating mb-3">
+
+                    </div>
+                    <div class="form-floating mb-3">
                         <input type="text"
                                class="form-control"
                                placeholder="Имя"

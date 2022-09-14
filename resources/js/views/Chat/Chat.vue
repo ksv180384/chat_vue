@@ -16,7 +16,7 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                     <li>
-                        <a :href="`/chat/${chat_id}/settings`" class="dropdown-item">Настройки</a>
+                        <router-link :to="`/chat/${chat_id}/settings`" class="dropdown-item">Настройки</router-link>
                     </li>
                     <li class="dropdown-divider"></li>
                     <li>

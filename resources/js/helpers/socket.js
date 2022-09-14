@@ -31,7 +31,7 @@ socket.on('connect', async () => {
 socket.on('message', function(data){
 
     const chatId = +data.chat_room_id;
-    const selectChat = +store.state.storeChat.chat.id;
+    const selectChat = store.state.storeChat.chat ? +store.state.storeChat.chat.id : null;
 
     console.log('message chat id: ' + chatId);
 
