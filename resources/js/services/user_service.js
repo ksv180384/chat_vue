@@ -1,6 +1,15 @@
 import api from "../helpers/api";
 import { pageLoad } from "../helpers/helpers";
 
+export const login = async (email, password, remember) => {
+    const formParams = { email, password, remember };
+    return await api.post('/login', formParams);
+}
+
+export const registration = async (registrationData) => {
+    return await api.post('/registration', registrationData);
+}
+
 export const saveProfile = async (profileData) => {
     return await api.post('/user/profile/update', profileData);
 }

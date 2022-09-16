@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegistrationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -30,7 +31,8 @@ class AuthController extends Controller
 
         $token = JWTAuth::attempt($credentials, $remember);
         if (!$token) {
-            return response()->json(['message' => 'Неверный логин или пароль'], 401);
+            //return response()->json(['message' => 'Неверный логин или пароль'], 401);
+            throw ValidationException::withMessages(['error_auth' => ['Неверный логин или пароль']]);
         }
 
         return response()->json(array_merge(

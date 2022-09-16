@@ -30,7 +30,7 @@ export default {
             const currentChat = this.chats.find(item => item.id === chatId);
 
             if(
-                currentChat.settings.show_notification_new_message &&
+                currentChat.settings?.show_notification_new_message &&
                 !(this.$route.name === 'Chat' && +this.$route.params.id === chatId)
             ){
                 this.pushNotification(data);

@@ -36,3 +36,18 @@ export const pageLoad = async (url) => {
     store.commit('setLoadPage', false);
     return res;
 }
+
+export const getResponseErrorMessage = (resError) => {
+    const errors = resError?.response?.data?.errors;
+
+    if(!errors){
+        return 'Ошибка';
+    }
+    const firstError = errors[Object.keys(errors)[0]];
+
+    if(!firstError){
+        return 'Ошибка';
+    }
+
+    return firstError[0] ?? 'Ошибка';
+}

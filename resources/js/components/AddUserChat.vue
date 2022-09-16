@@ -12,7 +12,7 @@
         <div class="mb-3">
             <label class="form-label">Найти пользователя</label>
             <input @keyup="search"
-                   v-model="searchUser"
+                   v-model.trim="search_user"
                    type="text"
                    class="form-control"
                    ref="input_search"
@@ -76,7 +76,7 @@ export default {
             showM: false,
             users: [],
             select_user: 0,
-            searchUser: '',
+            search_user: '',
             searchTimeout: null,
             loading: false,
             btn_join_is_disabled: false,
@@ -86,6 +86,12 @@ export default {
         ...mapMutations('storeChatsList', ['pushChats']),
         ...mapMutations('storeChat', ['setUsers']),
         search(){
+            if(this.search_user.length < 2){
+                this.loading = false;
+                this.users = [];
+                return true;
+            }
+
             this.loading = true;
 
             clearTimeout(this.searchTimeout);
@@ -95,14 +101,10 @@ export default {
             }.bind(this), 1000);
         },
         async searchUserRequest(){
-            if(this.searchUser.length < 2){
-                this.loading = false;
-                return true;
-            }
             try {
-                const resSearchUserToChat = await searchUserToChat(this.searchUser);
+                const resSearchUserToChat = await searchUserToChat(this.search_user);
                 this.users = resSearchUserToChat.users;
-                this.pushChats(resSearchUserToChat.chat);
+                //this.pushChats(resSearchUserToChat.chat);
                 this.loading = false;
             }catch (e) {
                 this.loading = false;
@@ -112,7 +114,7 @@ export default {
             try {
                 this.btn_join_is_disabled = true;
                 const resJoinUserToChat =  await joinUserToChat({ chat_room_id: this.chat_id, user_id: this.select_user });
-                this.setUsers(resJoinUserToChat.chat.users);
+                //this.setUsers(resJoinUserToChat.chat.users);
                 this.$refs.closeModalAddUserChat.click();
                 this.btn_join_is_disabled = false;
             }catch (e) {
@@ -127,7 +129,7 @@ export default {
         },
         afterHideModal(){
             this.users = [];
-            this.searchUser = '';
+            this.search_user = '';
             this.select_user = 0;
         }
     },

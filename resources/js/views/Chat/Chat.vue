@@ -84,6 +84,15 @@ export default {
             search_user_text: '',
         }
     },
+    mounted() {
+        this.loadChat();
+    },
+    unmounted() {
+        this.setChat(null);
+        this.setUsers([]);
+        this.setMessages([]);
+        this.setPage(1);
+    },
     computed: {
         ...mapGetters({ user_id: 'storeUser/id' }),
         ...mapGetters(
@@ -126,15 +135,5 @@ export default {
             }
         },
     },
-    mounted() {
-        this.loadChat();
-
-    },
-    unmounted() {
-        this.setChat(null);
-        this.setUsers([]);
-        this.setMessages([]);
-        this.setPage(1);
-    }
 }
 </script>

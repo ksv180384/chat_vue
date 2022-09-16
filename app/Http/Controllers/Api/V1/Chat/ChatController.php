@@ -96,7 +96,6 @@ class ChatController extends BaseController
 
         $chatRoom->users()->attach($request->user_id);
         $chatRoom->load('users');
-        $chatRoom->load('settings');
 
         return new ChatResource($chatRoom);
     }

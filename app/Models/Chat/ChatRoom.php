@@ -25,7 +25,7 @@ class ChatRoom extends Model
             'chat_room_id',
             'user_id',
             'id',
-            'id');
+            'id')->orderBy('users.name');
     }
 
     // Relationships

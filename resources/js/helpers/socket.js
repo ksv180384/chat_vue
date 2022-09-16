@@ -11,15 +11,15 @@ const connectionOptions =  {
 };
 const socket = io("http://localhost:3077", connectionOptions);
 
-
-socket.on('connect', async () => {
+// Событие подключения к серверу
+socket.on('connect', async (data) => {
 
     const chatsList = store.state.storeChatsList.chats;
     if(chatsList.length === 0){
         console.log('no chats');
     }
 
-    // Добавляем доступные комноты
+    // Добавляем доступные комнаты
     chatsList.forEach((el, i) => {
         socket.emit('enterRoom', `chat_${el.id}`);
     });
@@ -28,6 +28,7 @@ socket.on('connect', async () => {
     socket.emit('userConnect', userId);
 });
 
+// Событие получения сообщения, получают все, кто состоит хоть в одном из чатов с отправителем
 socket.on('message', function(data){
 
     const chatId = +data.chat_room_id;
@@ -40,30 +41,63 @@ socket.on('message', function(data){
     }
 });
 
-socket.on('joinUserChat', async (chatData) => {
-    store.commit('storeChatsList/pushChats', chatData);
+// Когда пользователь присоединяется к чату, все пользователи (с которыми но состоит в чате) получают это саобытие
+socket.on('joinUserChat', async (data) => {
+    console.log('join user: ');
+    console.log(data);
+    store.commit('storeChatsList/pushChats', data.chat_data);
+    store.commit('setUsersOnline', data.users_online);
 });
 
+socket.on('addUserChat', async (data) => {
+    console.log('add user: ');
+    console.log(data);
+    const selectChat = store.state.storeChat.chat ? +store.state.storeChat.chat.id : null;
+    if(selectChat === +data.chat_data.id){
+        store.commit('storeChat/setUsers', data.chat_data.users);
+    }
+    store.commit('addUserOnline', data.user_id);
+});
+
+// Когда пользователь отписывается от чата, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('laveUserChat', async (data) => {
-    //console.log('lave chat id: ' + store.state.storeChat.chat.id);
+    console.log('lave chat: ');
+    console.log(data);
     if(+store.state.storeChat.chat.id === +data.chat_id){
         store.commit('storeChat/removeUser', data.user_id);
     }
+    store.commit('removeUserOnline', data.user_id);
 });
 
-socket.on('userConnect', async (usersIds) => {
+// При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
+socket.on('usersOnline', async (usersIds) => {
 
-    console.log('user connect:');
+    console.log('users online:');
     console.log(usersIds);
 
-    //store.commit('addUserOnline', userId);
+    store.commit('setUsersOnline', usersIds);
 });
 
+// Кода пользователь подключился к чату, все пользователи (с которыми но состоит в чате) получают это событие
+socket.on('userConnect', async (userId) => {
+
+    console.log('user connect:');
+    console.log(userId);
+
+    store.commit('addUserOnline', userId);
+});
+
+// Когда пользователю отключается от чата, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('userDisconnect', async (userId) => {
 
     console.log('user disconnect: ' + userId);
 
-    //store.commit('removeUserOnline', userId);
+    store.commit('removeUserOnline', userId);
+});
+
+// Событие срабатывает при потере соединения с сервером
+socket.on('disconnect', async () => {
+    store.commit('setUsersOnline', []);
 });
 
 export default socket;

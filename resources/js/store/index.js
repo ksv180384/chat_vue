@@ -20,6 +20,9 @@ const store = createStore({
         setLoadPage(state, load){
             state.load_page = load;
         },
+        setUsersOnline(state, usersIds){
+            state.users_online = usersIds;
+        },
         addUserOnline(state, userId){
             state.users_online.push(userId);
         },

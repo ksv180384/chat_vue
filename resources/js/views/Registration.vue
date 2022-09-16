@@ -9,7 +9,8 @@
           <div class="">
             <div class="form-group mt-3">
               <label class="form-label">Имя</label>
-              <input type="text"
+              <input ref="input_name"
+                     type="text"
                      class="form-control"
                      placeholder="Введите ваше имя"
                      v-model="form.name"
@@ -80,64 +81,79 @@
 import useVuelidate from '@vuelidate/core';
 import { required, email, minLength, sameAs, helpers } from '@vuelidate/validators';
 import api from "../helpers/api";
+import {mapMutations} from "vuex";
+import {setUserDataToLocalStorage} from "../helpers/helpers";
+import { registration } from '../services/user_service';
 
 export default {
-  setup (){
-    return { v$: useVuelidate() }
-  },
-  data (){
-    return {
-      form: {
-        name: '',
-        email: '',
-        password: '',
-        passwordConfirmation: '',
-      },
-      load_form: false,
-      errors: {
-        required: helpers.withMessage('Поле не должно быть пустым.', required),
-        email: helpers.withMessage('Некорректный email.', email),
-        minLength: (length) => helpers.withMessage(({ $params }) => `Поле должно быть не короче ${$params.min} символов.`, minLength(length)),
-        sameAs: (password) => helpers.withMessage('Неверно подтвержден пароль.', sameAs(password)),
-      }
-    }
-  },
-  validations (){
-    return {
-      form:{
-        name: {
-          required: this.errors.required,
-          minLength: this.errors.minLength(2)
-        },
-        email: { required: this.errors.required, email: this.errors.email },
-        password: { required: this.errors.required, minLength: this.errors.minLength(6) },
-        passwordConfirmation: { sameAs: this.errors.sameAs(this.form.password) }
-      }
-    }
-  },
-  methods: {
-    registration(){
-        this.v$.$touch();
-        if (this.v$.$error) return;
+    setup (){
+        return { v$: useVuelidate() }
+    },
+    data (){
+        return {
+            form: {
+                name: '',
+                email: '',
+                password: '',
+                passwordConfirmation: '',
+            },
+            load_form: false,
+            errors: {
+                required: helpers.withMessage('Поле не должно быть пустым.', required),
+                email: helpers.withMessage('Некорректный email.', email),
+                minLength: (length) => helpers.withMessage(({ $params }) => `Поле должно быть не короче ${$params.min} символов.`, minLength(length)),
+                sameAs: (password) => helpers.withMessage('Неверно подтвержден пароль.', sameAs(password)),
+            }
+        }
+    },
+    mounted() {
+        this.$refs.input_name.focus();
+    },
+    validations (){
+        return {
+            form:{
+                name: {
+                    required: this.errors.required,
+                    minLength: this.errors.minLength(2)
+                },
+                email: { required: this.errors.required, email: this.errors.email },
+                password: { required: this.errors.required, minLength: this.errors.minLength(6) },
+                passwordConfirmation: { sameAs: this.errors.sameAs(this.form.password) }
+            }
+        }
+    },
+    methods: {
+        ...mapMutations('storeUser', ['setUser']),
+        async registration(){
+            this.v$.$touch();
+            if (this.v$.$error) return;
 
-        this.load_form = true;
-        const formParams = { name: this.form.name, email: this.form.email, password: this.form.password, password_confirmation: this.form.passwordConfirmation };
-        api.post('/registration', formParams)
-            .then(res => {
+            this.load_form = true;
+            const formParams = {
+                name: this.form.name,
+                email: this.form.email,
+                password: this.form.password,
+                password_confirmation: this.form.passwordConfirmation
+            };
+
+            try {
+                const resRegistration = await registration(formParams);
+                const accessToken = resRegistration.access_token;
+                const user = resRegistration.user;
+
                 this.load_form = false;
-                localStorage.setItem('user_token', res.access_token);
-                localStorage.setItem('user', JSON.stringify(res.user));
-                this.$store.commit('setUser', res.user)
-                api.defaults.headers.common['Authorization'] = 'Bearer ' + res.access_token;
+                localStorage.setItem('user_token', accessToken);
+                setUserDataToLocalStorage(user);
+                this.setUser(user);
+                api.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
                 this.$router.push('/');
-            }).catch(error => {
-                // handle error
+            }catch (e) {
                 this.password = '';
                 this.load_form = false;
                 this.error = error.response.data.message;
-            });
-    },
-  }
+            }
+        },
+    }
 }
 </script>
 
