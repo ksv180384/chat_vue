@@ -10108,7 +10108,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       showM: false,
       users: [],
       select_user: 0,
-      searchUser: '',
+      search_user: '',
       searchTimeout: null,
       loading: false,
       btn_join_is_disabled: false
@@ -10116,6 +10116,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: _objectSpread(_objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_5__.mapMutations)('storeChatsList', ['pushChats'])), (0,vuex__WEBPACK_IMPORTED_MODULE_5__.mapMutations)('storeChat', ['setUsers'])), {}, {
     search: function search() {
+      if (this.search_user.length < 2) {
+        this.loading = false;
+        this.users = [];
+        return true;
+      }
+
       this.loading = true;
       clearTimeout(this.searchTimeout);
       this.searchTimeout = setTimeout(function () {
@@ -10131,40 +10137,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_this.searchUser.length < 2)) {
-                  _context.next = 3;
-                  break;
-                }
-
-                _this.loading = false;
-                return _context.abrupt("return", true);
+                _context.prev = 0;
+                _context.next = 3;
+                return (0,_services_chat_service__WEBPACK_IMPORTED_MODULE_4__.searchUserToChat)(_this.search_user);
 
               case 3:
-                _context.prev = 3;
-                _context.next = 6;
-                return (0,_services_chat_service__WEBPACK_IMPORTED_MODULE_4__.searchUserToChat)(_this.searchUser);
-
-              case 6:
                 resSearchUserToChat = _context.sent;
-                _this.users = resSearchUserToChat.users;
-
-                _this.pushChats(resSearchUserToChat.chat);
+                _this.users = resSearchUserToChat.users; //this.pushChats(resSearchUserToChat.chat);
 
                 _this.loading = false;
-                _context.next = 15;
+                _context.next = 11;
                 break;
 
-              case 12:
-                _context.prev = 12;
-                _context.t0 = _context["catch"](3);
+              case 8:
+                _context.prev = 8;
+                _context.t0 = _context["catch"](0);
                 _this.loading = false;
 
-              case 15:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[3, 12]]);
+        }, _callee, null, [[0, 8]]);
       }))();
     },
     joinUser: function joinUser() {
@@ -10187,25 +10182,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               case 4:
                 resJoinUserToChat = _context2.sent;
 
-                _this2.setUsers(resJoinUserToChat.chat.users);
-
+                //this.setUsers(resJoinUserToChat.chat.users);
                 _this2.$refs.closeModalAddUserChat.click();
 
                 _this2.btn_join_is_disabled = false;
-                _context2.next = 13;
+                _context2.next = 12;
                 break;
 
-              case 10:
-                _context2.prev = 10;
+              case 9:
+                _context2.prev = 9;
                 _context2.t0 = _context2["catch"](0);
                 _this2.btn_join_is_disabled = false;
 
-              case 13:
+              case 12:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[0, 10]]);
+        }, _callee2, null, [[0, 9]]);
       }))();
     },
     changeSelectUser: function changeSelectUser(id) {
@@ -10216,7 +10210,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     afterHideModal: function afterHideModal() {
       this.users = [];
-      this.searchUser = '';
+      this.search_user = '';
       this.select_user = 0;
     }
   }),
@@ -10647,6 +10641,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @fortawesome/fontawesome-svg-core */ "./node_modules/@fortawesome/fontawesome-svg-core/index.es.js");
 /* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fortawesome/free-solid-svg-icons */ "./node_modules/@fortawesome/free-solid-svg-icons/index.es.js");
 /* harmony import */ var _fortawesome_vue_fontawesome__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fortawesome/vue-fontawesome */ "./node_modules/@fortawesome/vue-fontawesome/index.es.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm-bundler.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 
 
@@ -10664,7 +10666,19 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_0__.library.add(_fort
   },
   components: {
     FontAwesomeIcon: _fortawesome_vue_fontawesome__WEBPACK_IMPORTED_MODULE_1__.FontAwesomeIcon
-  }
+  },
+  computed: _objectSpread({
+    isOnline: function isOnline() {
+      var _this = this;
+
+      console.log('isOnline id: ' + this.user.id + ' ' + (this.users_online.filter(function (item) {
+        return item === _this.user.id;
+      }).length > 0));
+      return this.users_online.filter(function (item) {
+        return item === _this.user.id;
+      }).length > 0;
+    }
+  }, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['users_online']))
 });
 
 /***/ }),
@@ -10802,6 +10816,15 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_1__.library.add(_fort
       search_user_text: ''
     };
   },
+  mounted: function mounted() {
+    this.loadChat();
+  },
+  unmounted: function unmounted() {
+    this.setChat(null);
+    this.setUsers([]);
+    this.setMessages([]);
+    this.setPage(1);
+  },
   computed: _objectSpread(_objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_10__.mapGetters)({
     user_id: 'storeUser/id'
   })), (0,vuex__WEBPACK_IMPORTED_MODULE_10__.mapGetters)('storeChat', ['chat', 'users', 'page'])), {}, {
@@ -10903,16 +10926,7 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_1__.library.add(_fort
         }, _callee3);
       }))();
     }
-  }),
-  mounted: function mounted() {
-    this.loadChat();
-  },
-  unmounted: function unmounted() {
-    this.setChat(null);
-    this.setUsers([]);
-    this.setMessages([]);
-    this.setPage(1);
-  }
+  })
 });
 
 /***/ }),
@@ -11002,14 +11016,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           return $options.search && $options.search.apply($options, arguments);
         }),
         "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-          return $data.searchUser = $event;
+          return $data.search_user = $event;
         }),
         type: "text",
         "class": "form-control",
         ref: "input_search"
       }, null, 544
       /* HYDRATE_EVENTS, NEED_PATCH */
-      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.searchUser]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, " Поиск пользователей... ")) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search_user, void 0, {
+        trim: true
+      }]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, " Поиск пользователей... ")) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
         key: 1
       }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.users, function (user) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_SearchUserItem, {
@@ -11393,43 +11409,47 @@ var _withScopeId = function _withScopeId(n) {
 var _hoisted_1 = {
   "class": "d-flex align-items-start"
 };
-var _hoisted_2 = ["src", "alt"];
-var _hoisted_3 = {
+var _hoisted_2 = {
+  "class": "text-center me-2"
+};
+var _hoisted_3 = ["src", "alt"];
+var _hoisted_4 = {
   "class": "flex-grow-1 ml-3"
 };
-
-var _hoisted_4 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "small"
-  }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
-    "class": "fas fa-circle chat-online"
-  }), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Online")], -1
-  /* HOISTED */
-  );
-});
-
+var _hoisted_5 = {
+  "class": "small"
+};
+var _hoisted_6 = {
+  key: 0,
+  "class": "user-status online"
+};
+var _hoisted_7 = {
+  key: 1,
+  "class": "user-status offline"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_FontAwesomeIcon = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("FontAwesomeIcon");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
     href: "#",
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["list-group-item list-group-item-action border-0", {
-      'creator_chat': $props.is_chat_creator
+    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["user-item list-group-item list-group-item-action border-0", {
+      'creator-chat': $props.is_chat_creator,
+      'user-online': $options.isOnline
     }])
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [$props.is_chat_creator ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_FontAwesomeIcon, {
-    key: 0,
-    icon: "crown"
-  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
     src: $props.user.avatar_src,
-    "class": "user-item-img me-4",
+    "class": "user-item-img",
     alt: $props.user.name,
     width: "40",
     height: "40"
   }, null, 8
   /* PROPS */
-  , _hoisted_2), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.user.name) + " ", 1
+  , _hoisted_3)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [$props.is_chat_creator ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_FontAwesomeIcon, {
+    key: 0,
+    icon: "crown"
+  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.user.name), 1
   /* TEXT */
-  ), _hoisted_4])])], 2
+  )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [$options.isOnline ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_6, "Online")) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_7, "Offline"))])])])], 2
   /* CLASS */
   );
 }
@@ -11753,7 +11773,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.creator_chat[data-v-329923e9]{\r\n        order: -1;\n}\n.creator_chat svg[data-v-329923e9]{\r\n        color: #fcd975;\r\n        position: absolute;\r\n        top: 50%;\r\n        right: 0;\r\n        transform: translate(0, -50%);\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.user-item.creator-chat[data-v-329923e9]{\r\n        order: -1 !important;\n}\n.creator-chat svg[data-v-329923e9]{\r\n        color: #fcd975;\r\n        font-size: 10px;\n}\n.user-status[data-v-329923e9]{\r\n        position: relative;\r\n        padding-left: 18px;\n}\n.user-status[data-v-329923e9]:after{\r\n        content: '';\r\n        display: block;\r\n        width: 10px;\r\n        height: 10px;\r\n        border-radius: 50%;\r\n        position: absolute;\r\n        left: 2px;\r\n        top: 50%;\r\n        transform: translate(0, -50%);\n}\n.user-item[data-v-329923e9]{\r\n        order: 1;\n}\n.user-item.user-online[data-v-329923e9]{\r\n        order: 0;\n}\n.user-status.online[data-v-329923e9]:after{\r\n        background-color: green;\n}\n.user-status.offline[data-v-329923e9]:after{\r\n        background-color: red;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

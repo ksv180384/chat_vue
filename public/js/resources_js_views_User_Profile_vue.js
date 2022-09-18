@@ -10364,6 +10364,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "login": () => (/* binding */ login),
+/* harmony export */   "registration": () => (/* binding */ registration),
 /* harmony export */   "saveProfile": () => (/* binding */ saveProfile),
 /* harmony export */   "loadProfileData": () => (/* binding */ loadProfileData),
 /* harmony export */   "deleteAvatar": () => (/* binding */ deleteAvatar)
@@ -10380,19 +10382,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
-var saveProfile = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(profileData) {
+var login = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(email, password, remember) {
+    var formParams;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
-            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/user/profile/update', profileData);
-
-          case 2:
-            return _context.abrupt("return", _context.sent);
+            formParams = {
+              email: email,
+              password: password,
+              remember: remember
+            };
+            _context.next = 3;
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/login', formParams);
 
           case 3:
+            return _context.abrupt("return", _context.sent);
+
+          case 4:
           case "end":
             return _context.stop();
         }
@@ -10400,26 +10408,23 @@ var saveProfile = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function saveProfile(_x) {
+  return function login(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
-var loadProfileData = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
-    var url, res;
+var registration = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2(registrationData) {
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            url = "/user/profile";
-            _context2.next = 3;
-            return (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_2__.pageLoad)(url);
+            _context2.next = 2;
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/registration', registrationData);
+
+          case 2:
+            return _context2.abrupt("return", _context2.sent);
 
           case 3:
-            res = _context2.sent;
-            return _context2.abrupt("return", res.user);
-
-          case 5:
           case "end":
             return _context2.stop();
         }
@@ -10427,18 +10432,18 @@ var loadProfileData = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function loadProfileData() {
+  return function registration(_x4) {
     return _ref2.apply(this, arguments);
   };
 }();
-var deleteAvatar = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3() {
+var saveProfile = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3(profileData) {
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.next = 2;
-            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"]["delete"]('/user/profile/remove-avatar');
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/user/profile/update', profileData);
 
           case 2:
             return _context3.abrupt("return", _context3.sent);
@@ -10451,8 +10456,59 @@ var deleteAvatar = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function deleteAvatar() {
+  return function saveProfile(_x5) {
     return _ref3.apply(this, arguments);
+  };
+}();
+var loadProfileData = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4() {
+    var url, res;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            url = "/user/profile";
+            _context4.next = 3;
+            return (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_2__.pageLoad)(url);
+
+          case 3:
+            res = _context4.sent;
+            return _context4.abrupt("return", res.user);
+
+          case 5:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function loadProfileData() {
+    return _ref4.apply(this, arguments);
+  };
+}();
+var deleteAvatar = /*#__PURE__*/function () {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee5() {
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
+            return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"]["delete"]('/user/profile/remove-avatar');
+
+          case 2:
+            return _context5.abrupt("return", _context5.sent);
+
+          case 3:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function deleteAvatar() {
+    return _ref5.apply(this, arguments);
   };
 }();
 
