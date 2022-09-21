@@ -32,6 +32,7 @@ import {mapGetters, mapMutations} from "vuex";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {faCaretLeft} from "@fortawesome/free-solid-svg-icons";
+import {responseErrorNote} from "../../helpers/helpers";
 
 library.add(faCaretLeft);
 
@@ -65,11 +66,17 @@ export default {
             const chatId = +this.$route.params.id;
 
             const chatData = { setting: settingField, value: this[settingField] };
-            const resChangeSettingsChat = await changeSettingsChat(chatId, chatData);
 
-            const currentChat = this.chats.find(item => item.id === chatId);
-            currentChat.settings[settingField] = +this[settingField];
-            this.changeChat(currentChat);
+            try {
+                const resChangeSettingsChat = await changeSettingsChat(chatId, chatData);
+
+                const currentChat = this.chats.find(item => item.id === chatId);
+                currentChat.settings[settingField] = +this[settingField];
+                this.changeChat(currentChat);
+            } catch (e) {
+                this[settingField] = !this[settingField];
+                responseErrorNote(e);
+            }
         }
     },
 }

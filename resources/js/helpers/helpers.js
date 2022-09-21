@@ -2,6 +2,8 @@
 import store from "../store";
 import api from "./api";
 
+import { useToast } from "vue-toastification";
+
 export const userData = () => {
     let userData = null;
     try{
@@ -32,17 +34,32 @@ export const setUserDataToLocalStorage = (userData) => {
 
 export const pageLoad = async (url) => {
     store.commit('setLoadPage', true);
-    const res = await api.get(url);
-    store.commit('setLoadPage', false);
+    store.commit('setIsSiteNotWork', false);
+    let res = '';
+    try{
+        res = await api.get(url);
+        store.commit('setLoadPage', false);
+    } catch (e) {
+        res = e;
+        store.commit('setLoadPage', false);
+        store.commit('setIsSiteNotWork', true);
+    }
     return res;
 }
 
 export const getResponseErrorMessage = (resError) => {
+
     const errors = resError?.response?.data?.errors;
+    const message = resError?.response?.data?.message;
+
+    if(!errors && message){
+        return message;
+    }
 
     if(!errors){
         return 'Ошибка';
     }
+
     const firstError = errors[Object.keys(errors)[0]];
 
     if(!firstError){
@@ -50,4 +67,14 @@ export const getResponseErrorMessage = (resError) => {
     }
 
     return firstError[0] ?? 'Ошибка';
+}
+
+export const showNote = (message, type) => {
+    const toast = useToast();
+    toast[type](message);
+}
+
+export const responseErrorNote = (response) => {
+    const errorMessage = getResponseErrorMessage(response);
+    showNote(errorMessage, 'error');
 }

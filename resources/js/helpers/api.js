@@ -43,6 +43,10 @@ api.interceptors.response.use(function (response) {
         router.push('/login');
     }
 
+    if (error.response.status === 404){
+        router.push('/404');
+    }
+
     return Promise.reject(error);
 });
 

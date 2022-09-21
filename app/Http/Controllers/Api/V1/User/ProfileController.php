@@ -23,25 +23,44 @@ class ProfileController extends BaseController
 
     /**
      * Профиль пользователя
-     * @return UserResource
+     * @return UserResource|\Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        $user = $this->userService->getById(Auth::id());
-        return new UserResource($user);
+        try{
+            $user = $this->userService->getById(Auth::id());
+            return new UserResource($user);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
     }
 
+    /**
+     * Обновляем данные пользователя
+     * @param UpdateUserRequest $request
+     * @return UserResource|\Illuminate\Http\JsonResponse
+     */
     public function update(UpdateUserRequest $request)
     {
-        $user = $this->userService->update(Auth::user(), $request);
-
-        return new UserResource($user);
+        try{
+            $user = $this->userService->update(Auth::user(), $request);
+            return new UserResource($user);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
+    /**
+     * Удаляем аватар
+     * @return UserResource|\Illuminate\Http\JsonResponse
+     */
     public function removeAvatar()
     {
-        $user = $this->userService->removeAvatar(Auth::user());
-
-        return new UserResource($user);
+        try{
+            $user = $this->userService->removeAvatar(Auth::user());
+            return new UserResource($user);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 }

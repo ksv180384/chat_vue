@@ -65,7 +65,7 @@ import { mapMutations } from "vuex";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers } from "@vuelidate/validators";
 import api from '../helpers/api';
-import {setUserDataToLocalStorage, getResponseErrorMessage} from '../helpers/helpers';
+import {setUserDataToLocalStorage, getResponseErrorMessage, responseErrorNote} from '../helpers/helpers';
 import { login } from '../services/user_service';
 
 export default {
@@ -118,7 +118,12 @@ export default {
             }catch (e) {
                 this.password = '';
                 this.request = false;
-                this.error_message =  getResponseErrorMessage(e);
+
+                if(e.response.status === 422){
+                    this.error_message =  getResponseErrorMessage(e);
+                }else{
+                    responseErrorNote(e);
+                }
             }
         },
     }

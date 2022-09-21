@@ -66,6 +66,7 @@ import ChatUsersList from "../../components/ChatUsersList";
 import SearchUserChat from "../../components/SearchUserChat";
 import SendMessage from "../../components/SendMessage";
 import {deleteChat, loadChatPage, laveChat} from "../../services/chat_service";
+import {responseErrorNote} from "../../helpers/helpers";
 
 library.add(faCaretLeft);
 
@@ -113,14 +114,22 @@ export default {
         ),
         ...mapMutations('storeChatsList', ['deleteChat']),
         async leave(){
-            await laveChat(this.chat_id);
-            this.deleteChat(this.chat_id);
-            router.push('/');
+            try {
+                await laveChat(this.chat_id);
+                this.deleteChat(this.chat_id);
+                router.push('/');
+            } catch (e) {
+                responseErrorNote(e);
+            }
         },
         async del(){
-            await deleteChat(this.chat_id);
-            this.deleteChat(this.chat_id);
-            router.push('/');
+            try {
+                await deleteChat(this.chat_id);
+                this.deleteChat(this.chat_id);
+                router.push('/');
+            } catch (e) {
+                responseErrorNote(e);
+            }
         },
         async loadChat(){
             const pageData = await loadChatPage(this.chat_id);

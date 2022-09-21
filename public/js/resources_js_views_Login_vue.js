@@ -2212,7 +2212,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _context.t0 = _context["catch"](5);
                 _this.password = '';
                 _this.request = false;
-                _this.error_message = (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.getResponseErrorMessage)(_context.t0);
+
+                if (_context.t0.response.status === 422) {
+                  _this.error_message = (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.getResponseErrorMessage)(_context.t0);
+                } else {
+                  (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.responseErrorNote)(_context.t0);
+                }
 
               case 24:
               case "end":

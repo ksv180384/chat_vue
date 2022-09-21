@@ -8,14 +8,11 @@ use App\Http\Requests\Chat\LaveChatRequest;
 use App\Http\Requests\Chat\JoinUserChatRequest;
 use App\Http\Resources\ChatCollection;
 use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessagesCollection;
 use App\Http\Resources\MessagesPaginateResource;
 use App\Models\Chat\ChatRoom;
 use App\Http\Requests\Chat\CreateChatRequest;
 use App\Services\ChatMessageService;
 use App\Services\ChatService;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends BaseController
@@ -43,14 +40,17 @@ class ChatController extends BaseController
 
     /**
      * Список чатов пользователя
-     * @return ChatCollection
+     * @return ChatCollection|\Illuminate\Http\JsonResponse
      */
     public function index()
     {
         $userId = Auth::id();
-        $chats = $this->chatService->getByUserId($userId);
-
-        return new ChatCollection($chats);
+        try {
+            $chats = $this->chatService->getByUserId($userId);
+            return new ChatCollection($chats);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
     }
 
     /**
@@ -69,35 +69,40 @@ class ChatController extends BaseController
                 'messages' => new MessagesPaginateResource($messages),
             ]);
         }catch (\Exception $e){
-            return response()->json(['message' => 'Ошибка'], 404);
+            return response()->json(['message' => $e->getMessage()], 404);
         }
     }
 
     /**
      * Создать чат
      * @param CreateChatRequest $request
-     * @return ChatResource
+     * @return ChatResource|\Illuminate\Http\JsonResponse
      */
     public function store(CreateChatRequest $request)
     {
-        $chat = $this->chatService->create($request->all());
-
-        return new ChatResource($chat);
+        try {
+            $chat = $this->chatService->create($request->all());
+            return new ChatResource($chat);
+        }catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**
      * Добавить пользователя в чат
      * @param JoinUserChatRequest $request
-     * @return ChatResource
+     * @return ChatResource|\Illuminate\Http\JsonResponse
      */
     public function join(JoinUserChatRequest $request)
     {
-        $chatRoom = ChatRoom::findOrFail($request->chat_room_id);
-
-        $chatRoom->users()->attach($request->user_id);
-        $chatRoom->load('users');
-
-        return new ChatResource($chatRoom);
+        try {
+            $chatRoom = ChatRoom::findOrFail($request->chat_room_id);
+            $chatRoom->users()->attach($request->user_id);
+            $chatRoom->load('users');
+            return new ChatResource($chatRoom);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**
@@ -107,12 +112,14 @@ class ChatController extends BaseController
      */
     public function lave(LaveChatRequest $request)
     {
-
         ['id' => $chat_room_id, 'user_id' => $user_id] = $request->validated();
 
-        $this->chatService->lave($chat_room_id, $user_id);
-
-        return response()->json(['message' => 'Вы учпешно покинули чат.']);
+        try {
+            $this->chatService->lave($chat_room_id, $user_id);
+            return response()->json(['message' => 'Вы учпешно покинули чат.']);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**
@@ -122,9 +129,11 @@ class ChatController extends BaseController
      */
     public function delete(DeleteChatRequest $request)
     {
-
-        $this->chatService->delete($request->id);
-
-        return response()->json(['message' => 'Вы учпешно удалили чат.']);
+        try {
+            $this->chatService->delete($request->id);
+            return response()->json(['message' => 'Вы учпешно удалили чат.']);
+        }catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 }

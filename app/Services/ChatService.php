@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\Api\V1\BaseController;
 use App\Models\Chat\ChatUserSettings;
 use App\Models\Chat\ChatRoom;
 use Illuminate\Support\Facades\Auth;
@@ -18,9 +19,14 @@ class ChatService extends Service{
     /**
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function getById($id){
-        $chat = $this->model->one()->find($id);
+        $chat = $this->model->query()->one()->find($id);
+
+        if(!$chat){
+            throw new \Exception(config('app_messages.errors.get_data'));
+        }
 
         return $chat;
     }
@@ -29,29 +35,40 @@ class ChatService extends Service{
      * Добавляем новый чат
      * @param $data
      * @return mixed
+     * @throws \Exception
      */
     public function create($data)
     {
         $userId = Auth::id();
-        $chatRoom = ChatRoom::create($data);
-        $chatRoom->users()->attach($userId);
-        (new ChatUserSettingsService())->initSettings($chatRoom->id, $userId);
-        return $chatRoom;
+
+        try{
+            $chatRoom = ChatRoom::query()->create($data);
+            $chatRoom->users()->attach($userId);
+            (new ChatUserSettingsService())->initSettings($chatRoom->id, $userId);
+            return $chatRoom;
+        }catch (\Exception $e){
+            throw new \Exception(config('app_messages.errors.get_update'));
+        }
     }
 
     /**
      * Получаем чаты в которых состоит пользователь
      * @param $userId
      * @return mixed
+     * @throws \Exception
      */
     public function getByUserId($userId){
-        $chats = $this->model
+        $chats = $this->model->query()
             ->select('chat_rooms.*')
             ->with(['settings'])
             ->list()
             ->leftJoin('chat_room_to_users', 'chat_rooms.id', '=', 'chat_room_to_users.chat_room_id')
             ->orWhere('chat_room_to_users.user_id', $userId)
             ->get();
+
+        if(!$chats){
+            throw new \Exception(config('app_messages.errors.get_data'));
+        }
 
         // Добавляем настройки чата пользователю если их нет
         foreach ($chats as $k => $chat){
@@ -67,18 +84,25 @@ class ChatService extends Service{
      * Удаляем связь пользователя с чатом
      * @param $chatId
      * @param $userId
+     * @return void
+     * @throws \Exception
      */
     public function lave($chatId, $userId)
     {
-        DB::transaction(function () use ($chatId, $userId) {
-            $chatRoom = ChatRoom::findOrFail($chatId);
-            $chatRoom->users()->detach($userId);
-            $chatRoom->settings()->delete();
 
-            if($chatRoom->users()->count() == 0){
-                $chatRoom->delete();
-            }
-        });
+        try {
+            DB::transaction(function () use ($chatId, $userId) {
+                $chatRoom = ChatRoom::query()->findOrFail($chatId);
+                $chatRoom->users()->detach($userId);
+                $chatRoom->settings()->delete();
+
+                if($chatRoom->users()->count() == 0){
+                    $chatRoom->delete();
+                }
+            });
+        } catch (\Exception $e){
+            throw new \Exception(config('app_messages.errors.update_data'));
+        }
     }
 
     /**
@@ -87,13 +111,17 @@ class ChatService extends Service{
      */
     public function delete($chatId)
     {
-        DB::transaction(function () use ($chatId) {
-            $chatRoom = ChatRoom::findOrFail($chatId);
-            $chatRoom->users()->detach();
-            $chatRoom->settings()->delete();
-            $chatRoom->messages()->delete();
+        try {
+            DB::transaction(function () use ($chatId) {
+                $chatRoom = ChatRoom::query()->findOrFail($chatId);
+                $chatRoom->users()->detach();
+                $chatRoom->settings()->delete();
+                $chatRoom->messages()->delete();
 
-            $chatRoom->delete();
-        });
+                $chatRoom->delete();
+            });
+        }catch (\Exception $e){
+            throw new \Exception(config('app_messages.errors.update_data'));
+        }
     }
 }

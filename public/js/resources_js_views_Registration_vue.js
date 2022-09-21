@@ -2159,7 +2159,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sameAs: function sameAs(password) {
           return _vuelidate_validators__WEBPACK_IMPORTED_MODULE_5__.helpers.withMessage('Неверно подтвержден пароль.', (0,_vuelidate_validators__WEBPACK_IMPORTED_MODULE_5__.sameAs)(password));
         }
-      }
+      },
+      error: ''
     };
   },
   mounted: function mounted() {
@@ -2221,6 +2222,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 resRegistration = _context.sent;
                 accessToken = resRegistration.access_token;
                 user = resRegistration.user;
+                _this.error = '';
                 _this.load_form = false;
                 localStorage.setItem('user_token', accessToken);
                 (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.setUserDataToLocalStorage)(user);
@@ -2231,22 +2233,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _this.$router.push('/');
 
-                _context.next = 24;
+                _context.next = 26;
                 break;
 
-              case 19:
-                _context.prev = 19;
+              case 20:
+                _context.prev = 20;
                 _context.t0 = _context["catch"](5);
                 _this.password = '';
+                _this.error = '';
                 _this.load_form = false;
-                _this.error = error.response.data.message;
 
-              case 24:
+                if (_context.t0.response.status === 422) {
+                  _this.error = (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.getResponseErrorMessage)(_context.t0);
+                } else {
+                  (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.responseErrorNote)(_context.t0);
+                }
+
+              case 26:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[5, 19]]);
+        }, _callee, null, [[5, 20]]);
       }))();
     }
   })
@@ -2352,6 +2360,8 @@ var _hoisted_20 = {
 var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Авторизоваться");
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _$setup$v$$form$email2;
+
   var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
@@ -2389,7 +2399,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.email]]), $setup.v$.form.email.$error ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.v$.form.email.$errors[0].$message), 1
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.email]]), $setup.v$.form.email.$error || $data.error ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$setup$v$$form$email2 = $setup.v$.form.email.$errors[0]) === null || _$setup$v$$form$email2 === void 0 ? void 0 : _$setup$v$$form$email2.$message) || $data.error), 1
   /* TEXT */
   )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "password",

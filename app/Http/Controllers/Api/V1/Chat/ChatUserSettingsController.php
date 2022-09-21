@@ -34,7 +34,7 @@ class ChatUserSettingsController  extends BaseController
             $settings = $this->chatUserSettingsService->getSettings($chatId, Auth::id());
             return response()->json(['settings' => $settings]);
         }catch (\Exception $e){
-            return response()->json(['message' => 'Ошибка'], 404);
+            return response()->json(['message' => $e->getMessage()], 404);
         }
 
     }
@@ -51,10 +51,9 @@ class ChatUserSettingsController  extends BaseController
 
         try {
             $this->chatUserSettingsService->updateSetting($chatId, $arRequest);
+            return response()->json(['message' => 'Настройка чата успешно изменена.']);
         }catch (\Exception $e){
-            return response()->json(['message' => 'Ошибка'], 404);
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-        return response()->json(['message' => 'Настройка чата успешно изменена.']);
     }
 }

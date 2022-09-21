@@ -39,20 +39,27 @@ class MessageController extends BaseController
      */
     public function messagesByChatId($id)
     {
-        $messages = $this->chatMessageService->messagesByChatId($id);
-        return response()->json(new MessagesPaginateResource($messages));
+        try{
+            $messages = $this->chatMessageService->messagesByChatId($id);
+            return response()->json(new MessagesPaginateResource($messages));
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**
      * Добавляем сообщение в чат
      * @param CreateMessageRequest $request
-     * @return MessageResource
+     * @return MessageResource|\Illuminate\Http\JsonResponse
      */
     public function store(CreateMessageRequest $request)
     {
-        $message = $this->chatMessageService->create($request->validated());
-
-        return new MessageResource($message);
+        try {
+            $message = $this->chatMessageService->create($request->validated());
+            return new MessageResource($message);
+        } catch (\Exception $e){
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**
@@ -65,7 +72,7 @@ class MessageController extends BaseController
         try {
             $this->chatMessageService->read($request->user_id, $request->chat_room_id);
         }catch (\Exception $e){
-            return response()->json(['message' => 'Ошибка'], 404);
+            return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 }

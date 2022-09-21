@@ -60,6 +60,7 @@ import WModal from "./modal/WModal";
 import SearchUserItem from "./SearchUserItem";
 
 import { joinUserToChat, searchUserToChat } from "../services/chat_service";
+import { responseErrorNote } from "../helpers/helpers";
 
 
 export default {
@@ -104,10 +105,11 @@ export default {
             try {
                 const resSearchUserToChat = await searchUserToChat(this.search_user);
                 this.users = resSearchUserToChat.users;
-                //this.pushChats(resSearchUserToChat.chat);
                 this.loading = false;
             }catch (e) {
+                this.users = [];
                 this.loading = false;
+                responseErrorNote(e);
             }
         },
         async joinUser(){
@@ -119,6 +121,8 @@ export default {
                 this.btn_join_is_disabled = false;
             }catch (e) {
                 this.btn_join_is_disabled = false;
+                this.select_user = 0;
+                responseErrorNote(e);
             }
         },
         changeSelectUser(id){

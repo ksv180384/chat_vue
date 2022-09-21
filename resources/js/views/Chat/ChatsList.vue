@@ -35,7 +35,13 @@
             >
                 Сохранить
             </button>
-            <button ref="closeModalCreateChat" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button ref="closeModalCreateChat"
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+            >
+                Отмена
+            </button>
         </template>
     </WModal>
 </template>
@@ -50,6 +56,7 @@ import BtnModal from "../../components/modal/BtnModal";
 import WModal from "../../components/modal/WModal";
 import ChatItem from "../../components/ChatItem";
 import { addChat } from "../../services/chat_service";
+import {responseErrorNote} from "../../helpers/helpers";
 
 
 export default {
@@ -68,8 +75,6 @@ export default {
         ...mapGetters('storeChatsList', ['chats']),
     },
     mounted() {
-        //this.loadChats();
-
         // bootstrap модальное окно
         this.modalAddUserChat = document.getElementById('modalCreateChat');
         this.modalAddUserChat.addEventListener('shown.bs.modal', this.focusAfterShownModal);
@@ -89,11 +94,17 @@ export default {
         ...mapMutations('storeChatsList', ['pushChats']),
         async saveChat(){
             this.btn_add_chat_is_disabled = true;
-            const resAddChat = await addChat({ title: this.chatName });
-            this.pushChats(resAddChat.chat);
-            this.btn_add_chat_is_disabled = false;
-            this.$refs.closeModalCreateChat.click();
-            router.push(`/chat/${resAddChat.chat.id}`);
+
+            try {
+                const resAddChat = await addChat({ title: this.chatName });
+                this.pushChats(resAddChat.chat);
+                this.btn_add_chat_is_disabled = false;
+                this.$refs.closeModalCreateChat.click();
+                router.push(`/chat/${resAddChat.chat.id}`);
+            }catch (e) {
+                this.btn_add_chat_is_disabled = false;
+                responseErrorNote(e);
+            }
         },
         focusAfterShownModal(){
             this.$refs.input_title_chat.focus();

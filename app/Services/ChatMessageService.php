@@ -19,31 +19,41 @@ class ChatMessageService extends Service{
 
     /**
      * Получаем сообщения чата
-     * @param int $chatId
+     * @param $chatId
      * @return mixed
+     * @throws \Exception
      */
     public function messagesByChatId($chatId)
     {
-        $messages = $this->model
-            ->list()
-            ->where('chat_room_id', $chatId)
-            ->orderByDesc('created_at')
-            ->simplePaginate(self::PAGINATE_COUNT);
+        try{
+            $messages = $this->model->query()
+                ->list()
+                ->where('chat_room_id', $chatId)
+                ->orderByDesc('created_at')
+                ->simplePaginate(self::PAGINATE_COUNT);
 
-        return $messages;
+            return $messages;
+        } catch (\Exception $e){
+            throw new \Exception(config('app_messages.errors.get_data'));
+        }
     }
 
     /**
      * Добавляем новое сообщение
-     * @param array $messageData
+     * @param $messageData
      * @return mixed
+     * @throws \Exception
      */
     public function create($messageData)
     {
-        $message = $this->model->create($messageData);
-        $message = ChatMessage::list()->find($message->id);
+        try{
+            $message = $this->model->query()->create($messageData);
+            $message = ChatMessage::query()->list()->find($message->id);
 
-        return $message;
+            return $message;
+        } catch (\Exception $e){
+            throw new \Exception(config('app_messages.errors.get_data'));
+        }
     }
 
     /**
@@ -53,6 +63,10 @@ class ChatMessageService extends Service{
      */
     public function read($userId, $chatId)
     {
-        ChatRoomToUser::where('user_id', $userId)->where('chat_room_id', $chatId)->updateTimestamp();
+        try{
+            ChatRoomToUser::query()->where('user_id', $userId)->where('chat_room_id', $chatId)->updateTimestamp();
+        } catch (\Exception $e){
+            throw new \Exception(config('app_messages.errors.update_data'));
+        }
     }
 }

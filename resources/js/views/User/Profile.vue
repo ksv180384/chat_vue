@@ -52,6 +52,7 @@ import { faCaretLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import { loadProfileData, saveProfile, deleteAvatar } from '../../services/user_service';
+import {responseErrorNote} from "../../helpers/helpers";
 
 library.add(faCaretLeft, faTrash);
 
@@ -102,9 +103,13 @@ export default {
             formData.append('name', this.name);
             formData.append('avatar', this.image_file);
 
-            const resSaveProfile = await saveProfile(formData);
-            this.setUser(resSaveProfile.user);
-            this.image_file = '';
+            try {
+                const resSaveProfile = await saveProfile(formData);
+                this.setUser(resSaveProfile.user);
+                this.image_file = '';
+            } catch (e) {
+                responseErrorNote(e);
+            }
         },
         dragEnter(){
             this.avatar_drag_enter = true;
@@ -116,11 +121,16 @@ export default {
             this.avatar_drag_enter = false;
         },
         async removeAvatar(){
-            const resDeleteAvatar = await deleteAvatar();
-            this.setUser(resDeleteAvatar.user);
-            this.avatar = '';
-            this.image_file = '';
-            this.$refs.inputImg.value = '';
+
+            try{
+                const resDeleteAvatar = await deleteAvatar();
+                this.setUser(resDeleteAvatar.user);
+                this.avatar = '';
+                this.image_file = '';
+                this.$refs.inputImg.value = '';
+            } catch (e) {
+                responseErrorNote(e);
+            }
         }
     }
 }

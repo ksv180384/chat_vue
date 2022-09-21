@@ -28,8 +28,8 @@
                      v-model="form.email"
                      @blur="v$.form.email.$touch"
               />
-              <div v-if="v$.form.email.$error" class="form-text text-danger">
-                {{ v$.form.email.$errors[0].$message }}
+              <div v-if="v$.form.email.$error || error" class="form-text text-danger">
+                {{ v$.form.email.$errors[0]?.$message || error }}
               </div>
             </div>
             <div class="form-group mt-3">
@@ -82,7 +82,7 @@ import useVuelidate from '@vuelidate/core';
 import { required, email, minLength, sameAs, helpers } from '@vuelidate/validators';
 import api from "../helpers/api";
 import {mapMutations} from "vuex";
-import {setUserDataToLocalStorage} from "../helpers/helpers";
+import {getResponseErrorMessage, responseErrorNote, setUserDataToLocalStorage} from "../helpers/helpers";
 import { registration } from '../services/user_service';
 
 export default {
@@ -103,7 +103,8 @@ export default {
                 email: helpers.withMessage('Некорректный email.', email),
                 minLength: (length) => helpers.withMessage(({ $params }) => `Поле должно быть не короче ${$params.min} символов.`, minLength(length)),
                 sameAs: (password) => helpers.withMessage('Неверно подтвержден пароль.', sameAs(password)),
-            }
+            },
+            error: '',
         }
     },
     mounted() {
@@ -141,6 +142,7 @@ export default {
                 const accessToken = resRegistration.access_token;
                 const user = resRegistration.user;
 
+                this.error = '';
                 this.load_form = false;
                 localStorage.setItem('user_token', accessToken);
                 setUserDataToLocalStorage(user);
@@ -149,8 +151,14 @@ export default {
                 this.$router.push('/');
             }catch (e) {
                 this.password = '';
+                this.error = '';
                 this.load_form = false;
-                this.error = error.response.data.message;
+
+                if(e.response.status === 422){
+                    this.error =  getResponseErrorMessage(e);
+                }else{
+                    responseErrorNote(e);
+                }
             }
         },
     }
