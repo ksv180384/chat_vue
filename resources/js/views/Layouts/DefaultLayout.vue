@@ -35,7 +35,7 @@ export default {
     },
     methods: {
         ...mapMutations('storeChatsList', ['setChats']),
-        ...mapMutations(['setIsSiteNotWork']),
+        ...mapMutations(['setIsSiteNotWork', 'setIsSocketConnect']),
         async loadChats(){
             try {
                 const resChatsList = await loadChatListPage();
@@ -45,6 +45,10 @@ export default {
 
                 this.socket.io.opts.query = { user_id: this.current_user_id};
                 this.socket.connect();
+                if(!this.socket.connected){
+                    this.setIsSocketConnect(false);
+                }
+
             }catch(e){
                 this.setIsSiteNotWork(true);
                 console.log('error load chats');
