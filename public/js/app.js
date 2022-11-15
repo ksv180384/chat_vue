@@ -20385,11 +20385,13 @@ socket.on('addUserChat', /*#__PURE__*/function () {
 
 socket.on('laveUserChat', /*#__PURE__*/function () {
   var _ref4 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4(data) {
+    var _store$state$storeCha;
+
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            if (+_store__WEBPACK_IMPORTED_MODULE_2__["default"].state.storeChat.chat.id === +data.chat_id) {
+            if (+((_store$state$storeCha = _store__WEBPACK_IMPORTED_MODULE_2__["default"].state.storeChat.chat) === null || _store$state$storeCha === void 0 ? void 0 : _store$state$storeCha.id) === +data.chat_id) {
               _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('storeChat/removeUser', data.user_id);
             }
 

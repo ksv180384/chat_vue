@@ -37,7 +37,7 @@ import {responseErrorNote} from "../../helpers/helpers";
 library.add(faCaretLeft);
 
 export default {
-    name: "ChatUserOptions",
+    name: "ChatUserSettings",
     components: {
         FontAwesomeIcon,
     },

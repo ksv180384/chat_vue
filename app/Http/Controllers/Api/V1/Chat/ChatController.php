@@ -98,7 +98,7 @@ class ChatController extends BaseController
         try {
             $chatRoom = ChatRoom::findOrFail($request->chat_room_id);
             $chatRoom->users()->attach($request->user_id);
-            $chatRoom->load('users');
+            $chatRoom->load('users', 'settings');
             return new ChatResource($chatRoom);
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], 422);

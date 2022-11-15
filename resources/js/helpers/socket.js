@@ -56,7 +56,7 @@ socket.on('addUserChat', async (data) => {
 
 // Когда пользователь отписывается от чата, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('laveUserChat', async (data) => {
-    if(+store.state.storeChat.chat.id === +data.chat_id){
+    if(+store.state.storeChat.chat?.id === +data.chat_id){
         store.commit('storeChat/removeUser', data.user_id);
     }
     store.commit('removeUserOnline', data.user_id);
