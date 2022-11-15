@@ -95,7 +95,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('storeUser', ['setUser']),
+        ...mapMutations('storeUser', ['setUser', 'setAuthRemember']),
         async login(){
             this.error_message = '';
 
@@ -105,7 +105,7 @@ export default {
             this.request = true;
 
             try {
-                const resLogin = await login(this.email, this.password, this.remember);
+                const resLogin = await login(this.email, this.password);
                 const accessToken = resLogin.access_token;
                 const user = resLogin.user;
 
@@ -113,6 +113,10 @@ export default {
                 localStorage.setItem('user_token', accessToken);
                 setUserDataToLocalStorage(user);
                 this.setUser(user);
+                if(this.remember){
+                    this.setAuthRemember(true);
+                    localStorage.setItem('remember', true);
+                }
                 api.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
                 this.$router.push('/');
             }catch (e) {

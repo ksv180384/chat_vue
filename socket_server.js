@@ -13,7 +13,9 @@ io.on("connect", socket => {
     // Сразу после подключения к сокет серверу, пользователь отправляет это событие
     socket.on('userConnect', (userId) => {
 
-        allUsers[socket.id] = { user_id: userId , rooms: socket.rooms };
+        allUsers[socket.id] = { user_id: +userId , rooms: socket.rooms };
+        console.log(`user id: ${userId}`);
+        console.log(Object.keys(allUsers).length);
 
         // Получаем пользователей из всех комнат к которым подключен текущий пользователь
         const usersSocketIdByAllRooms = getUsersSocketIdByAllRooms(socket);
@@ -78,23 +80,41 @@ io.on("connect", socket => {
 
     // Событие потери соединения пользователем
     socket.on('disconnect', function() {
-        console.log('user disconnect: ' + socket.handshake.query.user_id);
+        const disconnectUserId = +socket.handshake.query.user_id;
 
-        const userId = +allUsers[socket.id].user_id;
-        const userRooms = allUsers[socket.id].rooms;
+        console.log(`user disconnect: ${disconnectUserId}`);
 
-        delete allUsers[socket.id];
+        //const userId = +allUsers[socket.id]?.user_id;
+        console.log(allUsers);
+        const socketId = Object.keys(allUsers).find((key) => allUsers[key].user_id === disconnectUserId);
+
+        if(!socketId){
+            console.log(`Ошибка отключения пользователя ID: ${disconnectUserId}`);
+            return true;
+        }
+
+        console.log('DISCONNECTED socket id:' + socketId);
+        console.log('DISCONNECTED user id:' + disconnectUserId);
+
+        // if(!userId){
+        //     console.log('ERROR DISCONNECTED socket id:' + socket.id);
+        //     return true;
+        // }
+
+        const userRooms = allUsers[socketId].rooms;
+
+        delete allUsers[socketId];
 
         // Если пользователь не подключится снова, то генерируем событие отключения пользователя
         setTimeout(() => {
 
             // Считаем количество подключений пользователя
-            const countSocketsUser = Object.keys(allUsers).filter(item => allUsers[item].user_id === userId).length;
+            const countSocketsUser = Object.keys(allUsers).filter(item => allUsers[item].user_id === disconnectUserId).length;
 
             // Если подключений пользователя нет, то генерируем событие отелючение пользователя
             if(!countSocketsUser){
                 userRooms.forEach((item) => {
-                    socket.to(item).emit('userDisconnect', userId);
+                    socket.to(item).emit('userDisconnect', disconnectUserId);
                 });
             }
         }, 5000);

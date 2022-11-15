@@ -4,7 +4,8 @@ import {
     laveUserToChatSocket,
     sendMessageSocket
 } from "./socket_service";
-import { userData, pageLoad } from "../helpers/helpers";
+import { userData } from "../helpers/helpers";
+import { pageLoad } from './service';
 
 export const loadChatList = async () => {
     return await api.get(`/chat`);

@@ -27,9 +27,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only(['email', 'password']);
-        $remember = $request->remember == 'true';
 
-        $token = JWTAuth::attempt($credentials, $remember);
+        $token = JWTAuth::attempt($credentials);
         if (!$token) {
             //return response()->json(['message' => 'Неверный логин или пароль'], 401);
             throw ValidationException::withMessages(['error_auth' => ['Неверный логин или пароль']]);

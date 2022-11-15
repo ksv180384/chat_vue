@@ -52,7 +52,7 @@ export default {
     },
     computed: {
         isOnline(){
-            console.log('isOnline id: ' + this.user.id + ' ' + (this.users_online.filter(item => item === this.user.id).length > 0));
+            //console.log('isOnline id: ' + this.user.id + ' ' + (this.users_online.filter(item => item === this.user.id).length > 0));
             return this.users_online.filter(item => item === this.user.id).length > 0;
         },
         ...mapGetters(['users_online']),

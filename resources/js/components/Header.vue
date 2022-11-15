@@ -39,6 +39,7 @@ export default {
             const resLogout = await api.post('logout');
             localStorage.removeItem('user_token');
             localStorage.removeItem('user');
+            localStorage.removeItem('remember');
             api.defaults.headers.common['Authorization'] = null;
             this.setUser(null);
             this.$router.push('/login');

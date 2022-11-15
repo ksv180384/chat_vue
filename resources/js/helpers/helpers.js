@@ -32,19 +32,36 @@ export const setUserDataToLocalStorage = (userData) => {
     }
 }
 
-export const pageLoad = async (url) => {
-    store.commit('setLoadPage', true);
-    store.commit('setIsSiteNotWork', false);
-    let res = '';
-    try{
-        res = await api.get(url);
-        store.commit('setLoadPage', false);
-    } catch (e) {
-        res = e;
-        store.commit('setLoadPage', false);
-        store.commit('setIsSiteNotWork', true);
-    }
-    return res;
+// export const pageLoad = async (url) => {
+//     store.commit('setLoadPage', true);
+//     store.commit('setIsSiteNotWork', false);
+//     let res = '';
+//     try{
+//         res = await api.get(url);
+//         store.commit('setLoadPage', false);
+//     } catch (e) {
+//         store.commit('setLoadPage', false);
+//         store.commit('setIsSiteNotWork', true);
+//     }
+//     return res;
+// }
+
+export const getAuthToken = () => {
+    const t = localStorage.getItem('user_token');
+    return t ? t : '';
+}
+
+export const removeUserData = (store) => {
+    store.commit('storeUser/setUser', null);
+    store.commit('storeUser/setAuthRemember', false);
+    //store.getters.socket.disconnected();
+    removeLocalStorageUserData();
+}
+
+export const removeLocalStorageUserData = () => {
+    localStorage.removeItem('user_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('remember');
 }
 
 export const getResponseErrorMessage = (resError) => {

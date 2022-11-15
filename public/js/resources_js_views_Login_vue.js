@@ -2163,7 +2163,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     };
   },
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_6__.mapMutations)('storeUser', ['setUser'])), {}, {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_6__.mapMutations)('storeUser', ['setUser', 'setAuthRemember'])), {}, {
     login: function login() {
       var _this = this;
 
@@ -2188,7 +2188,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _this.request = true;
                 _context.prev = 5;
                 _context.next = 8;
-                return (0,_services_user_service__WEBPACK_IMPORTED_MODULE_4__.login)(_this.email, _this.password, _this.remember);
+                return (0,_services_user_service__WEBPACK_IMPORTED_MODULE_4__.login)(_this.email, _this.password);
 
               case 8:
                 resLogin = _context.sent;
@@ -2200,15 +2200,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _this.setUser(user);
 
+                if (_this.remember) {
+                  _this.setAuthRemember(true);
+
+                  localStorage.setItem('remember', true);
+                }
+
                 _helpers_api__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.headers.common.Authorization = 'Bearer ' + accessToken;
 
                 _this.$router.push('/');
 
-                _context.next = 24;
+                _context.next = 25;
                 break;
 
-              case 19:
-                _context.prev = 19;
+              case 20:
+                _context.prev = 20;
                 _context.t0 = _context["catch"](5);
                 _this.password = '';
                 _this.request = false;
@@ -2219,12 +2225,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__.responseErrorNote)(_context.t0);
                 }
 
-              case 24:
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[5, 19]]);
+        }, _callee, null, [[5, 20]]);
       }))();
     }
   })
@@ -2401,7 +2407,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _helpers_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers/api */ "./resources/js/helpers/api.js");
-/* harmony import */ var _helpers_helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helpers/helpers */ "./resources/js/helpers/helpers.js");
+/* harmony import */ var _service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./service */ "./resources/js/services/service.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -2497,7 +2503,7 @@ var loadProfileData = /*#__PURE__*/function () {
           case 0:
             url = "/user/profile";
             _context4.next = 3;
-            return (0,_helpers_helpers__WEBPACK_IMPORTED_MODULE_2__.pageLoad)(url);
+            return (0,_service__WEBPACK_IMPORTED_MODULE_2__.pageLoad)(url);
 
           case 3:
             res = _context4.sent;

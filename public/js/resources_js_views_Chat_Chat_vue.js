@@ -10676,9 +10676,7 @@ _fortawesome_fontawesome_svg_core__WEBPACK_IMPORTED_MODULE_0__.library.add(_fort
     isOnline: function isOnline() {
       var _this = this;
 
-      console.log('isOnline id: ' + this.user.id + ' ' + (this.users_online.filter(function (item) {
-        return item === _this.user.id;
-      }).length > 0));
+      //console.log('isOnline id: ' + this.user.id + ' ' + (this.users_online.filter(item => item === this.user.id).length > 0));
       return this.users_online.filter(function (item) {
         return item === _this.user.id;
       }).length > 0;
