@@ -2,26 +2,41 @@
 
 ## Чат
 
-### Требоваиния
+#### PHP 8.0, composer, Laravel, mysql, node.js, socket.io
 
-- php 7.3
-- nodejs
-- mysql/mariadb
+login: `test@test.ru`  
+password: `password`
 
-### Необходимые действия для запуска
+[Demo](https://site4.ksv-test.ru/).
 
-Создать БД и настроить .env  
-Дообавить в .env `MIX_APP_URL=${APP_URL}`  
-Соответственно `APP_URL` изменить на актуальный
+### Порядок установки
+
+---
+
+#### Если вы используете Docker
+
+#### Необходимо наличие Node.js
+После клонирования репозитория выполните следующие команды:
+- `docker compose up`
+- `node socket_server.js`
+
+---
+
+#### Если вы НЕ используете Docker
+
+#### Необходимая версия PHP 8.0
+- После клонирования репозитория, в корневой папке переименуйте файл `.env.example` в `.env`
+- Измените настройки подключения к БД в `.env`
+- Создать БД `chat_vue`
 
 Выполните следующие команды:
-- `composer update`
+- `composer install`
 - `php artisan key:generate`
 - `php artisan storage:link`
 - `php artisan jwt:secret`
 - `php artisan migrate --seed`
 - `npm install`
 
-### Запуск сокет сервера
+#### Запуск сокет сервера
 - `node socket_server.js`
 

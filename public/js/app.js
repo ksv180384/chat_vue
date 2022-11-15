@@ -20084,7 +20084,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
-  baseURL: "http://localhost" + '/api/v1',
+  baseURL: "http://localhost:8083" + '/api/v1',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'

@@ -35,8 +35,6 @@ socket.on('message', function(data){
     const chatId = +data.chat_room_id;
     const selectChat = store.state.storeChat.chat ? +store.state.storeChat.chat.id : null;
 
-    //console.log('message chat id: ' + chatId);
-
     if(chatId === selectChat){
         store.commit('storeChat/pushMessages', data);
     }
@@ -44,15 +42,11 @@ socket.on('message', function(data){
 
 // Когда пользователь присоединяется к чату, все пользователи (с которыми но состоит в чате) получают это саобытие
 socket.on('joinUserChat', async (data) => {
-    // console.log('join user: ');
-    // console.log(data);
     store.commit('storeChatsList/pushChats', data.chat_data);
     store.commit('setUsersOnline', data.users_online);
 });
 
 socket.on('addUserChat', async (data) => {
-    // console.log('add user: ');
-    // console.log(data);
     const selectChat = store.state.storeChat.chat ? +store.state.storeChat.chat.id : null;
     if(selectChat === +data.chat_data.id){
         store.commit('storeChat/setUsers', data.chat_data.users);
@@ -62,8 +56,6 @@ socket.on('addUserChat', async (data) => {
 
 // Когда пользователь отписывается от чата, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('laveUserChat', async (data) => {
-    // console.log('lave chat: ');
-    // console.log(data);
     if(+store.state.storeChat.chat.id === +data.chat_id){
         store.commit('storeChat/removeUser', data.user_id);
     }
@@ -72,10 +64,6 @@ socket.on('laveUserChat', async (data) => {
 
 // При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
 socket.on('usersOnline', async (usersIds) => {
-
-    //console.log('users online:');
-    //onsole.log(usersIds);
-
     store.commit('setUsersOnline', usersIds);
 });
 

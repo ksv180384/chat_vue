@@ -5,7 +5,7 @@ services:
     container_name: nginx-container
     image: nginx:stable-alpine
     ports:
-      - "8083:80"
+      - "8077:80"
     volumes:
       - ./:/var/www/chat-vue.local
       - ./_docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
@@ -61,15 +61,6 @@ services:
       - PMA_ARBITRARY=1
     networks:
       - chat-vue
-  #node
-#  chat-vue-node:
-#    container_name: node-container
-#    image: node:latest
-#    volumes:
-#      - ./src:/var/www/chat-vue.local
-#    working_dir: /var/www/chat-vue.local
-#    networks:
-#      - chat-vue
 
 networks:
   chat-vue:
