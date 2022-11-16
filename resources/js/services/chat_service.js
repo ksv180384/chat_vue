@@ -1,5 +1,7 @@
 import api from "../helpers/api";
 import {
+    deleteChatToChatSocket,
+    createChatToChatSocket,
     joinUserToChatSocket,
     laveUserToChatSocket,
     sendMessageSocket
@@ -49,11 +51,15 @@ export const searchUserToChat = async (userName) => {
 }
 
 export const deleteChat = async (chatId) => {
-    return await api.post(`/chat/delete`, { id: chatId });
+    const res = await api.post(`/chat/delete`, { id: chatId });
+    deleteChatToChatSocket(chatId);
+    return res;
 }
 
-export const addChat = async (chatData) => {
-    return await api.post('/chat/create', chatData);
+export const addChat = async (chatData, userId) => {
+    const res = await api.post('/chat/create', chatData);
+    createChatToChatSocket(res.chat.id);
+    return res
 }
 
 export const changeSettingsChat = async (chatId, chatData) => {

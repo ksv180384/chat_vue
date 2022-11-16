@@ -20,8 +20,8 @@ class CreateChatMessagesTable extends Migration
             $table->text('message');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('chat_room_id')->references('id')->on('chat_rooms');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('chat_room_id')->references('id')->on('chat_rooms')->onDelete('cascade');
         });
     }
 

@@ -7,6 +7,13 @@ export const sendMessageSocket = (chatId, messageData) => {
     );
 }
 
+export const createChatToChatSocket = (chatId) => {
+    store.state.socket.emit(
+        'enterRoom',
+        `chat_${chatId}`
+    );
+}
+
 export const joinUserToChatSocket = (userId, chatData) => {
     store.state.socket.emit(
         'joinUserChat',
@@ -21,4 +28,10 @@ export const laveUserToChatSocket = (userId, chatId) => {
     );
 }
 
+export const deleteChatToChatSocket = (chatId) => {
+    store.state.socket.emit(
+        'deleteChat',
+        { id: chatId }
+    );
+}
 

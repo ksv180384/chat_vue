@@ -73,6 +73,7 @@ export default {
     },
     computed: {
         ...mapGetters('storeChatsList', ['chats']),
+        ...mapGetters('storeUser', {user_id: 'id'})
     },
     mounted() {
         // bootstrap модальное окно
@@ -96,7 +97,7 @@ export default {
             this.btn_add_chat_is_disabled = true;
 
             try {
-                const resAddChat = await addChat({ title: this.chatName });
+                const resAddChat = await addChat({ title: this.chatName }, this.user_id);
                 this.pushChats(resAddChat.chat);
                 this.btn_add_chat_is_disabled = false;
                 this.$refs.closeModalCreateChat.click();

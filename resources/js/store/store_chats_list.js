@@ -23,6 +23,11 @@ const storeChatsList = {
                 return chatItem;
             });
         },
+        removeChat(state, chatId){
+            state.chats = state.chats.filter((chat) => {
+                return chat.id !== chatId;
+            });
+        },
         setLoad(state, load){
             state.load_chats = load;
         },

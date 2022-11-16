@@ -20272,11 +20272,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/build/esm/index.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store */ "./resources/js/store/index.js");
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./helpers */ "./resources/js/helpers/helpers.js");
+/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../router */ "./resources/js/router/index.js");
+/* harmony import */ var _services_socket_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/socket_service */ "./resources/js/services/socket_service.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
 
 
 
@@ -20409,17 +20413,22 @@ socket.on('laveUserChat', /*#__PURE__*/function () {
   return function (_x4) {
     return _ref4.apply(this, arguments);
   };
-}()); // При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
+}()); // Когда удаляют чат, пользователи состоящие в чате получаю это событие
 
-socket.on('usersOnline', /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee5(usersIds) {
+socket.on('deleteChat', /*#__PURE__*/function () {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee5(chatId) {
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setUsersOnline', usersIds);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('storeChatsList/removeChat', +chatId);
 
-          case 1:
+            if (_router__WEBPACK_IMPORTED_MODULE_4__["default"].currentRoute.value.path === "/chat/".concat(chatId)) {
+              _router__WEBPACK_IMPORTED_MODULE_4__["default"].push('/');
+            } //laveUserToChatSocket(store.getters["storeUser/id"], chatId);
+
+
+          case 2:
           case "end":
             return _context5.stop();
         }
@@ -20430,17 +20439,15 @@ socket.on('usersOnline', /*#__PURE__*/function () {
   return function (_x5) {
     return _ref5.apply(this, arguments);
   };
-}()); // Кода пользователь подключился к чату, все пользователи (с которыми но состоит в чате) получают это событие
+}()); // При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
 
-socket.on('userConnect', /*#__PURE__*/function () {
-  var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(userId) {
+socket.on('usersOnline', /*#__PURE__*/function () {
+  var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(usersIds) {
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            //console.log('user connect:');
-            //console.log(userId);
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('addUserOnline', userId);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setUsersOnline', usersIds);
 
           case 1:
           case "end":
@@ -20453,16 +20460,15 @@ socket.on('userConnect', /*#__PURE__*/function () {
   return function (_x6) {
     return _ref6.apply(this, arguments);
   };
-}()); // Когда пользователю отключается от чата, все пользователи (с которыми но состоит в чате) получают это событие
+}()); // Кода пользователь подключился к чату, все пользователи (с которыми но состоит в чате) получают это событие
 
-socket.on('userDisconnect', /*#__PURE__*/function () {
+socket.on('userConnect', /*#__PURE__*/function () {
   var _ref7 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee7(userId) {
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
-            //console.log('user disconnect: ' + userId);
-            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('removeUserOnline', userId);
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('addUserOnline', userId);
 
           case 1:
           case "end":
@@ -20475,22 +20481,43 @@ socket.on('userDisconnect', /*#__PURE__*/function () {
   return function (_x7) {
     return _ref7.apply(this, arguments);
   };
+}()); // Когда пользователю отключается от чата, все пользователи (с которыми но состоит в чате) получают это событие
+
+socket.on('userDisconnect', /*#__PURE__*/function () {
+  var _ref8 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee8(userId) {
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('removeUserOnline', userId);
+
+          case 1:
+          case "end":
+            return _context8.stop();
+        }
+      }
+    }, _callee8);
+  }));
+
+  return function (_x8) {
+    return _ref8.apply(this, arguments);
+  };
 }()); // Событие срабатывает при потере соединения с сервером
 
-socket.on('disconnect', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee8() {
-  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee8$(_context8) {
+socket.on('disconnect', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee9() {
+  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee9$(_context9) {
     while (1) {
-      switch (_context8.prev = _context8.next) {
+      switch (_context9.prev = _context9.next) {
         case 0:
           _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setIsSocketConnect', false);
           _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setUsersOnline', []);
 
         case 2:
         case "end":
-          return _context8.stop();
+          return _context9.stop();
       }
     }
-  }, _callee8);
+  }, _callee9);
 })));
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (socket);
 
@@ -20870,6 +20897,7 @@ var searchUserToChat = /*#__PURE__*/function () {
 }();
 var deleteChat = /*#__PURE__*/function () {
   var _ref9 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee9(chatId) {
+    var res;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
@@ -20880,9 +20908,11 @@ var deleteChat = /*#__PURE__*/function () {
             });
 
           case 2:
-            return _context9.abrupt("return", _context9.sent);
+            res = _context9.sent;
+            (0,_socket_service__WEBPACK_IMPORTED_MODULE_2__.deleteChatToChatSocket)(chatId);
+            return _context9.abrupt("return", res);
 
-          case 3:
+          case 5:
           case "end":
             return _context9.stop();
         }
@@ -20895,7 +20925,8 @@ var deleteChat = /*#__PURE__*/function () {
   };
 }();
 var addChat = /*#__PURE__*/function () {
-  var _ref10 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee10(chatData) {
+  var _ref10 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee10(chatData, userId) {
+    var res;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee10$(_context10) {
       while (1) {
         switch (_context10.prev = _context10.next) {
@@ -20904,9 +20935,11 @@ var addChat = /*#__PURE__*/function () {
             return _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].post('/chat/create', chatData);
 
           case 2:
-            return _context10.abrupt("return", _context10.sent);
+            res = _context10.sent;
+            (0,_socket_service__WEBPACK_IMPORTED_MODULE_2__.createChatToChatSocket)(res.chat.id);
+            return _context10.abrupt("return", res);
 
-          case 3:
+          case 5:
           case "end":
             return _context10.stop();
         }
@@ -20914,7 +20947,7 @@ var addChat = /*#__PURE__*/function () {
     }, _callee10);
   }));
 
-  return function addChat(_x9) {
+  return function addChat(_x9, _x10) {
     return _ref10.apply(this, arguments);
   };
 }();
@@ -20938,7 +20971,7 @@ var changeSettingsChat = /*#__PURE__*/function () {
     }, _callee11);
   }));
 
-  return function changeSettingsChat(_x10, _x11) {
+  return function changeSettingsChat(_x11, _x12) {
     return _ref11.apply(this, arguments);
   };
 }();
@@ -20965,7 +20998,7 @@ var sendMessage = /*#__PURE__*/function () {
     }, _callee12);
   }));
 
-  return function sendMessage(_x12) {
+  return function sendMessage(_x13) {
     return _ref12.apply(this, arguments);
   };
 }();
@@ -21044,8 +21077,10 @@ var pageLoad = /*#__PURE__*/function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "sendMessageSocket": () => (/* binding */ sendMessageSocket),
+/* harmony export */   "createChatToChatSocket": () => (/* binding */ createChatToChatSocket),
 /* harmony export */   "joinUserToChatSocket": () => (/* binding */ joinUserToChatSocket),
-/* harmony export */   "laveUserToChatSocket": () => (/* binding */ laveUserToChatSocket)
+/* harmony export */   "laveUserToChatSocket": () => (/* binding */ laveUserToChatSocket),
+/* harmony export */   "deleteChatToChatSocket": () => (/* binding */ deleteChatToChatSocket)
 /* harmony export */ });
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../store */ "./resources/js/store/index.js");
 
@@ -21054,6 +21089,9 @@ var sendMessageSocket = function sendMessageSocket(chatId, messageData) {
     room: "chat_".concat(chatId),
     message: messageData
   });
+};
+var createChatToChatSocket = function createChatToChatSocket(chatId) {
+  _store__WEBPACK_IMPORTED_MODULE_0__["default"].state.socket.emit('enterRoom', "chat_".concat(chatId));
 };
 var joinUserToChatSocket = function joinUserToChatSocket(userId, chatData) {
   _store__WEBPACK_IMPORTED_MODULE_0__["default"].state.socket.emit('joinUserChat', {
@@ -21065,6 +21103,11 @@ var laveUserToChatSocket = function laveUserToChatSocket(userId, chatId) {
   _store__WEBPACK_IMPORTED_MODULE_0__["default"].state.socket.emit('laveUserChat', {
     user_id: userId,
     chat_id: chatId
+  });
+};
+var deleteChatToChatSocket = function deleteChatToChatSocket(chatId) {
+  _store__WEBPACK_IMPORTED_MODULE_0__["default"].state.socket.emit('deleteChat', {
+    id: chatId
   });
 };
 
@@ -21323,6 +21366,11 @@ var storeChatsList = {
       state.chats = state.chats.map(function (chatItem) {
         chatItem = chatItem.id === chat.id ? chat : chatItem;
         return chatItem;
+      });
+    },
+    removeChat: function removeChat(state, chatId) {
+      state.chats = state.chats.filter(function (chat) {
+        return chat.id !== chatId;
       });
     },
     setLoad: function setLoad(state, load) {

@@ -62,6 +62,11 @@ io.on("connect", socket => {
         socket.leave(`chat_${chatData.chat_id}`)
     });
 
+    // Удаление чата
+    socket.on('deleteChat', function (chat) {
+        socket.to(`chat_${chat.id}`).emit('deleteChat', chat.id);
+    });
+
     socket.on('leaveRoom', function(room) {
 
         socket.leave(room);

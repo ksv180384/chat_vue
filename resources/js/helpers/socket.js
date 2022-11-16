@@ -1,6 +1,8 @@
 import {io} from "socket.io-client";
 import store from "../store";
 import {userData} from "./helpers";
+import router from "../router";
+import {laveUserToChatSocket} from "../services/socket_service";
 
 const connectionOptions =  {
     "force new connection" : true,
@@ -62,6 +64,17 @@ socket.on('laveUserChat', async (data) => {
     store.commit('removeUserOnline', data.user_id);
 });
 
+// Когда удаляют чат, пользователи состоящие в чате получаю это событие
+socket.on('deleteChat', async (chatId) => {
+    store.commit('storeChatsList/removeChat', +chatId);
+
+    if(router.currentRoute.value.path === `/chat/${chatId}`){
+        router.push('/');
+    }
+
+    //laveUserToChatSocket(store.getters["storeUser/id"], chatId);
+});
+
 // При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
 socket.on('usersOnline', async (usersIds) => {
     store.commit('setUsersOnline', usersIds);
@@ -69,18 +82,11 @@ socket.on('usersOnline', async (usersIds) => {
 
 // Кода пользователь подключился к чату, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('userConnect', async (userId) => {
-
-    //console.log('user connect:');
-    //console.log(userId);
-
     store.commit('addUserOnline', userId);
 });
 
 // Когда пользователю отключается от чата, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('userDisconnect', async (userId) => {
-
-    //console.log('user disconnect: ' + userId);
-
     store.commit('removeUserOnline', userId);
 });
 

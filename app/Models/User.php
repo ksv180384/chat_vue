@@ -81,6 +81,6 @@ class User extends Authenticatable implements JWTSubject
             ?
             Storage::disk('public')->url('users/' . $this->id . '/' . $this->avatar)
             :
-            'https://bootdey.com/img/Content/avatar/avatar5.png';
+            asset('/img/not_avatar.jpg');
     }
 }

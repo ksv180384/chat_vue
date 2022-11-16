@@ -146,7 +146,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       btn_add_chat_is_disabled: false
     };
   },
-  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_7__.mapGetters)('storeChatsList', ['chats'])),
+  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_7__.mapGetters)('storeChatsList', ['chats'])), (0,vuex__WEBPACK_IMPORTED_MODULE_7__.mapGetters)('storeUser', {
+    user_id: 'id'
+  })),
   mounted: function mounted() {
     // bootstrap модальное окно
     this.modalAddUserChat = document.getElementById('modalCreateChat');
@@ -177,7 +179,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _context.next = 4;
                 return (0,_services_chat_service__WEBPACK_IMPORTED_MODULE_5__.addChat)({
                   title: _this.chatName
-                });
+                }, _this.user_id);
 
               case 4:
                 resAddChat = _context.sent;
