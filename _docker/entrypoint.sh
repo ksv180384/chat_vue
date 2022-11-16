@@ -32,9 +32,13 @@ php artisan view:clear
 php artisan migrate:fresh --seed
 php artisan jwt:secret
 
-echo "Start socket server!"
+echo "Node.js!"
 
-#node socket_server.js
+npm install
+npm run dev
+
+echo "Start socket server!"
+node socket_server.js
 
 #echo "Completed app entrypoint!"
 

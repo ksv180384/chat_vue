@@ -20,10 +20,6 @@ RUN npm install npm@latest -g
 RUN command -v node
 RUN command -v npm
 
-RUN npm install
-
-RUN npm run dev
-
 COPY . /var/www/chat-vue.local
 
 RUN chown -R www-data:www-data /var/www/chat-vue.local

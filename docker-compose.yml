@@ -16,14 +16,14 @@ services:
       - chat-vue
 
   #php
-  chat-vue-php_7_4:
-    container_name: php-7-4-container
+  chat-vue-php_8:
+    container_name: php-8-container
     build:
       context: .
       dockerfile: ./_docker/php/php.dockerfile
     entrypoint: /entrypoint.sh
-    ports:
-      - "9000:9000"
+#    ports:
+#      - "9000:9000"
     volumes:
       - ./:/var/www/chat-vue.local
       - ./_docker/php/php.ini:/usr/local/etc/php/php.ini
