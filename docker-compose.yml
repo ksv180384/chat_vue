@@ -10,7 +10,7 @@ services:
       - ./:/var/www/chat-vue.local
       - ./_docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - chat-vue-php_7_4
+      - chat-vue-php_8
       - chat-vue-mariadb
     networks:
       - chat-vue
