@@ -2,12 +2,17 @@
 
 ## Чат
 
-#### PHP 8.0, composer, Laravel, mysql, node.js, socket.io
+### PHP 8.0, composer, Laravel, mysql, node.js, socket.io
 
+**Пользователь 1**  
 login: `test@test.ru`  
 password: `password`
 
-[Demo](https://site4.ksv-test.ru/).
+**Пользователь 2**  
+login: `test2@test.ru`  
+password: `password`
+
+Демо версии нет
 
 ### Порядок установки
 
@@ -17,8 +22,11 @@ password: `password`
 
 #### Необходимо наличие Node.js
 После клонирования репозитория выполните следующие команды:
+- Убедитесь, что в файле `_docker\entrypoint.sh` тип переноса сток установлен как LF
 - `docker compose up`
 - `node socket_server.js`
+
+Чат доступен по адресу `http://localhost:8077`
 
 ---
 
