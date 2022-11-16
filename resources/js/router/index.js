@@ -28,6 +28,7 @@ const routes = [
         name: 'ChatsList',
         component: () => import('./../views/Chat/ChatsList'),
         meta: {
+            layout: DefaultLayout,
             auth: true
         },
     },
@@ -36,6 +37,7 @@ const routes = [
         name: 'Chat',
         component: () => import('../views/Chat/Chat'),
         meta: {
+            layout: DefaultLayout,
             auth: true
         },
     },
@@ -44,6 +46,7 @@ const routes = [
         name: 'ChatUserSettings',
         component: () => import('./../views/Chat/ChatUserSettings'),
         meta: {
+            layout: DefaultLayout,
             auth: true
         },
     },
@@ -53,6 +56,7 @@ const routes = [
         name: 'Profile',
         component: () => import('./../views/User/Profile'),
         meta: {
+            layout: DefaultLayout,
             auth: true
         },
     },
@@ -82,13 +86,14 @@ router.beforeEach((to, from, next) => {
     }
 
     // Подстановка layout поумолчанию
-    to.meta.layout = setDefaultLayout(to.meta.layout);
+    const layout = to ? to?.meta?.layout : null;
+    to.meta.layout = setDefaultLayout(layout);
 
 });
 
 const setDefaultLayout = (layout) => {
     if(!layout){
-        return DefaultLayout
+        return AuthLayout
     }
 
     return layout;

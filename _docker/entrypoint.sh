@@ -37,8 +37,8 @@ echo "Node.js!"
 npm install
 npm run dev
 
-echo "Start socket server!"
-node socket_server.js
+#echo "Start socket server!"
+#node socket_server.js
 
 #echo "Completed app entrypoint!"
 

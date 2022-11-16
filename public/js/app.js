@@ -19512,12 +19512,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 2:
                 resLogout = _context.sent;
+
+                _this.setUser(null);
+
                 localStorage.removeItem('user_token');
                 localStorage.removeItem('user');
                 localStorage.removeItem('remember');
                 _helpers_api__WEBPACK_IMPORTED_MODULE_1__["default"].defaults.headers.common.Authorization = null;
-
-                _this.setUser(null);
 
                 _this.$router.push('/login');
 
@@ -20540,6 +20541,7 @@ var routes = [{
     return __webpack_require__.e(/*! import() */ "resources_js_views_Chat_ChatsList_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./../views/Chat/ChatsList */ "./resources/js/views/Chat/ChatsList.vue"));
   },
   meta: {
+    layout: _views_Layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_1__["default"],
     auth: true
   }
 }, {
@@ -20549,6 +20551,7 @@ var routes = [{
     return __webpack_require__.e(/*! import() */ "resources_js_views_Chat_Chat_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../views/Chat/Chat */ "./resources/js/views/Chat/Chat.vue"));
   },
   meta: {
+    layout: _views_Layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_1__["default"],
     auth: true
   }
 }, {
@@ -20558,6 +20561,7 @@ var routes = [{
     return __webpack_require__.e(/*! import() */ "resources_js_views_Chat_ChatUserSettings_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./../views/Chat/ChatUserSettings */ "./resources/js/views/Chat/ChatUserSettings.vue"));
   },
   meta: {
+    layout: _views_Layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_1__["default"],
     auth: true
   }
 }, // User
@@ -20568,6 +20572,7 @@ var routes = [{
     return __webpack_require__.e(/*! import() */ "resources_js_views_User_Profile_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./../views/User/Profile */ "./resources/js/views/User/Profile.vue"));
   },
   meta: {
+    layout: _views_Layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_1__["default"],
     auth: true
   }
 }, {
@@ -20584,6 +20589,8 @@ var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.createRouter)({
   routes: routes
 });
 router.beforeEach(function (to, from, next) {
+  var _to$meta;
+
   // Редирект на страницу авторизации
   var userAuth = localStorage.getItem('user_token');
   var requireAuth = to.matched.some(function (record) {
@@ -20597,12 +20604,13 @@ router.beforeEach(function (to, from, next) {
   } // Подстановка layout поумолчанию
 
 
-  to.meta.layout = setDefaultLayout(to.meta.layout);
+  var layout = to ? to === null || to === void 0 ? void 0 : (_to$meta = to.meta) === null || _to$meta === void 0 ? void 0 : _to$meta.layout : null;
+  to.meta.layout = setDefaultLayout(layout);
 });
 
 var setDefaultLayout = function setDefaultLayout(layout) {
   if (!layout) {
-    return _views_Layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_1__["default"];
+    return _views_Layouts_AuthLayout__WEBPACK_IMPORTED_MODULE_0__["default"];
   }
 
   return layout;
