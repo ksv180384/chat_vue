@@ -14,8 +14,6 @@ io.on("connect", socket => {
     socket.on('userConnect', (userId) => {
 
         allUsers[socket.id] = { user_id: +userId , rooms: socket.rooms };
-        console.log(`user id: ${userId}`);
-        console.log(Object.keys(allUsers).length);
 
         // Получаем пользователей из всех комнат к которым подключен текущий пользователь
         const usersSocketIdByAllRooms = getUsersSocketIdByAllRooms(socket);
@@ -29,13 +27,10 @@ io.on("connect", socket => {
         const usersIds = getUsersIdsAllRooms(usersSocketIdByAllRooms, allUsers);
         socket.emit('usersOnline', usersIds);
 
-        //console.log(allUsers);
     });
 
     // Присоединение пользователя к комнате
     socket.on('enterRoom', function(room) {
-
-        //console.log('USER ENTER ROOM: ' + room);
 
         socket.join(room);
     });
@@ -69,8 +64,6 @@ io.on("connect", socket => {
 
     socket.on('leaveRoom', function(room) {
 
-        //console.log('USER LAVE ROOM: ' + room);
-
         socket.leave(room);
     });
 
@@ -84,22 +77,12 @@ io.on("connect", socket => {
 
         console.log(`user disconnect: ${disconnectUserId}`);
 
-        //const userId = +allUsers[socket.id]?.user_id;
-        console.log(allUsers);
         const socketId = Object.keys(allUsers).find((key) => allUsers[key].user_id === disconnectUserId);
 
         if(!socketId){
             console.log(`Ошибка отключения пользователя ID: ${disconnectUserId}`);
             return true;
         }
-
-        console.log('DISCONNECTED socket id:' + socketId);
-        console.log('DISCONNECTED user id:' + disconnectUserId);
-
-        // if(!userId){
-        //     console.log('ERROR DISCONNECTED socket id:' + socket.id);
-        //     return true;
-        // }
 
         const userRooms = allUsers[socketId].rooms;
 
