@@ -2,7 +2,7 @@
 
 ## Чат
 
-### PHP 8.0, composer, Laravel, mysql, node.js, socket.io
+### PHP 8.0, composer, Laravel, mysql, node.js, socket.io, Vue.js
 
 **Пользователь 1**  
 login: `test@test.ru`  
