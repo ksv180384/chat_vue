@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router';
 
 import AuthLayout from "../views/Layouts/AuthLayout";
 import DefaultLayout from "../views/Layouts/DefaultLayout";
+import store from "../store";
 
 const routes = [
     {
@@ -75,6 +76,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+    store.commit('setIsSiteNotWork', false); // сбрасываем отображение страницы с ошибкой
     // Редирект на страницу авторизации
     const userAuth = localStorage.getItem('user_token');
     const requireAuth = to.matched.some(record => record.meta.auth);

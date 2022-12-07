@@ -20521,9 +20521,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm-bundler.js");
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm-bundler.js");
 /* harmony import */ var _views_Layouts_AuthLayout__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../views/Layouts/AuthLayout */ "./resources/js/views/Layouts/AuthLayout.vue");
 /* harmony import */ var _views_Layouts_DefaultLayout__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/Layouts/DefaultLayout */ "./resources/js/views/Layouts/DefaultLayout.vue");
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store */ "./resources/js/store/index.js");
+
 
 
 
@@ -20598,14 +20600,16 @@ var routes = [{
     layout: _views_Layouts_AuthLayout__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
 }];
-var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.createRouter)({
-  history: (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.createWebHistory)(),
+var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createRouter)({
+  history: (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createWebHistory)(),
   routes: routes
 });
 router.beforeEach(function (to, from, next) {
   var _to$meta;
 
+  _store__WEBPACK_IMPORTED_MODULE_2__["default"].commit('setIsSiteNotWork', false); // сбрасываем отображение страницы с ошибкой
   // Редирект на страницу авторизации
+
   var userAuth = localStorage.getItem('user_token');
   var requireAuth = to.matched.some(function (record) {
     return record.meta.auth;
