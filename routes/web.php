@@ -13,5 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::get('/', [\App\Http\Controllers\TestController::class, 'test'])->name('test');
 Route::get('{any}', [\App\Http\Controllers\IndexController::class, 'index'])->where('any', '.*');

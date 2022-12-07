@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Api\V1\BaseController;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends BaseController

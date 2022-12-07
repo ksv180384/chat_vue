@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,13 +67,7 @@ class UserService extends Service
 
             $file = $request->file('avatar');
             if($file){
-                $this->removeAvatar($user);
-                $avatarName = 'avatar_' . uniqid() . '.' . $file->extension();
-                $path = 'users/' . $user->id . '/' . $avatarName;
-                Storage::disk('public')->put($path, file_get_contents($file));
-                $user->update([
-                    'avatar' => $avatarName,
-                ]);
+                $this->updateAvatar($user, $file);
             }
 
             return $user;
@@ -90,13 +85,23 @@ class UserService extends Service
     public function removeAvatar(User $user)
     {
         try {
-            $path = 'users/' . $user->id . '/' . $user->avatar;
-            Storage::disk('public')->delete($path);
+            Storage::disk('public')->delete($user->avatar);
             $user->update(['avatar' => null]);
 
             return $user;
         } catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.delete_data'));
         }
+    }
+
+    private function updateAvatar(User $user, UploadedFile $file)
+    {
+        $this->removeAvatar($user);
+        $path = 'users/' . $user->id;
+        $pathFile = (new UploadFile())->upload($file, $path);
+
+        $user->update([
+            'avatar' => $pathFile,
+        ]);
     }
 }

@@ -79,7 +79,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->avatar
             ?
-            Storage::disk('public')->url('users/' . $this->id . '/' . $this->avatar)
+            Storage::disk('public')->url($this->avatar)
             :
             asset('/img/not_avatar.jpg');
     }

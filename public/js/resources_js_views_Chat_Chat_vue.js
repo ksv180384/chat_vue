@@ -11771,7 +11771,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.chat-users-list[data-v-464a82f3]{\n        height: calc(100vh - 230px);\n        overflow-y: auto;\n        display: flex;\n        flex-direction: column;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.chat-users-list[data-v-464a82f3]{\r\n        height: calc(100vh - 230px);\r\n        overflow-y: auto;\r\n        display: flex;\r\n        flex-direction: column;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -11794,7 +11794,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.user-item.creator-chat[data-v-329923e9]{\n        order: -1 !important;\n}\n.creator-chat svg[data-v-329923e9]{\n        color: #fcd975;\n        font-size: 10px;\n}\n.user-status[data-v-329923e9]{\n        position: relative;\n        padding-left: 18px;\n}\n.user-status[data-v-329923e9]:after{\n        content: '';\n        display: block;\n        width: 10px;\n        height: 10px;\n        border-radius: 50%;\n        position: absolute;\n        left: 2px;\n        top: 50%;\n        transform: translate(0, -50%);\n}\n.user-item[data-v-329923e9]{\n        order: 1;\n}\n.user-item.user-online[data-v-329923e9]{\n        order: 0;\n}\n.user-status.online[data-v-329923e9]:after{\n        background-color: green;\n}\n.user-status.offline[data-v-329923e9]:after{\n        background-color: red;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.user-item.creator-chat[data-v-329923e9]{\r\n        order: -1 !important;\n}\n.creator-chat svg[data-v-329923e9]{\r\n        color: #fcd975;\r\n        font-size: 10px;\n}\n.user-status[data-v-329923e9]{\r\n        position: relative;\r\n        padding-left: 18px;\n}\n.user-status[data-v-329923e9]:after{\r\n        content: '';\r\n        display: block;\r\n        width: 10px;\r\n        height: 10px;\r\n        border-radius: 50%;\r\n        position: absolute;\r\n        left: 2px;\r\n        top: 50%;\r\n        transform: translate(0, -50%);\n}\n.user-item[data-v-329923e9]{\r\n        order: 1;\n}\n.user-item.user-online[data-v-329923e9]{\r\n        order: 0;\n}\n.user-status.online[data-v-329923e9]:after{\r\n        background-color: green;\n}\n.user-status.offline[data-v-329923e9]:after{\r\n        background-color: red;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
