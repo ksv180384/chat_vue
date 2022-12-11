@@ -18,11 +18,7 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        //$this->middleware('auth:api_v1', ['except' => ['login', 'logout', 'registration']]);
-        //$this->middleware('jwt.auth', ['except' => ['login', 'logout', 'registration']]);
-    }
+    public function __construct(){}
 
     public function login(Request $request)
     {
