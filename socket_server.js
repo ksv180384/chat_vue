@@ -4,11 +4,6 @@ const io = require('socket.io')(3077);
 const allUsers = [];
 
 io.on("connect", socket => {
-    console.log('user connect: ' + socket.id);
-    //console.log(socket.adapter.rooms);
-    //console.log(socket.handshake.query.user_id);
-
-    //socket.emit('connect', 'CONNECT');
 
     // Сразу после подключения к сокет серверу, пользователь отправляет это событие
     socket.on('userConnect', (userId) => {

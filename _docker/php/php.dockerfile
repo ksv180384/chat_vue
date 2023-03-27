@@ -20,7 +20,14 @@ RUN npm install npm@latest -g
 RUN command -v node
 RUN command -v npm
 
+# Для смены типа переноса строк
+RUN apt-get update && apt-get install -y dos2unix
+
 COPY . /var/www/chat-vue.local
+
+# Меняем тип переноса строк на LF
+RUN dos2unix /var/www/chat-vue.local/_docker/php/entrypoint.sh && chmod +x /var/www/chat-vue.local/_docker/php/entrypoint.sh
+
 
 RUN chown -R www-data:www-data /var/www/chat-vue.local
 

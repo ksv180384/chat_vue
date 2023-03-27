@@ -14,3 +14,4 @@ yarn-error.log
 package-lock.json
 /.idea
 /.vscode
+/_docker/mysql

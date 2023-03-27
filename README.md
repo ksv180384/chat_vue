@@ -22,9 +22,7 @@ password: `password`
 
 #### Необходимо наличие Node.js
 После клонирования репозитория выполните следующие команды:
-- Убедитесь, что в файле `_docker\entrypoint.sh` тип переноса строк установлен как LF
 - `docker compose up`
-- `node socket_server.js`
 
 Чат доступен по адресу `http://localhost:8077`
 

@@ -21,14 +21,32 @@ services:
     build:
       context: .
       dockerfile: ./_docker/php/php.dockerfile
-    entrypoint: /entrypoint.sh
-#    ports:
-#      - "9000:9000"
+    entrypoint: /var/www/chat-vue.local/_docker/php/entrypoint.sh
     volumes:
-      - ./:/var/www/chat-vue.local
+#      - ./:/var/www/chat-vue.local
       - ./_docker/php/php.ini:/usr/local/etc/php/php.ini
-      - ./_docker/entrypoint.sh:/entrypoint.sh
+#      - ./_docker/php/entrypoint.sh:/var/www/chat-vue.local/entrypoint.sh
     command: php-fpm
+    depends_on:
+      - chat-vue-mariadb
+    networks:
+      - chat-vue
+
+  # node js
+  nodejs:
+    container_name: nodejs
+    build:
+      context: .
+      dockerfile: ./_docker/nodejs/nodejs.dockerfile
+    restart: unless-stopped
+    entrypoint: /var/www/chat-vue.local/_docker/nodejs/entrypoint.sh
+#    volumes:
+#      - ./:/var/www/chat-vue.local
+#      - ./_docker/nodejs/entrypoint.sh:/var/www/chat-vue.local/entrypoint.sh
+    ports:
+      - "3077:3077"
+    depends_on:
+      - chat-vue-php_8
     networks:
       - chat-vue
 
