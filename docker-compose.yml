@@ -7,7 +7,7 @@ services:
     ports:
       - "8077:80"
     volumes:
-      - ./:/var/www/chat-vue.local
+      - ./chat_app:/var/www/chat_vue
       - ./_docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - chat-vue-php_8
@@ -21,27 +21,29 @@ services:
     build:
       context: .
       dockerfile: ./_docker/php/php.dockerfile
-    entrypoint: /var/www/chat-vue.local/_docker/php/entrypoint.sh
+    entrypoint: /var/www/_docker/php/entrypoint.sh
     volumes:
-#      - ./:/var/www/chat-vue.local
+      - ./chat_app/:/var/www/chat_vue
       - ./_docker/php/php.ini:/usr/local/etc/php/php.ini
 #      - ./_docker/php/entrypoint.sh:/var/www/chat-vue.local/entrypoint.sh
     command: php-fpm
     depends_on:
       - chat-vue-mariadb
+    ports:
+      - "8088:8088"
     networks:
       - chat-vue
 
   # node js
-  nodejs:
+  chat-vue-nodejs:
     container_name: nodejs
     build:
       context: .
       dockerfile: ./_docker/nodejs/nodejs.dockerfile
     restart: unless-stopped
-    entrypoint: /var/www/chat-vue.local/_docker/nodejs/entrypoint.sh
-#    volumes:
-#      - ./:/var/www/chat-vue.local
+    entrypoint: /var/www/_docker/nodejs/entrypoint.sh
+    volumes:
+      - ./chat_socket_server:/var/www/chat_socket_server
 #      - ./_docker/nodejs/entrypoint.sh:/var/www/chat-vue.local/entrypoint.sh
     ports:
       - "3077:3077"

@@ -2,9 +2,10 @@
 
 echo "Node.js!"
 
-cd /var/www/chat-vue.local
+cd /var/www/chat_socket_server
 
 npm install
-npm run dev
+#npm run dev
 
-node socket_server.js
+#node socket_server.js
+npm run start:watch

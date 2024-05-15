@@ -6,9 +6,9 @@ echo "Starting app entrypoint..."
 
 set -e
 
-cd /var/www/chat-vue.local
+cd /var/www/chat_vue
 
-cp .env.example.docker .env
+cp .env.example .env
 
 composer install
 
@@ -35,7 +35,8 @@ php artisan jwt:secret
 #echo "Node.js!"
 #
 npm install
-npm run dev
+npm run build
+#npm run dev
 
 echo "Running container commands..."
 exec "$@"

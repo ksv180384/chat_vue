@@ -1,13 +1,14 @@
-FROM node:19.7
+FROM node:20
 
-WORKDIR /var/www/chat-vue.local
+WORKDIR /var/www/chat_socket_server
 
 # Для смены типа переноса строк
 RUN apt-get update && apt-get install -y dos2unix
 
-COPY . /var/www/chat-vue.local
+COPY ./chat_socket_server /var/www/chat_socket_server
+COPY ./_docker/nodejs /var/www/_docker/nodejs
 
 # Меняем тип переноса строк на LF
-RUN dos2unix /var/www/chat-vue.local/_docker/nodejs/entrypoint.sh && chmod +x /var/www/chat-vue.local/_docker/nodejs/entrypoint.sh
+RUN dos2unix /var/www/_docker/nodejs/entrypoint.sh && chmod +x /var/www/_docker/nodejs/entrypoint.sh
 
 ENTRYPOINT ["entrypoint"]

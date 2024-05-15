@@ -1,6 +1,6 @@
-FROM php:8.1.12-fpm
+FROM php:8.2.19-fpm
 
-WORKDIR /var/www/chat-vue.local
+WORKDIR /var/www/chat_vue
 
 RUN apt-get update && apt-get install -y nodejs npm zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql\
@@ -23,13 +23,14 @@ RUN command -v npm
 # Для смены типа переноса строк
 RUN apt-get update && apt-get install -y dos2unix
 
-COPY . /var/www/chat-vue.local
+COPY ./chat_app /var/www/chat_vue
+COPY ./_docker/php /var/www/_docker/php
 
 # Меняем тип переноса строк на LF
-RUN dos2unix /var/www/chat-vue.local/_docker/php/entrypoint.sh && chmod +x /var/www/chat-vue.local/_docker/php/entrypoint.sh
+RUN dos2unix /var/www/_docker/php/entrypoint.sh && chmod +x /var/www/_docker/php/entrypoint.sh
 
 
-RUN chown -R www-data:www-data /var/www/chat-vue.local
+RUN chown -R www-data:www-data /var/www/chat_vue
 
 EXPOSE 9000
 
