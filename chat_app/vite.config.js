@@ -4,9 +4,6 @@ import { defineConfig } from 'vite';
 import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
-    // server: {
-    //     port: 8077
-    // },
     server: {
         host: true,
         port: 8088,
