@@ -66,7 +66,11 @@ class MessageController extends BaseController
      * @param ReadMessagesChat $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function read(ReadMessagesChat $request): JsonResponse
+    /**
+     * @param ReadMessagesChat $request
+     * @return JsonResponse|void
+     */
+    public function read(ReadMessagesChat $request)
     {
         try {
             $this->chatMessageService->read($request->user_id, $request->chat_room_id);
