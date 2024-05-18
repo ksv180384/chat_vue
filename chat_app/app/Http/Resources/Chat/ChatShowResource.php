@@ -19,7 +19,6 @@ class ChatShowResource extends JsonResource
             'id' => $this->id,
             'creator' => $this->creator,
             'title' => $this->title,
-            'users' => ChatUsersResource::collection($this->users),
             'settings' => $this->settings,
         ];
 

@@ -1,26 +1,71 @@
 <template>
-    <div v-if="notifications" class="notification-message-list">
-        <div @click="toPageChat(notification.chat_room_id, notification.id)"
-             v-for="notification of notifications"
-             class="notification-message-item"
-        >
-            <img :src="notification.user.avatar_src" class="avatar"/>
-            <div class="content">
-                <div class="user-name">{{ notification.user.name }}</div>
-                <div class="message">
-                    {{ notification.message }}
-                </div>
-            </div>
-            <div @click.stop="close(notification.id)" class="close">
-                x
-            </div>
+  <div
+    v-if="messageNotificationsStore.notifications"
+    class="notification-message-list"
+  >
+    <div
+      v-for="notification of messageNotificationsStore.notifications"
+      class="notification-message-item"
+      @click="toPageChat(notification.chat_room_id, notification.id)"
+    >
+      <img :src="notification.user.avatar_src" class="avatar"/>
+      <div class="content">
+        <div class="user-name">{{ notification.user.name }}</div>
+        <div class="message">
+          {{ notification.message }}
         </div>
+      </div>
+      <div @click.stop="close(notification.id)" class="close">
+        x
+      </div>
     </div>
+  </div>
 </template>
 
-<script>
-import {mapGetters, mapMutations} from 'vuex';
+<script setup>
+// import {mapGetters, mapMutations} from 'vuex';
+import { onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useRoomsStore } from '@/store/chats_rooms.js';
+import { useSocketStore } from '@/store/socket.js'
+import { useMessageNotificationsStore } from '@/store/message_notifications.js'
 
+const roomsStore = useRoomsStore();
+const socketStore = useSocketStore();
+const messageNotificationsStore = useMessageNotificationsStore();
+const route = useRoute();
+const router = useRouter();
+
+const toPageChat = (chatId, messageId) => {
+  router.push({ name: 'chat', params: { id: chatId } });
+  this.popNotification(messageId);
+}
+
+const close = (messageId) => {
+  this.popNotification(messageId);
+}
+
+onMounted(() => {
+  socketStore.socket.on('message', (data) => {
+
+    const chatId = data.chat_room_id;
+    const currentChat = roomsStore.chats.find(item => item.id === chatId);
+
+    if(
+      currentChat.settings?.show_notification_new_message &&
+      !(route.name === 'chat' && +route.params.id === chatId)
+    ){
+      messageNotificationsStore.pushNotification(data);
+
+      setTimeout(() => {
+        messageNotificationsStore.popNotification(data.id);
+      }, 8000);
+    }
+
+  });
+});
+
+/*
 export default {
     name: 'MessageNotification',
     mounted() {
@@ -60,6 +105,7 @@ export default {
         }
     },
 }
+*/
 </script>
 
 <style scoped>

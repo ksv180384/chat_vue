@@ -7,7 +7,7 @@ import store from '@/store';
 const routes = [
     {
         path: '/login',
-        name: 'Login',
+        name: 'login',
         component: () => import('@/views/Login.vue'),
         meta: {
             layout: AuthLayout,
@@ -16,7 +16,7 @@ const routes = [
     },
     {
         path: '/registration',
-        name: 'Registration',
+        name: 'registration',
         component: () => import('@/views/Registration.vue'),
         meta: {
             layout: AuthLayout,
@@ -26,7 +26,7 @@ const routes = [
     // Chat
     {
         path: '/',
-        name: 'ChatsList',
+        name: 'chats-list',
         component: () => import('@/views/Chat/ChatsList.vue'),
         meta: {
             layout: DefaultLayout,
@@ -35,7 +35,7 @@ const routes = [
     },
     {
         path: '/chat/:id',
-        name: 'Chat',
+        name: 'chat',
         component: () => import('@/views/Chat/Chat.vue'),
         meta: {
             layout: DefaultLayout,
@@ -44,7 +44,7 @@ const routes = [
     },
     {
         path: '/chat/:id/settings',
-        name: 'ChatUserSettings',
+        name: 'chat.user-settings',
         component: () => import('@/views/Chat/ChatUserSettings.vue'),
         meta: {
             layout: DefaultLayout,
@@ -54,7 +54,7 @@ const routes = [
     // User
     {
         path: '/profile',
-        name: 'Profile',
+        name: 'profile',
         component: () => import('@/views/User/Profile.vue'),
         meta: {
             layout: DefaultLayout,

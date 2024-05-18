@@ -6,11 +6,11 @@
              type="text"
              class="form-control"
              placeholder="Введите сообщение"
-             :disabled="send_loading"
+             :disabled="isLoadingSend"
       />
       <button @click.prevent="send"
               class="btn btn-primary"
-              :disabled="send_loading"
+              :disabled="isLoadingSend"
       >
           отправить
       </button>
@@ -18,40 +18,33 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import { useChatMessagesStore } from '@/store/chat_messages.js';
 import { sendMessage } from '@/services/chat_service.js';
-import {mapGetters, mapMutations} from "vuex";
 
-export default {
-    name: "SendMessage",
-    props: {
-        chat_id: {
-            type: Number,
-            required: true,
-        }
-    },
-    data(){
-        return {
-            message: '',
-            send_loading: false
-        }
-    },
-    computed: {
-        ...mapGetters('storeChat', ['load_send']),
-    },
-    methods: {
-        ...mapMutations('storeChat', ['pushMessages', 'setAddMessagesType']),
-        async send(){
-            this.send_loading = true;
-            if(this.message.length < 2){
-                return true;
-            }
-            const messageData = { message: this.message, chat_room_id: this.chat_id };
-            const resSendMessage = await sendMessage(messageData);
-            this.message = '';
-            this.send_loading = false;
-            //this.pushMessages(resSendMessage);
-        }
+const props = defineProps({
+  chatId: { type: Number, default: null },
+});
+
+const chatMessagesStore = useChatMessagesStore();
+const message = ref('');
+const isLoadingSend = ref(false);
+
+const send = async() => {
+
+  isLoadingSend.value = true;
+  try {
+    if(message.value.length < 2){
+      return true;
     }
+    const messageData = { message: message.value, chat_room_id: props.chatId };
+    await sendMessage(messageData);
+    message.value = '';
+  } catch (e) {
+    console.error(e);
+  } finally {
+    isLoadingSend.value = false;
+  }
 }
 </script>

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -82,7 +83,7 @@ class UserService extends Service
      * @return User
      * @throws \Exception
      */
-    public function removeAvatar(User $user)
+    public function removeAvatar(User $user): User
     {
         try {
             Storage::disk('public')->delete($user->avatar);
@@ -92,6 +93,20 @@ class UserService extends Service
         } catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.delete_data'));
         }
+    }
+
+    /**
+     * @param int $chatId
+     * @return Collection
+     */
+    public function getUsersById(int $chatId): Collection
+    {
+        $users = User::query()
+            ->join('chat_room_to_users', 'chat_room_to_users.user_id', '=', 'users.id')
+            ->where('chat_room_to_users.chat_room_id', $chatId)
+            ->get();
+
+        return $users;
     }
 
     private function updateAvatar(User $user, UploadedFile $file)

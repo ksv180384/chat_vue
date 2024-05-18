@@ -64,7 +64,10 @@ class ChatMessageService extends Service{
     public function read($userId, $chatId)
     {
         try{
-            ChatRoomToUser::query()->where('user_id', $userId)->where('chat_room_id', $chatId)->updateTimestamp();
+            ChatRoomToUser::query()
+                ->where('user_id', $userId)
+                ->where('chat_room_id', $chatId)
+                ->updateTimestamp();
         } catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.update_data'));
         }

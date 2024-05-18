@@ -53,7 +53,6 @@ class ChatRoom extends Model
     {
         return $query->with([
             'creator:id,name,avatar',
-            'users:users.id,users.name,users.avatar'
         ]);
     }
 

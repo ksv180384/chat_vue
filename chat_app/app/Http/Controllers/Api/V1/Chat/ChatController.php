@@ -11,10 +11,12 @@ use App\Http\Resources\Chat\ChatResource;
 use App\Http\Resources\Chat\ChatShowResource;
 use App\Http\Resources\Message\MessageResource;
 use App\Http\Resources\PaginationSimpleResource;
+use App\Http\Resources\User\ChatUsersResource;
 use App\Models\Chat\ChatRoom;
 use App\Services\ChatMessageService;
 use App\Services\ChatService;
 use App\Services\SocketServer;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -50,12 +52,13 @@ class ChatController extends BaseController
 
     /**
      * Получаем чаты в которых состоит автоизованный пользователь
+     * @param ChatService $chatService
      * @return JsonResponse
      */
-    public function getUserChats(): JsonResponse
+    public function getUserChats(ChatService $chatService): JsonResponse
     {
         try {
-            $chats = $this->chatService->getByUserId(Auth::id());
+            $chats = $chatService->getByUserId(Auth::id());
             return response()->json(ChatResource::collection($chats));
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
@@ -65,24 +68,36 @@ class ChatController extends BaseController
     /**
      * Получить данные чата
      * @param int $id
+     * @param ChatService $chatService
+     * @param ChatMessageService $chatMessageService
      * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function show(int $id, SocketServer $socketServer): JsonResponse
+    public function show(
+        int $id,
+        ChatService $chatService,
+        ChatMessageService $chatMessageService,
+        UserService $userService,
+        SocketServer $socketServer
+    ): JsonResponse
     {
         try{
-            $chat = $this->chatService->getById($id);
-            $messages = $this->chatMessageService->messagesByChatId($id);
+            $chat = $chatService->getById($id);
+            $chatUsers = $userService->getUsersById($id);
+            $messages = $chatMessageService->messagesByChatId($id);
 
             $socketServer->enterRoom($id);
 
             return response()->json([
                 'chat' => ChatShowResource::make($chat),
+                'users' => ChatUsersResource::collection($chatUsers),
                 'messages' => MessageResource::collection($messages->items()),
                 'pagination' => PaginationSimpleResource::make($messages),
             ]);
         }catch (\Exception $e){
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
         }
     }
 

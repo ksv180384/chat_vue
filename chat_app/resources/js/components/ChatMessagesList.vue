@@ -1,126 +1,139 @@
 <template>
-    <div class="chat-messages p-4" ref="messages_container">
-        <div v-if="messages">
-            <div v-show="next" ref="sentinel" class="text-center py-3">Загрузка...</div>
-            <div ref="messages_list_container">
-                <div v-for="message in messages" :key="message.id">
-                    <ChatMessageItem v-if="message.user.id === current_user_id" :message="message"/>
-                    <ChatMessageItemLeft v-else :message="message"/>
-                </div>
-            </div>
-        </div>
+  <div
+    ref="refMessagesContainer"
+    class="chat-messages p-4"
+  >
+    <div
+      v-if="chatMessagesStore.isNextPage"
+      ref="refNotificationLoading"
+      class="text-center py-3"
+    >
+      Загрузка...
     </div>
+    <div ref="messages_list_container">
+      <div v-for="message in chatMessagesStore.messages" :key="message.id">
+        <ChatMessageItem
+          v-if="message.user.id === authUser.id"
+          :message="message"
+        />
+        <ChatMessageItemLeft
+          v-else
+          :message="message"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
-
-import {mapGetters, mapMutations} from "vuex";
+<script setup>
+import {ref, computed, watch, onMounted, nextTick, onUnmounted} from 'vue';
+import { useRoute } from 'vue-router';
+import { useAuthUserStore } from '@/store/auth_user.js';
+import { useChatMessagesStore } from '@/store/chat_messages.js';
+import { loadChatMessages } from '@/services/chat_service.js';
 
 import ChatMessageItem from '@/components/ChatMessageItem.vue';
 import ChatMessageItemLeft from '@/components/ChatMessageItemLeft.vue';
 
-import { loadChatMessages } from '@/services/chat_service.js';
+const props = defineProps({
+  isNextMessages: { type: Boolean, default: false },
+});
 
-export default {
-    name: "ChatMessagesList",
-    components: {
-        ChatMessageItemLeft,
-        ChatMessageItem,
-    },
-    data(){
-        return {
-            scroll_top: 0,
-            message_block_height: 0,
-        }
-    },
-    computed: {
-        ...mapGetters('storeChat', ['messages', 'page', 'next', 'load', 'add_messages_type']),
-        ...mapGetters({current_user_id: 'storeUser/id'}),
-    },
-    watch: {
-        messages(newVal, oldVal){
-            const countNewMessages = newVal.length - oldVal.length;
-            this.scroll_top = countNewMessages * this.message_block_height;
-        }
-    },
-    methods: {
-        ...mapMutations('storeChat', ['unshiftMessages', 'setPage', 'setNext', 'setLoad', 'setAddMessagesType']),
-        async loadMessages(){
-            const chatId = this.$route.params.id
+const route = useRoute();
+const authUserStore = useAuthUserStore();
+const chatMessagesStore = useChatMessagesStore();
+const refNotificationLoading = ref(null);
+const refMessagesContainer = ref(null);
+const authUser = authUserStore.auth_user;
+const page = ref(1);
+const scrollTop = ref(0);
+const messageBlockHeight = ref(0);
+const isLoading = ref(false);
 
-            const resLoadMessages = await loadChatMessages(chatId, this.page);
-            this.setAddMessagesType('load');
-            this.unshiftMessages(resLoadMessages.messages.reverse());
+const loadMessages = async () => {
+  const chatId = route.params.id;
+  isLoading.value = true;
+  chatMessagesStore.is_loading_messages = true;
+  try {
+    const res = await loadChatMessages(chatId, page.value + 1);
+    chatMessagesStore.push(res.messages.reverse());
+    page.value = res.pagination.current_page;
 
-            if(resLoadMessages.next_page_url){
-                this.setPage(this.page + 1);
-                this.setNext(true);
-            }else{
-                this.setNext(false);
-            }
-        },
-        setUpInterSectionObserver() {
-            let options = {
-                root: this.$refs.messages_container,
-                margin: "10px",
-            };
-            this.listEndObserver = new IntersectionObserver(
-                this.handleIntersection,
-                options
-            );
-            this.listEndObserver.observe(this.$refs.sentinel);
-        },
-        handleIntersection([entry]) {
-            if (entry.isIntersecting) {
-                this.loadMessages();
-            }
-            /*
-            if (entry.isIntersecting && this.canLoadMore && !this.isLoadingMore) {
-                //this.loadMore();
-                console.log('ok');
-                this.loadNextPosts();
-            }
-            */
-        },
-        scrollToBottom(type) {
-            type = type || 'auto';
-            const container = this.$refs.messages_container;
-
-            container.scrollTo({
-                top: container.scrollHeight,
-                behavior: type
-            });
-
-
-        },
-        loadMessagesScroll(){
-
-            if(this.add_messages_type === 'send'){
-                this.scrollToBottom('smooth');
-                return true;
-            }
-
-            const container = this.$refs.messages_container;
-
-            container.scrollTo({
-                top: this.scroll_top,
-            });
-        },
-        getMessageBlockHeight(){
-            const containerMessagesList = this.$refs.messages_list_container;
-
-            this.message_block_height = containerMessagesList.clientHeight / this.messages.length;
-        }
-    },
-    mounted() {
-        this.setUpInterSectionObserver();
-        this.scrollToBottom();
-        this.getMessageBlockHeight();
-    },
-    updated() {
-        this.loadMessagesScroll();
+    if(res.pagination.next_page_url){
+      chatMessagesStore.incrementPage();
+      chatMessagesStore.isNextPage = true;
+    }else{
+      chatMessagesStore.isNextPage = false;
     }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    isLoading.value = false;
+  }
 }
+
+const setUpInterSectionObserver = () => {
+  let options = {
+    // root: refMessagesContainer.value,
+    margin: "10px",
+  };
+  const listEndObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        loadMessages();
+      }
+  },
+    options
+  );
+
+  listEndObserver.observe(refNotificationLoading.value);
+}
+
+const scrollToBottom = (type) => {
+  type = type || 'auto';
+
+  refMessagesContainer.value.scrollTo({
+    top: refMessagesContainer.value.scrollHeight,
+    behavior: type
+  });
+}
+
+const loadMessagesScroll = () => {
+  refMessagesContainer.value.scrollTo({
+    top: scrollTop.value,
+  });
+}
+
+const getMessageBlockHeight = () => {
+  messageBlockHeight.value = refMessagesContainer.value.clientHeight / chatMessagesStore.messages.length;
+}
+
+watch(
+  () => chatMessagesStore.messages,
+  (newVal, oldVal) => {
+    nextTick(() => {
+      if(chatMessagesStore.is_loading_messages){
+        chatMessagesStore.is_loading_messages = false;
+        const countNewMessages = newVal.length - oldVal.length;
+        scrollTop.value = countNewMessages * messageBlockHeight.value;
+        loadMessagesScroll();
+        return;
+      }
+      scrollToBottom('smooth');
+    });
+  }
+);
+
+onMounted(() => {
+  chatMessagesStore.chat_id = parseInt(route.params.id);
+  setUpInterSectionObserver();
+  scrollToBottom();
+  getMessageBlockHeight();
+});
+
+onUnmounted(() => {
+  chatMessagesStore.chat_id = null;
+});
 </script>
 
 <style scoped>

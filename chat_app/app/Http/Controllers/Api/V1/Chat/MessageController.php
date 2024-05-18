@@ -7,6 +7,7 @@ use App\Http\Requests\Chat\CreateMessageRequest;
 use App\Http\Requests\Chat\ReadMessagesChat;
 use App\Http\Resources\Message\MessageResource;
 use App\Http\Resources\Message\MessagesPaginateResource;
+use App\Http\Resources\PaginationSimpleResource;
 use App\Services\ChatMessageService;
 use App\Services\SocketServer;
 use Illuminate\Http\JsonResponse;
@@ -31,7 +32,12 @@ class MessageController extends BaseController
     {
         try{
             $messages = $this->chatMessageService->messagesByChatId($id);
-            return response()->json(new MessagesPaginateResource($messages));
+
+            return response()->json([
+                'messages' => MessageResource::collection($messages->items()),
+                'pagination' => PaginationSimpleResource::make($messages),
+
+            ]);
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

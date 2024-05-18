@@ -41,8 +41,12 @@ class ChatService
         $userId = Auth::id();
 
         try{
-            $chatRoom = ChatRoom::query()->create($data);
-            $chatRoom->users()->attach($userId);
+            $chatRoom = DB::transaction(function () use ($data, $userId) {
+                $chatRoom = ChatRoom::query()->create($data);
+                $chatRoom->users()->attach($userId);
+
+                return $chatRoom;
+            }, 3);
             (new ChatUserSettingsService())->initSettings($chatRoom->id, $userId);
             return $chatRoom;
         }catch (\Exception $e){
