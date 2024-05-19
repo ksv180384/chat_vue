@@ -23,7 +23,6 @@
 </template>
 
 <script setup>
-// import {mapGetters, mapMutations} from 'vuex';
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useRoomsStore } from '@/store/chats_rooms.js';
@@ -38,11 +37,11 @@ const router = useRouter();
 
 const toPageChat = (chatId, messageId) => {
   router.push({ name: 'chat', params: { id: chatId } });
-  this.popNotification(messageId);
+  messageNotificationsStore.popNotification(messageId);
 }
 
 const close = (messageId) => {
-  this.popNotification(messageId);
+  messageNotificationsStore.popNotification(messageId);
 }
 
 onMounted(() => {
@@ -64,48 +63,6 @@ onMounted(() => {
 
   });
 });
-
-/*
-export default {
-    name: 'MessageNotification',
-    mounted() {
-        this.$store.state.socket.on('message', function(data){
-
-            const chatId = data.chat_room_id;
-            const currentChat = this.chats.find(item => item.id === chatId);
-
-            if(
-                currentChat.settings?.show_notification_new_message &&
-                !(this.$route.name === 'Chat' && +this.$route.params.id === chatId)
-            ){
-                this.pushNotification(data);
-
-                setTimeout(() => {
-                    this.popNotification(data.id);
-                }, 8000);
-            }
-
-        }.bind(this));
-    },
-    computed: {
-        ...mapGetters('storeMessageNotifications', ['notifications']),
-        ...mapGetters('storeChatsList', ['chats']),
-    },
-    methods: {
-        ...mapMutations(
-            'storeMessageNotifications',
-            ['pushNotification', 'popNotification']
-        ),
-        toPageChat(chatId, messageId){
-            this.$router.push(`/chat/${chatId}`);
-            this.popNotification(messageId);
-        },
-        close(messageId){
-            this.popNotification(messageId);
-        }
-    },
-}
-*/
 </script>
 
 <style scoped>

@@ -17,17 +17,7 @@
 </template>
 
 <script>
-export default {
-  name: "ChatMessageItemLeft",
-  props: {
-    message: {
-      message: String,
-      created_at: String,
-      user: {
-        name: String,
-        avatar: String,
-      }
-    }
-  }
-}
+const props = defineProps({
+  message: { type: Object, default: {} },
+});
 </script>

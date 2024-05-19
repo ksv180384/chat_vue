@@ -16,20 +16,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "ChatMessageItem",
-  props: {
-    message: {
-      message: String,
-      created_at: String,
-      user: {
-        name: String,
-        avatar: String,
-      }
-    }
-  }
-}
+<script setup>
+
+const props = defineProps({
+  message: { type: Object, default: {} },
+});
 </script>
 
 <style scoped>

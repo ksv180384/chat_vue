@@ -51,6 +51,9 @@ const messageBlockHeight = ref(0);
 const isLoading = ref(false);
 
 const loadMessages = async () => {
+  if(isLoading.value){
+    return;
+  }
   const chatId = route.params.id;
   isLoading.value = true;
   chatMessagesStore.is_loading_messages = true;
