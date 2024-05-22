@@ -52,10 +52,10 @@
 <script setup>
 const props = defineProps({
   id: { type: String, required: true },
-  footer: { type: String, required: true },
-  title: { type: String, required: true },
-  isShowBtnConfirm: { type: String, required: true },
-  isShowBtmClose: { type: String, required: true },
+  footer: { type: String, default: '' },
+  title: { type: String, default: '' },
+  isShowBtnConfirm: { type: Boolean, default: true },
+  isShowBtmClose: { type: Boolean, default: true },
 });
 </script>
 

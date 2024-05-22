@@ -1,7 +1,3 @@
-// Получаем данные пользователя из хранилища
-import store from '@/store';
-import api from '@/helpers/api.js';
-
 import { useToast } from "vue-toastification";
 
 export const userData = () => {
@@ -16,7 +12,6 @@ export const userData = () => {
         userData = {
             id: 0,
             name: '',
-            avatar: '',
             avatar_src: '',
         };
     }
@@ -31,20 +26,6 @@ export const setUserDataToLocalStorage = (userData) => {
 
     }
 }
-
-// export const pageLoad = async (url) => {
-//     store.commit('setLoadPage', true);
-//     store.commit('setIsSiteNotWork', false);
-//     let res = '';
-//     try{
-//         res = await api.get(url);
-//         store.commit('setLoadPage', false);
-//     } catch (e) {
-//         store.commit('setLoadPage', false);
-//         store.commit('setIsSiteNotWork', true);
-//     }
-//     return res;
-// }
 
 export const getAuthToken = () => {
     const t = localStorage.getItem('user_token');

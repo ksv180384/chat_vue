@@ -5,9 +5,10 @@
     </div>
     <div>
       <BtnModal
-        modal="modalCreateChat"
+        modal-target-id="modalCreateChat"
         variant="primary"
         size="sm"
+        type="primary"
       >
         Добавить чат
       </BtnModal>
