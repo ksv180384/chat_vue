@@ -19,11 +19,8 @@ export const useAuthUserStore = defineStore('authUserStore', {
     },
   }),
   actions: {
-    setUser(state, user){
-      this.auth_user.id = user?.id;
-      this.auth_user.name = user?.name;
-      this.auth_user.avatar = user?.avatar;
-      this.auth_user.avatar_src = user?.avatar_src;
+    setUser(user){
+      this.auth_user = user;
       // Обновляем данные пользователя в localStorage
       setUserDataToLocalStorage(this.auth_user);
     },

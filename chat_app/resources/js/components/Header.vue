@@ -37,7 +37,7 @@ const authUserStore = useAuthUserStore();
 const logout = async () => {
 
   const resLogout = await api.post('logout');
-  this.setUser(null);
+  authUserStore.setUser({});
   localStorage.removeItem('user_token');
   localStorage.removeItem('user');
   localStorage.removeItem('remember');
