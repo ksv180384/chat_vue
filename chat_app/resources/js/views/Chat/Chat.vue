@@ -53,21 +53,24 @@
       </div>
     </div>
   </div>
-  <div v-if="chat.id" class="card">
+  <div v-if="chatId" class="card">
     <div class="row g-0">
       <div class="col-12 col-lg-3 col-xl-3 border-right">
         <SearchUserChat
           v-model="searchUserText"
-          :show_btn_join_user="chatId === chat.creator_id"
+          :show_btn_join_user="chatId === chat.creator.id"
         />
         <ChatUsersList
-          :chat_users="usersList"
-          :chat_creator_id="chat.creator?.id"
+          :chat-users="usersList"
+          :chat-creator-id="chat.creator?.id"
         />
       </div>
       <div class="col-12 col-lg-9 col-xl-9">
         <div class="position-relative">
-          <ChatMessagesList/>
+          <ChatMessagesList
+            :messages="messages"
+            :is-next-page="isNextPage"
+          />
         </div>
         <SendMessage :chat-id="chat.id"/>
       </div>
@@ -76,10 +79,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useRoomsStore } from '@/store/chats_rooms.js';
-import { useChatMessagesStore } from '@/store/chat_messages.js';
+import { usePageStore } from '@/store/page.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -96,11 +99,9 @@ library.add(faCaretLeft);
 const router = useRouter();
 const route = useRoute();
 const roomsStore = useRoomsStore();
-const chatMessagesStore = useChatMessagesStore();
+const pageStore = usePageStore();
 const chatId = ref(route.params.id);
 const searchUserText = ref('');
-const chat = ref({});
-const users = ref([]);
 const isLoading = ref(false);
 
 const usersList = computed(() => {
@@ -108,21 +109,37 @@ const usersList = computed(() => {
     return users.value;
   }
   return users.value.filter((item) => item.name.toLowerCase().includes(searchUserText.value.toLowerCase()));
-})
+});
 
-const loadChat = async () => {
-  try {
-    const res = await loadChatPage(chatId.value);
-    chat.value = res.chat;
-    users.value = res.users;
-    chatMessagesStore.set(res.messages.reverse());
-    chatMessagesStore.isNextPage = !!res.pagination.next_page_url;
-  } catch (e) {
-    console.error(e);
-  } finally {
+const chat = computed(() => {
+  return pageStore.page.chat;
+});
 
-  }
-}
+const users = computed(() => {
+  return pageStore.page.users;
+});
+
+const messages = computed(() => {
+  return pageStore.page.messages.reverse();
+});
+
+const isNextPage = computed(() => {
+  return !!pageStore.page.pagination.next_page_url;
+});
+
+// const loadChat = async () => {
+//   // try {
+//     const res = await loadChatPage(chatId.value);
+//     chat.value = res.chat;
+//     users.value = res.users;
+//     chatMessagesStore.set(res.messages.reverse());
+//     chatMessagesStore.isNextPage = !!res.pagination.next_page_url;
+//   // } catch (e) {
+//   //   console.error(e);
+//   // } finally {
+//   //
+//   // }
+// }
 
 const leave = async () => {
   isLoading.value = true;
@@ -152,9 +169,9 @@ const remove = async () => {
   }
 }
 
-onMounted(() => {
-  loadChat();
-});
+// onMounted(() => {
+//   loadChat();
+// });
 
 /*
 export default {

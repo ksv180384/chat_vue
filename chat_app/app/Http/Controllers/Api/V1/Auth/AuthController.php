@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -20,8 +19,15 @@ class AuthController extends Controller
      */
     public function __construct(){}
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
+        $request->authenticate();
+
+        $request->session()->regenerate();
+
+        return response()->noContent();
+
+        /*
         $credentials = $request->only(['email', 'password']);
 
         $token = JWTAuth::attempt($credentials);
@@ -34,6 +40,7 @@ class AuthController extends Controller
             $this->respondWithToken($token)->getOriginalContent(),
             ['user' => Auth::user()->only(['id', 'name', 'avatar', 'avatar_src'])]
         ));
+        */
     }
 
     public function registration(RegistrationRequest $request){
@@ -74,6 +81,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
+        /*
         try {
             return $this->respondWithToken(auth()->refresh());
         }catch (JWTException $exception){
@@ -81,6 +89,7 @@ class AuthController extends Controller
                 'message' => $exception->getMessage(),
             ], 401);
         }
+        */
     }
 
     /**

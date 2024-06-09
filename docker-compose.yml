@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   # nginx
   chat-vue-nginx:
@@ -30,6 +30,7 @@ services:
     depends_on:
       - chat-vue-mariadb
     ports:
+#      - "9000:9000"
       - "8088:8088"
     networks:
       - chat-vue
@@ -84,3 +85,4 @@ services:
 
 networks:
   chat-vue:
+    driver: bridge

@@ -39,7 +39,6 @@ password: `password`
 - `composer install`
 - `php artisan key:generate`
 - `php artisan storage:link`
-- `php artisan jwt:secret`
 - `php artisan migrate --seed`
 - `npm install`
 

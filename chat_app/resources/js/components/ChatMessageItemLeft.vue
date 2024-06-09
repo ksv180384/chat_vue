@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 const props = defineProps({
   message: { type: Object, default: {} },
 });

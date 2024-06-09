@@ -1,4 +1,4 @@
-import api from "@/helpers/api";
+import api from '@/helpers/api';
 import {
     deleteChatToChatSocket,
     createChatToChatSocket,
@@ -6,7 +6,6 @@ import {
     laveUserToChatSocket,
     sendMessageSocket
 } from '@/services/socket_service.js';
-import { userData } from '@/helpers/helpers.js';
 import { pageLoad } from '@/services/service.js';
 
 export const loadChatList = async () => {
@@ -35,8 +34,8 @@ export const loadChatMessages = async (chatId, page) => {
 
 export const laveChat = async (chatId) => {
     const res = await api.post(`/chat/lave`, { id: chatId });
-    const userId = userData().id;
-    laveUserToChatSocket(userId, chatId);
+    // const userId = userData().id;
+    // laveUserToChatSocket(userId, chatId);
     return res;
 }
 

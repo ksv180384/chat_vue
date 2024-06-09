@@ -1,16 +1,26 @@
 // const io = require('socket.io')(3077);
 
+const cors = require('cors');
 const express = require('express');
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+app.use(cors());
+const httpServer = require('http').createServer(app);
+const socketIo = require('socket.io');
+const io = socketIo(httpServer, {
+    cors: {
+        origin: 'http://localhost:8077',
+        // origin: '*',
+        methods: ["GET", "POST"],
+        // serveClient: false,
+        // credentials: true,
+    }
+});
 
 // Middleware для обработки POST-запросов
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const socketMap = new Map();
-
 
 // Добавляем новый чат
 app.post('/create-chat', (req, res) => {
@@ -135,8 +145,12 @@ app.post('/user-join-to-chat', (req, res) => {
 // const allUsers = [];
 
 io.on('connect', socket => {
+    console.log('socket connect');
     const userId = parseInt(socket.handshake.query.user_id);
     const chatsIds = socket.handshake.query.chats ? socket.handshake.query.chats.split(',') : [];
+
+    console.log(userId);
+    console.log(chatsIds);
 
     socket.join(chatsIds.map(item => `chat_${item}`));
 
@@ -152,7 +166,7 @@ io.on('connect', socket => {
 
     // Получаем массив идентификаторов пользователей с которыми текщий пользователь состоит в комнатах
     const usersIds = getUsersIdsAllRooms(usersSocketIdByAllRooms, socketMap);
-    socket.emit('usersOnline', usersIds);
+    socket.emit('users-online', usersIds);
 
     // Сразу после подключения к сокет серверу, пользователь отправляет это событие
     /*
@@ -277,8 +291,8 @@ io.on('connect', socket => {
 });
 
 // Запуск сервера
-http.listen(3077, () => {
-    console.log('Сервер запущен на порту 3077');
+httpServer.listen(3077, () => {
+    console.log('Сервер запущен на порту 3077 ->>>>');
 });
 
 /**

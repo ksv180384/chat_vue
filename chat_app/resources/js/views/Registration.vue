@@ -82,7 +82,7 @@ import useVuelidate from '@vuelidate/core';
 import { required, email, minLength, sameAs, helpers } from '@vuelidate/validators';
 import api from '@/helpers/api.js';
 import {mapMutations} from "vuex";
-import { getResponseErrorMessage, responseErrorNote, setUserDataToLocalStorage } from '@/helpers/helpers.js';
+import { getResponseErrorMessage, responseErrorNote } from '@/helpers/helpers.js';
 import { registration } from '@/services/user_service.js';
 
 export default {
@@ -144,10 +144,10 @@ export default {
 
                 this.error = '';
                 this.load_form = false;
-                localStorage.setItem('user_token', accessToken);
-                setUserDataToLocalStorage(user);
-                this.setUser(user);
-                api.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
+                // localStorage.setItem('user_token', accessToken);
+                // setUserDataToLocalStorage(user);
+                // this.setUser(user);
+                // api.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
                 this.$router.push('/');
             }catch (e) {
                 this.password = '';

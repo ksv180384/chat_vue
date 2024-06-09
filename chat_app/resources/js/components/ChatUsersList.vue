@@ -5,7 +5,7 @@
         v-for="user in chatUsers"
         :key="user.id"
         :user="user"
-        :is_chat_creator="chatCreatorId === user.id"/>
+        :is-chat-creator="chatCreatorId === user.id"/>
     </template>
   </div>
 </template>
@@ -17,6 +17,8 @@ const props = defineProps({
   chatUsers: { type: Array, default: [] },
   chatCreatorId: { type: Number, required: true },
 });
+
+console.log(props.chatUsers)
 </script>
 
 <style scoped>

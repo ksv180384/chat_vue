@@ -4,11 +4,11 @@
       <div class="d-flex align-items-center">
         <img
           class="avatar-img me-2"
-          :src="authUserStore.auth_user.avatar_src"
-          :alt="authUserStore.auth_user.name"
+          :src="authUserStore.auth_data.avatar"
+          :alt="authUserStore.auth_data.name"
         />
         <router-link class="navbar-brand" :to="{ name: 'profile' }">
-          {{ authUserStore.auth_user.name }}
+          {{ authUserStore.auth_data.name }}
         </router-link>
       </div>
 
@@ -37,11 +37,11 @@ const authUserStore = useAuthUserStore();
 const logout = async () => {
 
   const resLogout = await api.post('logout');
-  authUserStore.setUser({});
-  localStorage.removeItem('user_token');
-  localStorage.removeItem('user');
-  localStorage.removeItem('remember');
-  api.defaults.headers.common['Authorization'] = null;
+  authUserStore.setUser(null);
+  // localStorage.removeItem('user_token');
+  // localStorage.removeItem('user');
+  // localStorage.removeItem('remember');
+  // api.defaults.headers.common['Authorization'] = null;
   router.push({ name: 'login' });
 }
 </script>

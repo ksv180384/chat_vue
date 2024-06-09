@@ -8,7 +8,7 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header" v-if="title">
+        <div class="modal-header">
           <h5 class="modal-title" :id="`${id}_label`">
             <slot name="title">Modal title</slot>
           </h5>
@@ -22,27 +22,8 @@
         <div class="modal-body">
           <slot></slot>
         </div>
-        <div
-          v-if="footer"
-          class="modal-footer"
-        >
-          <slot name="footer">
-            <button
-              v-if="isShowBtnConfirm"
-              type="button"
-              class="btn btn-primary"
-            >
-              Сохранить
-            </button>
-            <button
-              v-if="isShowBtmClose"
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Отмена
-            </button>
-          </slot>
+        <div class="modal-footer">
+          <slot name="footer"/>
         </div>
       </div>
     </div>

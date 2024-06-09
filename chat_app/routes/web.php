@@ -14,3 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('{any}', [\App\Http\Controllers\IndexController::class, 'index'])->where('any', '.*');
+
+//require __DIR__.'/auth.php';

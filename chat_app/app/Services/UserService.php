@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -11,10 +12,11 @@ use Illuminate\Support\Facades\Storage;
 
 class UserService extends Service
 {
+    const PATH_STORAGE = 'users';
+
     public function __construct()
     {
         parent::__construct();
-        $this->model = new User();
     }
 
     /**
@@ -26,7 +28,7 @@ class UserService extends Service
     public function search($userName)
     {
         try{
-            $users = $this->model->query()
+            $users = User::query()
                 ->where('name', 'LIKE', $userName . '%')
                 ->orderBy('name')
                 ->get();
@@ -45,7 +47,7 @@ class UserService extends Service
     public function getById($id)
     {
         try{
-            $user = $this->model->query()->find($id);
+            $user = User::query()->find($id);
             return $user;
         } catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.get_data'));
@@ -102,8 +104,14 @@ class UserService extends Service
     public function getUsersById(int $chatId): Collection
     {
         $users = User::query()
-            ->join('chat_room_to_users', 'chat_room_to_users.user_id', '=', 'users.id')
-            ->where('chat_room_to_users.chat_room_id', $chatId)
+            ->select([
+                'users.id',
+                'users.name',
+                'users.avatar',
+            ])
+            ->whereHas('chats', function (Builder $query) use ($chatId) {
+                $query->where('chat_rooms.id', $chatId);
+            })
             ->get();
 
         return $users;
@@ -112,7 +120,7 @@ class UserService extends Service
     private function updateAvatar(User $user, UploadedFile $file)
     {
         $this->removeAvatar($user);
-        $path = 'users/' . $user->id;
+        $path = self::PATH_STORAGE . '/' . $user->id;
         $pathFile = (new UploadFile())->upload($file, $path);
 
         $user->update([

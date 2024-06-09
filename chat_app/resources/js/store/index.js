@@ -2,9 +2,9 @@ import { createStore } from 'vuex';
 
 import socket from '@/helpers/socket.js';
 
-import storeUser from '@/store/store_user.js';
+// import storeUser from '@/store/store_user.js';
 import storeChatsList from '@/store/store_chats_list.js';
-import storeChat from '@/store/store_chat.js';
+import storeChat from '@/store/__store_chat.js';
 import storeMessageNotifications from '@/store/store_message_notifications.js';
 
 const store = createStore({
@@ -49,7 +49,7 @@ const store = createStore({
         is_socket_connect: state => state.is_socket_connect,
     },
     modules: {
-        storeUser: storeUser,
+        // storeUser: storeUser,
         storeChatsList: storeChatsList,
         storeChat: storeChat,
         storeMessageNotifications: storeMessageNotifications,

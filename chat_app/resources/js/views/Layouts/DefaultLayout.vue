@@ -23,22 +23,23 @@
 
 <script setup>
 import { onMounted, computed } from 'vue';
-import { useStore } from 'vuex';
 import { useRoomsStore } from '@/store/chats_rooms.js';
 import { useSocketStore } from '@/store/socket.js';
+import { useAuthUserStore } from '@/store/auth_user.js';
 import { loadUserChats } from '@/services/chat_service.js';
 
 import Header from '@/components/Header.vue';
 
-const store = useStore();
 const roomsStore = useRoomsStore();
 const socketStore = useSocketStore();
+const authUser = useAuthUserStore();
 
 onMounted(async () => {
+  console.log('loadChats')
   await loadChats();
 });
 
-const currentUserId = computed(() => store.state.storeUser.id);
+const currentUserId = computed(() => authUser.auth_data.id);
 const isSocketConnected = computed(() => socketStore.socket.connected);
 
 const loadChats = async () => {
@@ -48,8 +49,9 @@ const loadChats = async () => {
     roomsStore.setChats(resChatsList);
     socketStore.socket.io.opts.query = {
       user_id: currentUserId,
-      chats: resChatsList?.map(item => item),
+      chats: resChatsList?.map(item => item.id),
     };
+
     socketStore.socket.connect();
   }catch(e){
     console.error('error load chats', e);

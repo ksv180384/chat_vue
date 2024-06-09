@@ -23,10 +23,14 @@ class ChatMessageFactory extends Factory
     public function definition()
     {
         $user = User::inRandomOrder()->first();
+        $createdAt = $this->faker->dateTimeBetween('-6 month', 'now');
+
         return [
             'user_id' => $user->id,
             'chat_room_id' => $user->chatToUser->random()->chat_room_id,
             'message' => $this->faker->text(100),
+            'created_at' => $createdAt,
+            'updated_at' => $createdAt,
         ];
     }
 }

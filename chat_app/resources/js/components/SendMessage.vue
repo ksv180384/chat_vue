@@ -20,7 +20,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useChatMessagesStore } from '@/store/chat_messages.js';
+import { useChatMessagesStore } from '@/store/__chat_messages.js';
 import { sendMessage } from '@/services/chat_service.js';
 
 const props = defineProps({

@@ -20,14 +20,14 @@ use Illuminate\Support\Facades\Route;
 
 
 // Авторизация
-Route::post('login', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'login']);
+Route::post('login', [\App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest');
 Route::post('registration', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'registration']);
 Route::post('refresh', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'refresh']);
 
 //
-Route::group(['middleware' => 'jwt.auth:api_v1'], function (){
+Route::group(['middleware' => ['auth:api_v1', 'page-data']], function () {
 
-    Route::post('logout', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'logout']);
+    Route::post('logout', [\App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController::class, 'destroy']);
 
     // Профиль
     Route::get('user/profile', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'index']);
@@ -40,9 +40,9 @@ Route::group(['middleware' => 'jwt.auth:api_v1'], function (){
     Route::get('users/search/{user}', [\App\Http\Controllers\Api\V1\User\UserController::class, 'search']);
 
     // Чат user-chats
-    Route::get('chat/', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'index']);
+    Route::get('page/', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'index']);
     Route::get('chat/user-chats', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'getUserChats']);
-    Route::get('chat/{id}', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'show']);
+    Route::get('page/chat/{id}', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'show']);
     Route::post('chat/create', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'store']);
     Route::post('chat/join', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'join']);
     Route::post('chat/lave', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'lave']);

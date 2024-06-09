@@ -1,104 +1,116 @@
 import { createWebHistory, createRouter } from 'vue-router';
+import api from '@/helpers/api';
+import { useAuthUserStore } from '@/store/auth_user.js';
+import { usePageStore } from '@/store/page.js';
 
 import AuthLayout from '@/views/Layouts/AuthLayout.vue';
 import DefaultLayout from '@/views/Layouts/DefaultLayout.vue';
-import store from '@/store';
+//import {login} from "@/services/user_service.js";
+
 
 const routes = [
-    {
-        path: '/login',
-        name: 'login',
-        component: () => import('@/views/Login.vue'),
-        meta: {
-            layout: AuthLayout,
-            auth: false
-        },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/Login.vue'),
+    meta: {
+      layout: AuthLayout,
+      auth: false
     },
-    {
-        path: '/registration',
-        name: 'registration',
-        component: () => import('@/views/Registration.vue'),
-        meta: {
-            layout: AuthLayout,
-            auth: false
-        },
+  },
+  {
+    path: '/registration',
+    name: 'registration',
+    component: () => import('@/views/Registration.vue'),
+    meta: {
+      layout: AuthLayout,
+      auth: false
     },
-    // Chat
-    {
-        path: '/',
-        name: 'chats-list',
-        component: () => import('@/views/Chat/ChatsList.vue'),
-        meta: {
-            layout: DefaultLayout,
-            auth: true
-        },
+  },
+  // Chat
+  {
+    path: '/',
+    name: 'chats-list',
+    component: () => import('@/views/Chat/ChatsList.vue'),
+    meta: {
+      layout: DefaultLayout,
+      auth: true
     },
-    {
-        path: '/chat/:id',
-        name: 'chat',
-        component: () => import('@/views/Chat/Chat.vue'),
-        meta: {
-            layout: DefaultLayout,
-            auth: true
-        },
+  },
+  {
+    path: '/chat/:id',
+    name: 'chat',
+    component: () => import('@/views/Chat/Chat.vue'),
+    meta: {
+      layout: DefaultLayout,
+      auth: true
     },
-    {
-        path: '/chat/:id/settings',
-        name: 'chat.user-settings',
-        component: () => import('@/views/Chat/ChatUserSettings.vue'),
-        meta: {
-            layout: DefaultLayout,
-            auth: true
-        },
+  },
+  {
+    path: '/chat/:id/settings',
+    name: 'chat.user-settings',
+    component: () => import('@/views/Chat/ChatUserSettings.vue'),
+    meta: {
+      layout: DefaultLayout,
+      auth: true
     },
-    // User
-    {
-        path: '/profile',
-        name: 'profile',
-        component: () => import('@/views/User/Profile.vue'),
-        meta: {
-            layout: DefaultLayout,
-            auth: true
-        },
+  },
+  // User
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/User/Profile.vue'),
+    meta: {
+      layout: DefaultLayout,
+      auth: true
     },
-    {
-        path: "/:pathMatch(.*)*",
-        component: () => import('@/views/PageNotFound.vue'),
-        meta: {
-            layout: AuthLayout,
-        },
-    }
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import('@/views/PageNotFound.vue'),
+    meta: {
+      layout: AuthLayout,
+    },
+  }
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 });
 
-router.beforeEach((to, from, next) => {
-    store.commit('setIsSiteNotWork', false); // сбрасываем отображение страницы с ошибкой
-    // Редирект на страницу авторизации
-    const userAuth = localStorage.getItem('user_token');
-    const requireAuth = to.matched.some(record => record.meta.auth);
+router.beforeEach(async (to, from, next) => {
 
-    if(requireAuth && !userAuth){
-        next('/login');
-    }else{
-        next();
-    }
+  const isPageNeedAuth = to.matched.some(record => record.meta.auth);
+  const authUserStore = useAuthUserStore();
+  const pageStore = usePageStore();
 
-    // Подстановка layout поумолчанию
-    const layout = to ? to?.meta?.layout : null;
-    to.meta.layout = setDefaultLayout(layout);
+  const res = await api.get(`/page${to.path}`);
+  if(res?.pages_info?.auth_data){
+    authUserStore.setUser(res.pages_info.auth_data);
+  }
+  pageStore.clearData();
+  if(res.data){
+    pageStore.setPageData(res.data);
+  }
+  if(isPageNeedAuth && !authUserStore.auth_data){
+    next('/login');
+  }else{
+    next();
+  }
+
+  // Подстановка layout поумолчанию
+  const layout = to ? to?.meta?.layout : null;
+  to.meta.layout = setDefaultLayout(layout);
 
 });
 
 const setDefaultLayout = (layout) => {
-    if(!layout){
-        return AuthLayout
-    }
+  if(!layout){
+    return AuthLayout
+  }
 
-    return layout;
+  return layout;
 }
 
 

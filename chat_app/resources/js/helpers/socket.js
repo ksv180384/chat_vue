@@ -1,41 +1,52 @@
 import { io } from 'socket.io-client';
 import store from '@/store';
-import {userData} from '@/helpers/helpers.js';
+// import {userData} from '@/helpers/helpers.js';
 import router from '@/router';
 import { useRoomsStore } from '@/store/chats_rooms.js';
-import { useChatMessagesStore } from '@/store/chat_messages.js';
-import {laveUserToChatSocket} from '@/services/socket_service.js';
+import { useUsersOnlineStore } from '@/store/users_online.js';
+import { useChatMessagesStore } from '@/store/__chat_messages.js';
+// import {laveUserToChatSocket} from '@/services/socket_service.js';
+import { useAuthUserStore } from '@/store/auth_user.js';
 
-const connectionOptions =  {
-  "force new connection" : true,
-  "reconnectionAttempts": "Infinity", //avoid having user reconnect manually in order to prevent dead clients after a server restart
-  "timeout" : 10000, //before connect_error and connect_timeout are emitted.
-  "transports" : ["websocket"],
+// const connectionOptions =  {
+//   "force new connection" : true,
+//   "reconnectionAttempts": "Infinity", //avoid having user reconnect manually in order to prevent dead clients after a server restart
+//   "timeout" : 10000, //before connect_error and connect_timeout are emitted.
+//   "transports" : ["websocket"],
+//   autoConnect: false,
+// };
+const connectionOptions = {
+  forceNew: true,
+  reconnectionAttempts: "Infinity",
+  timeout: 10000,
   autoConnect: false,
 };
-const socket = io("http://localhost:3077", connectionOptions);
+const socket = io('http://localhost:3077', connectionOptions);
 
 // Событие подключения к серверу
-socket.on('connect', async (data) => {
-
-  const roomsStore = useRoomsStore();
-  const chatsList = roomsStore.chats;
-  if(chatsList.length === 0){
-    console.log('no chats');
-  }
-
-  // Добавляем доступные комнаты
-  const rooms = [];
-  chatsList.forEach((el, i) => {
-    rooms.push(`chat_${el.id}`);
-  });
-
-  socket.emit('enterRoom', rooms);
-
-  const userId = userData().id;
-  socket.emit('userConnect', userId);
-  store.commit('setIsSocketConnect', true);
-});
+// socket.on('connect', async (data) => {
+//
+//   console.log('@connect', data);
+//
+//   const roomsStore = useRoomsStore();
+//   const chatsList = roomsStore.chats;
+//   if(chatsList.length === 0){
+//     console.log('no chats');
+//   }
+//
+//   // Добавляем доступные комнаты
+//   const rooms = [];
+//   chatsList.forEach((el, i) => {
+//     rooms.push(`chat_${el.id}`);
+//   });
+//
+//   // socket.emit('enterRoom', rooms);
+//
+//   const authUserStore = useAuthUserStore();
+//   const userId = authUserStore.auth_data.id;
+//   // socket.emit('userConnect', userId);
+//   // store.commit('setIsSocketConnect', true);
+// });
 
 // Событие получения сообщения, получают все, кто состоит хоть в одном из чатов с отправителем
 socket.on('createChat', function(data){
@@ -45,7 +56,8 @@ socket.on('createChat', function(data){
 
 // Событие получения сообщения, получают все, кто состоит хоть в одном из чатов с отправителем
 socket.on('message', function(data){
-  const chatMessagesStore = useChatMessagesStore();
+  console.log(data);
+  // const chatMessagesStore = useChatMessagesStore();
   const chatId = +data.chat_room_id;
   const selectChat = chatMessagesStore.chat_id;
 
@@ -53,7 +65,7 @@ socket.on('message', function(data){
   console.log(data);
 
   if(chatId === selectChat){
-    chatMessagesStore.push(data);
+    // chatMessagesStore.push(data);
   }
 });
 
@@ -95,8 +107,9 @@ socket.on('removeChat', async (data) => {
 });
 
 // При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
-socket.on('usersOnline', async (usersIds) => {
-  store.commit('setUsersOnline', usersIds);
+socket.on('users-online', async (usersIds) => {
+  const usersOnlineStore =  useUsersOnlineStore();
+  usersOnlineStore.setUsersIds(usersIds);
 });
 
 // Кода пользователь подключился к чату, все пользователи (с которыми но состоит в чате) получают это событие

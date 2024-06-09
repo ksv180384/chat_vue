@@ -22,7 +22,7 @@
   </div>
 
   <WModal id="modalCreateChat">
-    <template v-slot:title>
+    <template #title>
       Добавить чат
     </template>
     <div class="mb-3">
@@ -37,7 +37,7 @@
       />
     </div>
 
-    <template v-slot:footer>
+    <template #footer>
       <button
         @click="saveChat"
         type="button"
