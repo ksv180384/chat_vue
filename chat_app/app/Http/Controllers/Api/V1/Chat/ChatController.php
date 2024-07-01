@@ -12,7 +12,9 @@ use App\Http\Resources\Chat\ChatShowResource;
 use App\Http\Resources\Message\MessageResource;
 use App\Http\Resources\PaginationSimpleResource;
 use App\Http\Resources\User\ChatUsersResource;
+use App\Http\Resources\User\UserResource;
 use App\Models\Chat\ChatRoom;
+use App\Models\User;
 use App\Services\ChatMessageService;
 use App\Services\ChatService;
 use App\Services\SocketServer;
@@ -91,7 +93,7 @@ class ChatController extends BaseController
             return response()->json([
                 'chat' => ChatShowResource::make($chat),
                 'users' => ChatUsersResource::collection($chatUsers),
-                'messages' => MessageResource::collection($messages->items()),
+                'messages' => MessageResource::collection(array_reverse($messages->items())),
                 'pagination' => PaginationSimpleResource::make($messages),
             ]);
         }catch (\Exception $e){
@@ -128,12 +130,18 @@ class ChatController extends BaseController
     {
         try {
             $chatRoom = ChatRoom::findOrFail($request->chat_room_id);
+            $joinUser = User::query()->findOrFail($request->user_id);
             $chatRoom->users()->attach($request->user_id);
-            $chatRoom->load('users:id,name', 'settings');
 
-            $socketServer->userJoinToChat(ChatResource::make($chatRoom));
+            $resChatRoom = ChatRoom::query()
+                ->with(['users:id,name', 'creator'])
+                ->settingByUserId($request->user_id)
+                ->where('id', $request->chat_room_id)
+                ->first();
 
-            return response()->json(['message' => 'Сообщение успешно отправлено.']);
+            $socketServer->userJoinToChat(ChatUsersResource::make($joinUser), ChatResource::make($resChatRoom));
+
+            return response()->json(['message' => 'Пользователь успешно добавлен к чату.']);
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -142,14 +150,16 @@ class ChatController extends BaseController
     /**
      * Покинуть чат
      * @param LaveChatRequest $request
+     * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function lave(LaveChatRequest $request): JsonResponse
+    public function lave(LaveChatRequest $request, SocketServer $socketServer): JsonResponse
     {
         ['id' => $chatRoomId, 'user_id' => $userId] = $request->validated();
 
         try {
             $this->chatService->lave($chatRoomId, $userId);
+            $socketServer->userLaveChat($chatRoomId, $userId);
             return response()->json(['message' => 'Вы учпешно покинули чат.']);
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);

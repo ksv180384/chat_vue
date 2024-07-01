@@ -28,16 +28,16 @@ class ChangeSettingRequest extends FormRequest
     {
         return [
             'user_id' => 'required',
-            'setting' => 'required',
-            'value' => 'required',
-            'is_user_to_chat' => 'required',
+            'show_notification_new_message' => 'nullable',
+//            'value' => 'required',
+            'is_user_to_chat' => 'boolean',
         ];
     }
 
     public function messages()
     {
         return [
-            'setting.required' => 'Неверная настройка.',
+//            'setting.required' => 'Неверная настройка.',
             'is_user_to_chat.required' => 'Вы не состоите в в чате в котором меняете настройки.',
         ];
     }
@@ -49,22 +49,22 @@ class ChangeSettingRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $data = $this->all();
+//        $data = $this->all();
 
         $userId = Auth::id();
         $chatId = $this->route('chatId');
-        $setting = $data['setting'];
-        $value = $data['value'] ? true : false;
+//        $setting = $data['setting'];
+//        $value = $data['value'] ? true : false;
 
         $isChatRoomToUser = ChatRoomToUser::where('user_id', $userId)->where('chat_room_id', $chatId)->exists();
-        $setting = in_array($setting, ['show_notification_new_message']) ? $setting : null;
+//        $setting = in_array($setting, ['show_notification_new_message']) ? $setting : null;
 
         $this->merge([
             'user_id' => $userId,
             // Состоит ли пользователь в чате
-            'is_user_to_chat' => $isChatRoomToUser ? 'true' : null,
-            'setting' => $setting,
-            'value' => $value,
+            'is_user_to_chat' => $isChatRoomToUser,
+//            'setting' => $setting,
+//            'value' => $value,
         ]);
     }
 }

@@ -10,7 +10,7 @@
         <div class="text-muted small text-nowrap mt-2">{{ message.created_at_time }}</div>
     </div>
     <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-      <div class="font-weight-bold mb-1">{{ message.user.name }}</div>
+      <div class="font-weight-bold mb-1">{{ message.created_at }} {{ message.user.name }}</div>
       {{ message.message }}
     </div>
   </div>

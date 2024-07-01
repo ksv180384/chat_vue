@@ -26,7 +26,7 @@ class ChatMessageService extends Service{
     public function messagesByChatId($chatId)
     {
         try{
-            $messages = $this->model->query()
+            $messages = ChatMessage::query()
                 ->list()
                 ->where('chat_room_id', $chatId)
                 ->orderByDesc('created_at')
@@ -47,8 +47,9 @@ class ChatMessageService extends Service{
     public function create($messageData)
     {
         try{
-            $message = $this->model->query()->create($messageData);
-            $message = ChatMessage::query()->list()->find($message->id);
+            $message = ChatMessage::query()->create($messageData);
+//            dd($message);
+//            $message = ChatMessage::query()->list()->find($message->id);
 
             return $message;
         } catch (\Exception $e){

@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth:api_v1', 'page-data']], function () {
     Route::post('chat/delete', [\App\Http\Controllers\Api\V1\Chat\ChatController::class, 'delete']);
 
     // Settings
-    Route::get('chat/{chatId}/settings', [\App\Http\Controllers\Api\V1\Chat\ChatUserSettingsController::class, 'settingsByUser']);
+    Route::get('page/chat/{chatId}/settings', [\App\Http\Controllers\Api\V1\Chat\ChatUserSettingsController::class, 'settingsByUser']);
     Route::post('chat/{chatId}/setting-change', [\App\Http\Controllers\Api\V1\Chat\ChatUserSettingsController::class, 'settingChangeByUser']);
 
     // Messages

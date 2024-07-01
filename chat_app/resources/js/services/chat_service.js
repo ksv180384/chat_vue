@@ -1,4 +1,4 @@
-import api from '@/helpers/api';
+import api from '@/services/api';
 import {
     deleteChatToChatSocket,
     createChatToChatSocket,
@@ -22,10 +22,10 @@ export const loadChatPage = async (chatId) => {
     return await pageLoad(url);
 };
 
-export const loadChatSettingsPage = async (chatId) => {
-    const url = `/chat/${chatId}/settings`;
-    return await pageLoad(url);
-};
+// export const loadChatSettingsPage = async (chatId) => {
+//     const url = `/chat/${chatId}/settings`;
+//     return await pageLoad(url);
+// };
 
 export const loadChatMessages = async (chatId, page) => {
     const url = `/chat/${chatId}/messages?page=${page}`;

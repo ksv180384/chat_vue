@@ -1,5 +1,5 @@
 import store from '@/store';
-import api from '@/helpers/api.js';
+import api from '@/services/api.js';
 
 export const pageLoad = async (path, params) => {
     store.commit('setLoadPage', true);

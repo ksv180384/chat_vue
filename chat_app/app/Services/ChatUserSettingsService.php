@@ -6,6 +6,8 @@ namespace App\Services;
 
 
 use App\Models\Chat\ChatUserSettings;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Response;
 
 class ChatUserSettingsService extends Service
 {
@@ -71,12 +73,12 @@ class ChatUserSettingsService extends Service
     }
 
     /**
-     * Обновляем настройки чата
-     * @param int $chatId
-     * @param array $data
-     * @return void
+     * @param $chatId
+     * @param $data
+     * @return \Illuminate\Database\Eloquent\Model
+     * @throws \Exception
      */
-    public function updateSetting($chatId, $data)
+    public function updateSetting(int $chatId, array $data): Model
     {
         try {
             $chatUserSettings = ChatUserSettings::query()->where('user_id', $data['user_id'])
@@ -84,10 +86,12 @@ class ChatUserSettingsService extends Service
                 ->first();
 
             $chatUserSettings->update([
-                $data['setting'] => $data['value']
+                'show_notification_new_message' => $data['show_notification_new_message']
             ]);
+
+            return $chatUserSettings;
         } catch (\Exception $e){
-            throw new \Exception(config('app_messages.errors.update_data'), 422);
+            throw new \Exception(config('app_messages.errors.update_data'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

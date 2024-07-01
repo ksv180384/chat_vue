@@ -80,7 +80,7 @@ class ChatService
     {
         $chats = ChatRoom::query()
             ->select('chat_rooms.*')
-            ->with(['settings'/*, 'users'*/])
+            ->with(['settings'])
             ->list()
             ->whereHas('users', function ($q) use ($userId) {
                 $q->where('users.id', $userId);

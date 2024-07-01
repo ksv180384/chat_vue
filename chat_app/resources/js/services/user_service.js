@@ -1,5 +1,5 @@
-import api from '@/helpers/api.js';
-import { pageLoad } from '@/services/service.js';
+import api from '@/services/api';
+import { pageLoad } from '@/services/service';
 
 export const login = async (email, password, remember) => {
     const formParams = { email, password, remember };

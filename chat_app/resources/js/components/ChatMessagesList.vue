@@ -10,7 +10,7 @@
     >
       Загрузка...
     </div>
-    <div ref="messages_list_container">
+    <div ref="refMessagesListContainer">
       <div v-for="message in messages" :key="message.id">
         <ChatMessageItem
           v-if="message.user.id === authUser?.id"
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import {ref, computed, watch, onMounted, nextTick, onUnmounted} from 'vue';
+import { ref, computed, watch, onMounted, nextTick, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthUserStore } from '@/store/auth_user.js';
 import { usePageStore } from '@/store/page.js';
@@ -45,10 +45,10 @@ const authUserStore = useAuthUserStore();
 const pageStore = usePageStore();
 const refNotificationLoading = ref(null);
 const refMessagesContainer = ref(null);
-const authUser = computed(() => authUserStore.auth_user);
+const refMessagesListContainer = ref(null);
+const authUser = computed(() => authUserStore.auth_data);
 const page = ref(1);
 const scrollTop = ref(0);
-const messageBlockHeight = ref(0);
 const isLoading = ref(false);
 
 const currentPage = computed(() => {
@@ -64,16 +64,23 @@ const loadMessages = async () => {
   // chatMessagesStore.is_loading_messages = true;
   try {
     const res = await loadChatMessages(chatId, currentPage.value + 1);
-    pageStore.page.messages = [...pageStore.page.messages, ...res.messages];
-    // chatMessagesStore.push(res.messages.reverse());
-    // page.value = res.pagination.current_page;
 
-    // if(res.pagination.next_page_url){
-    //   // chatMessagesStore.incrementPage();
-    //   // pageStore.isNextPage = true;
-    // }else{
-    //   chatMessagesStore.isNextPage = false;
-    // }
+    const currentHeight = refMessagesListContainer.value.getBoundingClientRect().height;
+    pageStore.page.messages = [...res.messages, ...pageStore.page.messages];
+    pageStore.page.pagination = res.pagination;
+
+    nextTick(() => {
+      const newHeight = refMessagesListContainer.value.getBoundingClientRect().height;
+      const currentScrollTop = refMessagesContainer.value.scrollTop;
+      const diffHeight = (newHeight - currentHeight) + currentScrollTop;
+      refMessagesContainer.value.scrollTo({
+        top: diffHeight,
+      });
+    });
+
+    if(res.pagination.next_page_url){
+      chatMessagesStore.chat_id = null;
+    }
   } catch (e) {
     console.error(e);
   } finally {
@@ -107,48 +114,26 @@ const scrollToBottom = (type) => {
   });
 }
 
-const loadMessagesScroll = () => {
-  refMessagesContainer.value.scrollTo({
-    top: scrollTop.value,
-  });
-}
-
-const getMessageBlockHeight = () => {
-  messageBlockHeight.value = refMessagesContainer.value.clientHeight / chatMessagesStore.messages.length;
-}
+watch(
+  () => pageStore.page.messages,
+  (newVal, oldVal) => {
+    if(!newVal){
+      return
+    }
+    const newLastMessage = newVal.slice(-1)?.[0];
+    const oldLastMessage = oldVal.slice(-1)?.[0];
+    if(oldLastMessage && newLastMessage && newLastMessage.id > oldLastMessage.id){
+      nextTick(() => {
+        scrollToBottom('smooth');
+      });
+    }
+  }
+);
 
 onMounted(() => {
   scrollToBottom();
+  setUpInterSectionObserver();
 });
-
-// watch(
-//   () => pageStore.page.messages,
-//   (newVal, oldVal) => {
-//     nextTick(() => {
-//       if(chatMessagesStore.is_loading_messages){
-//         chatMessagesStore.is_loading_messages = false;
-//         const countNewMessages = newVal.length - oldVal.length;
-//         scrollTop.value = countNewMessages * messageBlockHeight.value;
-//         loadMessagesScroll();
-//         return;
-//       }
-//       scrollToBottom('smooth');
-//     });
-//   }
-// );
-
-// onMounted(() => {
-//   nextTick(() => {
-//     chatMessagesStore.chat_id = parseInt(route.params.id);
-//     setUpInterSectionObserver();
-//     scrollToBottom();
-//     getMessageBlockHeight();
-//   });
-// });
-
-// onUnmounted(() => {
-//   chatMessagesStore.chat_id = null;
-// });
 </script>
 
 <style scoped>

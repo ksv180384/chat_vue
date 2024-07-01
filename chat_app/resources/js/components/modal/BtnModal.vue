@@ -1,13 +1,13 @@
 <template>
-    <button
-      type="button"
-      class="btn"
-      :class="[classType, classSize]"
-      data-bs-toggle="modal"
-      :data-bs-target="`#${modalTargetId}`"
-    >
-        <slot></slot>
-    </button>
+  <button
+    type="button"
+    class="btn"
+    :class="[classType, classSize]"
+    data-bs-toggle="modal"
+    :data-bs-target="`#${modalTargetId}`"
+  >
+    <slot></slot>
+  </button>
 </template>
 
 <script setup>

@@ -6,12 +6,11 @@
     </div>
 </template>
 
-<script>
+<script setup>
 
-export default {
-    name: "LoadPage",
-    props: ['load']
-}
+const props = defineProps({
+  load: { type: Boolean, default: false }
+});
 </script>
 
 <style scoped>

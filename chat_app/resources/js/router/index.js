@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import api from '@/helpers/api';
+import api from '@/services/api';
 import { useAuthUserStore } from '@/store/auth_user.js';
 import { usePageStore } from '@/store/page.js';
 

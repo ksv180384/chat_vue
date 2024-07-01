@@ -80,7 +80,6 @@
 
 import useVuelidate from '@vuelidate/core';
 import { required, email, minLength, sameAs, helpers } from '@vuelidate/validators';
-import api from '@/helpers/api.js';
 import {mapMutations} from "vuex";
 import { getResponseErrorMessage, responseErrorNote } from '@/helpers/helpers.js';
 import { registration } from '@/services/user_service.js';

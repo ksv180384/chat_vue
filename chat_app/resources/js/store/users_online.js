@@ -15,6 +15,9 @@ export const useUsersOnlineStore = defineStore('usersOnlineStore', {
     setUsersIds(ids){
       this.ids = ids;
     },
+    addId(id){
+      this.ids = [...this.ids, id];
+    },
     clearData(){
       this.ids = initIds;
     },

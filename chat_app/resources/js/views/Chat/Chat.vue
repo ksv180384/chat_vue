@@ -41,7 +41,7 @@
             </a>
           </li>
           <li>
-            <a v-if="chatId === chat.creator?.id"
+            <a v-if="authUserId === chat.creator?.id"
                href="#"
                class="dropdown-item"
                @click.prevent="remove"
@@ -58,11 +58,11 @@
       <div class="col-12 col-lg-3 col-xl-3 border-right">
         <SearchUserChat
           v-model="searchUserText"
-          :show_btn_join_user="chatId === chat.creator.id"
+          :show-btn-join-user="showBtnJoinUser"
         />
         <ChatUsersList
           :chat-users="usersList"
-          :chat-creator-id="chat.creator?.id"
+          :chat-creator-id="chat?.creator.id || 0"
         />
       </div>
       <div class="col-12 col-lg-9 col-xl-9">
@@ -72,17 +72,18 @@
             :is-next-page="isNextPage"
           />
         </div>
-        <SendMessage :chat-id="chat.id"/>
+        <SendMessage :chat-id="chat?.id"/>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useRoomsStore } from '@/store/chats_rooms.js';
 import { usePageStore } from '@/store/page.js';
+import { useAuthUserStore } from '@/store/auth_user.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -100,7 +101,9 @@ const router = useRouter();
 const route = useRoute();
 const roomsStore = useRoomsStore();
 const pageStore = usePageStore();
+const authUserStore = useAuthUserStore();
 const chatId = ref(route.params.id);
+const authUserId = computed(() => authUserStore.auth_data?.id);
 const searchUserText = ref('');
 const isLoading = ref(false);
 
@@ -120,11 +123,15 @@ const users = computed(() => {
 });
 
 const messages = computed(() => {
-  return pageStore.page.messages.reverse();
+  return pageStore.page.messages;
 });
 
 const isNextPage = computed(() => {
-  return !!pageStore.page.pagination.next_page_url;
+  return !!pageStore.page.pagination?.next_page_url;
+});
+
+const showBtnJoinUser = computed(() => {
+  return authUserStore.auth_data.id === chat.value?.creator.id;
 });
 
 // const loadChat = async () => {

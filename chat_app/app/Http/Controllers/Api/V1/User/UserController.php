@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Api\V1\BaseController;
-use App\Http\Resources\User\UserCollection;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 
@@ -18,13 +18,12 @@ class UserController extends BaseController
     }
 
     /**
-     * Все пользователи
-     * @return UserCollection|\Exception
+     * @return \Exception|\Illuminate\Http\Resources\Json\ResourceCollection
      */
     public function index()
     {
         try {
-            return new UserCollection(User::all());
+            return UserResource::collection(User::all());
         } catch (\Exception $e){
             return new \Exception(config('app_messages.errors.update_data'));
         }
@@ -33,13 +32,13 @@ class UserController extends BaseController
     /**
      * Поиск пользователя
      * @param $userName
-     * @return UserCollection|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\ResourceCollection
      */
     public function search($userName)
     {
         try {
             $user = $this->userService->search($userName);
-            return new UserCollection($user);
+            return UserResource::collection($user);
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], 422);
         }

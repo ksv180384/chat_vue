@@ -7,33 +7,9 @@ export default defineConfig({
   server: {
     host: true,
     port: 8088,
-    // host: '0.0.0.0',
     hmr: {
       host: 'localhost',
-      // overlay: false,
-      // clientPort: 3077,
     },
-    proxy: {
-      // '/': {
-      //   target: 'http://localhost:8077',
-      //   // changeOrigin: true,
-      //   // secure: false,
-      //   // logLevel: 'debug'
-      // },
-      // '/socket.io': {
-      //   target: 'http://localhost:3077',
-      //   changeOrigin: true,
-      //   ws: true,
-      // },
-    }
-    // proxy: {
-    //   '/ok': {
-    //     target: 'http://chat-vue-nodejs',
-    //     changeOrigin: true,
-    //     secure: false,
-    //     // logLevel: 'debug'
-    //   },
-    // }
   },
   plugins: [
     laravel({

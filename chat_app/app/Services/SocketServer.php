@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Resources\Chat\ChatResource;
 use App\Http\Resources\Message\MessageResource;
+use App\Http\Resources\User\ChatUsersResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -29,13 +30,22 @@ class SocketServer
         $res = $this->post('remove-chat', Auth::id(), ['chat_id' => $chatId]);
     }
 
-    public function userJoinToChat(ChatResource $chat)
+    /**
+     * @param array $joinData ['user', 'chat']
+     * @return false|void
+     */
+    public function userJoinToChat(ChatUsersResource $joinUser, ChatResource $chat)
     {
         if (!Auth::check()){
             return false;
         }
 
-        $res = $this->post('user-join-to-chat', Auth::id(), $chat->toArray());
+        $res = $this->post('user-join-to-chat', Auth::id(), ['join_user' => $joinUser->toArray(), 'chat' => $chat->toArray()]);
+    }
+
+    public function userLaveChat(int $chatId, int $userId)
+    {
+        $res = $this->post('user-lave-chat', Auth::id(), ['chat_id' => $chatId, 'user_id' => $userId]);
     }
 
     /**

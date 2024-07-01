@@ -29,7 +29,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthUserStore } from '@/store/auth_user.js';
-import api from '@/helpers/api.js';
+import api from '@/services/api.js';
 
 const router = useRouter();
 const authUserStore = useAuthUserStore();

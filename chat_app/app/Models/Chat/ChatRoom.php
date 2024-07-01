@@ -43,17 +43,27 @@ class ChatRoom extends Model
 
     public function settings()
     {
-        return $this->hasOne(ChatUserSettings::class)
-            ->where('user_id', Auth::id());
+
+//        $userId = !empty($this->settingsUserId) ? $this->settingsUserId : Auth::id();
+//        dd($userId);
+        return $this->hasOne(ChatUserSettings::class);
+//            ->where('user_id', $userId);
     }
 
-    // Scopes
+    // Scopes --------
 
     public function scopeOne($query)
     {
         return $query->with([
             'creator:id,name,avatar',
         ]);
+    }
+
+    public function scopeSettingByUserId($query, int $userId)
+    {
+        return $query->with(['settings' => function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        },]);
     }
 
     public function scopeList($query)

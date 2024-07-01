@@ -110,23 +110,28 @@ app.post('/enter-room', (req, res) => {
 app.post('/user-join-to-chat', (req, res) => {
 
     // Получение данных из POST-запроса
-    const data = req.body;
+    const reqBody = req.body;
 
-    const userId = +data.user_id;
-    const chatData = data.chat_data;
+    const userId = +reqBody.user_id;
+    const chatData = reqBody.data.chat;
+    const joinUserData = reqBody.data.join_user;
     const joinRoomId = `chat_${chatData.id}`;
 
     // получаем все сокет ид поиглашаемого пользователя
-    const userSockets = getSocketsByUserId(socketMap, userId);
+    const userSockets = getSocketsByUserId(socketMap, joinUserData.id);
 
     // Оповещаем всех участников комнаты о добавлении нового пользователя и добавляем пользователя в комнату
-    io.sockets.to(joinRoomId).emit('addUserChat', { chat_data: chatData, user_id: userId });
+    io.sockets.to(joinRoomId).emit('addUserChat', { join_user: joinUserData, chat_id: chatData.id });
     for (let [socketKey, userSocket] of userSockets) { // Добавляем пользователя в комнату
         io.sockets.sockets.get(socketKey).join(joinRoomId);
     }
 
+    // Получаем превый сокет пользователя из массива его соктов, чтоб по первому сокету узнать все комнаты
+    // в которых состоит пользователь
+    const [firstUserSocketKey] = userSockets.keys();
+    const firstUserSocket = io.sockets.sockets.get(firstUserSocketKey);
     // Получаем пользователей из всех комнат к которым подключен приглашаемый пользователь
-    const usersSocketIdByAllRooms = getUsersSocketIdByAllRooms(socket);
+    const usersSocketIdByAllRooms = getUsersSocketIdByAllRooms(firstUserSocket);
 
     // Получаем массив идентификаторов пользователей, которые состоят в комнате,
     // в которую сейчас пригласили пользователя
@@ -137,7 +142,50 @@ app.post('/user-join-to-chat', (req, res) => {
     }
 
     // Отправка ответа клиенту
-    res.status(200).send('join-user-chat - запрос успешно обработан');
+    res.status(200).send('user-join-to-chat - запрос успешно обработан');
+});
+
+app.post('/user-lave-chat', (req, res) => {
+    const reqBody = req.body;
+
+    const userId = reqBody.data.user_id;
+    const chatId = reqBody.data.chat_id;
+    const roomName = `chat_${chatId}`;
+
+    // Все сокеты пользователя
+    const userSockets = getSocketsByUserId(socketMap, userId);
+    const [firstUserSocketKey] = userSockets.keys();
+    const firstUserSocket = io.sockets.sockets.get(firstUserSocketKey);
+    // Удаляем все сокеты пользователя из комнаты
+    for (let [socketKey, userSocket] of userSockets) {
+        io.sockets.sockets.get(socketKey).leave(roomName); // Удаляем пользователя из чата
+    }
+
+    // Получаем пользователей из всех комнат к которым подключен приглашаемый пользователь
+    const usersSocketIdByAllRooms = getUsersSocketIdByAllRooms(firstUserSocket);
+    const usersIds = getUsersIdsAllRooms(usersSocketIdByAllRooms, socketMap);
+    // Отсылаем текущему пользовотелю оповещение, что он покинул чат
+    for (let [socketKey, userSocket] of userSockets) {
+        io.sockets.sockets.get(socketKey).emit('currentUserLaveChat', { chat_id: chatId, users_online: usersIds });
+    }
+
+    // --- Отправка оповещения всем пользователям, которые сосотояли в чате, который покинул пользователь
+    // Получаем все сокеты комнаты
+    const roomSocketsKeysList =  io.sockets.adapter.rooms.get(roomName);
+
+    // Рассилаем всем пользователям, что пользователь вышел из чата
+    // TODO Рассалка ааждому пользователю его онлайн пользователей с которыми он состоит в чате
+    for (let roomSocketsKey of roomSocketsKeysList) {
+        const socketItem = io.sockets.sockets.get(roomSocketsKey);
+        // Получаем онлайн пользоватеоей которые состоят с пользователем в чате, для пользователей чата, который покинул пользователь
+        const usersSocketIdByAllRooms = getUsersSocketIdByAllRooms(socketItem);
+        const usersIds = getUsersIdsAllRooms(usersSocketIdByAllRooms, socketMap);
+        // Для каждого пользователя чата отправляем ID пользователя покинувшего чат и текущий онлайн пользователей
+        socketItem.emit('userLaveChat', { chat_id: chatId, user_id: userId, users_online: usersIds });
+    }
+
+    // Отправка ответа клиенту
+    res.status(200).send('user-lave-chat - запрос успешно обработан');
 });
 
 
@@ -166,7 +214,7 @@ io.on('connect', socket => {
 
     // Получаем массив идентификаторов пользователей с которыми текщий пользователь состоит в комнатах
     const usersIds = getUsersIdsAllRooms(usersSocketIdByAllRooms, socketMap);
-    socket.emit('users-online', usersIds);
+    socket.emit('usersOnline', usersIds);
 
     // Сразу после подключения к сокет серверу, пользователь отправляет это событие
     /*
@@ -243,11 +291,11 @@ io.on('connect', socket => {
     // });
 
     // Пользователь отписался от чата
-    socket.on('laveUserChat', function (chatData) {
-        const chatId = chatData.chat_id;
-        socket.to(`chat_${chatId}`).emit('laveUserChat', chatData);
-        socket.leave(`chat_${chatData.chat_id}`)
-    });
+    // socket.on('laveUserChat', function (chatData) {
+    //     const chatId = chatData.chat_id;
+    //     socket.to(`chat_${chatId}`).emit('laveUserChat', chatData);
+    //     socket.leave(`chat_${chatData.chat_id}`)
+    // });
 
     // Удаление чата
     socket.on('deleteChat', function (chat) {
@@ -292,7 +340,7 @@ io.on('connect', socket => {
 
 // Запуск сервера
 httpServer.listen(3077, () => {
-    console.log('Сервер запущен на порту 3077 ->>>>');
+    console.log('Сервер запущен на порту 3077');
 });
 
 /**
@@ -304,7 +352,7 @@ function getUsersSocketIdByAllRooms(socket){
     let usersAllRooms = new Set();
 
     socket.rooms.forEach((item) => {
-        console.log('Item: ', item);
+        // console.log('Item: ', item);
         const roomUsers = io.sockets.adapter.rooms.get(item);
         for (let user of roomUsers) {
             usersAllRooms.add(user);
@@ -324,15 +372,15 @@ function getUsersIdsAllRooms(usersAllRooms, allUsers){
 
     let usersIds = new Set();
 
-    console.log(usersAllRooms);
-    console.log(allUsers);
+    // console.log(usersAllRooms);
+    // console.log(allUsers);
 
     usersAllRooms.forEach((item) => {
         usersIds.add(allUsers.get(item).user_id);
 
     });
 
-    console.log([...usersIds]);
+    // console.log([...usersIds]);
 
     return [...usersIds];
 }

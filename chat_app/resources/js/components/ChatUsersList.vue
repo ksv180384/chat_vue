@@ -17,8 +17,6 @@ const props = defineProps({
   chatUsers: { type: Array, default: [] },
   chatCreatorId: { type: Number, required: true },
 });
-
-console.log(props.chatUsers)
 </script>
 
 <style scoped>

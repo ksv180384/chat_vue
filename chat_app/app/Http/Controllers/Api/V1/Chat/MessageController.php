@@ -34,7 +34,7 @@ class MessageController extends BaseController
             $messages = $this->chatMessageService->messagesByChatId($id);
 
             return response()->json([
-                'messages' => MessageResource::collection($messages->items()),
+                'messages' => MessageResource::collection(array_reverse($messages->items())),
                 'pagination' => PaginationSimpleResource::make($messages),
 
             ]);
@@ -54,7 +54,6 @@ class MessageController extends BaseController
         try {
             $message = $this->chatMessageService->create($request->validated());
             $socketServer->sendMessage(MessageResource::make($message));
-//            return MessageResource::make($message);
             return response()->json(['message' => 'Сообщение успешно отправлено.']);
         } catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);

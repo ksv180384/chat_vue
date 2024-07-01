@@ -6,8 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
-    public static $wrap = 'user';
-
     /**
      * Transform the resource into an array.
      *
@@ -23,5 +21,11 @@ class UserResource extends JsonResource
             'avatar_src' => $this->avatar_src,
             'name' => $this->name,
         ];
+    }
+
+    public static function collection($resource)
+    {
+        parent::$wrap = 'users';
+        return parent::collection($resource);
     }
 }
