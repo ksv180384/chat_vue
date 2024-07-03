@@ -4,11 +4,11 @@
       <div class="d-flex align-items-center">
         <img
           class="avatar-img me-2"
-          :src="authUserStore.auth_data.avatar"
-          :alt="authUserStore.auth_data.name"
+          :src="user.avatar"
+          :alt="user.name"
         />
         <router-link class="navbar-brand" :to="{ name: 'profile' }">
-          {{ authUserStore.auth_data.name }}
+          {{ user.name }}
         </router-link>
       </div>
 
@@ -27,17 +27,22 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthUserStore } from '@/store/auth_user.js';
+import { useSocketStore } from '@/store/socket.js';
 import api from '@/services/api.js';
 
 const router = useRouter();
 const authUserStore = useAuthUserStore();
+const socketStore = useSocketStore();
+const user = computed(() => authUserStore.auth_data || {});
 
 const logout = async () => {
 
   const resLogout = await api.post('logout');
-  authUserStore.setUser(null);
+  authUserStore.clearUser();
+  socketStore.socket.disconnect();
   // localStorage.removeItem('user_token');
   // localStorage.removeItem('user');
   // localStorage.removeItem('remember');

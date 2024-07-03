@@ -16,9 +16,7 @@ use Illuminate\Http\Response;
 class MessageController extends BaseController
 {
 
-    public function __construct(
-        private ChatMessageService $chatMessageService
-    )
+    public function __construct()
     {
         parent::__construct();
     }
@@ -26,12 +24,13 @@ class MessageController extends BaseController
     /**
      * Получаем сообщения чата
      * @param int $id
+     * @param ChatMessageService $chatMessageService
      * @return JsonResponse
      */
-    public function messagesByChatId(int $id): JsonResponse
+    public function messagesByChatId(int $id, ChatMessageService $chatMessageService): JsonResponse
     {
         try{
-            $messages = $this->chatMessageService->messagesByChatId($id);
+            $messages = $chatMessageService->messagesByChatId($id);
 
             return response()->json([
                 'messages' => MessageResource::collection(array_reverse($messages->items())),
@@ -46,13 +45,18 @@ class MessageController extends BaseController
     /**
      * Добавляем сообщение в чат
      * @param CreateMessageRequest $request
+     * @param ChatMessageService $chatMessageService
      * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function store(CreateMessageRequest $request, SocketServer $socketServer): JsonResponse
+    public function store(
+        CreateMessageRequest $request,
+        ChatMessageService $chatMessageService,
+        SocketServer $socketServer
+    ): JsonResponse
     {
         try {
-            $message = $this->chatMessageService->create($request->validated());
+            $message = $chatMessageService->create($request->validated());
             $socketServer->sendMessage(MessageResource::make($message));
             return response()->json(['message' => 'Сообщение успешно отправлено.']);
         } catch (\Exception $e){
@@ -63,16 +67,15 @@ class MessageController extends BaseController
     /**
      * Фиксрем дату прочтения пользователем сообщений чата
      * @param ReadMessagesChat $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    /**
-     * @param ReadMessagesChat $request
+     * @param ChatMessageService $chatMessageService
      * @return JsonResponse|void
      */
-    public function read(ReadMessagesChat $request)
+    public function read(ReadMessagesChat $request, ChatMessageService $chatMessageService)
     {
         try {
-            $this->chatMessageService->read($request->user_id, $request->chat_room_id);
+            $chatMessageService->read($request->user_id, $request->chat_room_id);
+
+            return response()->json(['message' => 'Зарос успешно выполнен.']);
         }catch (\Exception $e){
             return response()->json(['message' => $e->getMessage()], 422);
         }

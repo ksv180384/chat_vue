@@ -14,20 +14,19 @@ class ChatUserSettingsService extends Service
     public function __construct()
     {
         parent::__construct();
-        $this->model = new ChatUserSettings();
     }
 
     /**
      * Получаем настройки чата в котором состоит пользователь
-     * @param $chatId
-     * @param $userId
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|mixed|object|null
+     * @param int $chatId
+     * @param int $userId
+     * @return Model
      * @throws \Exception
      */
-    public function getSettings($chatId, $userId)
+    public function getSettings(int $chatId, int $userId): Model
     {
         try {
-            $chatUserSettings = $this->model::query()->where('chat_room_id', $chatId)->where('user_id', $userId)->first();
+            $chatUserSettings = ChatUserSettings::query()->where('chat_room_id', $chatId)->where('user_id', $userId)->first();
             if(!$chatUserSettings){
                 $chatUserSettings = $this->initSettings($chatId,  $userId);
             }
@@ -39,13 +38,15 @@ class ChatUserSettingsService extends Service
 
     /**
      * Добавляем настройки чата пользователя
-     * @param $data
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     * @param array $data
+     * @return Model
      * @throws \Exception
      */
-    public function createSettings($data){
+    public function createSettings(array $data): Model
+    {
         try{
             $chatUserSettings = $this->model::query()->create($data);
+
             return $chatUserSettings;
         } catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.add_data'));
@@ -54,28 +55,29 @@ class ChatUserSettingsService extends Service
 
     /**
      * Добавляем настройки чата если их еще нет
-     * @param $chatId
-     * @param $userId
-     * @return mixed
+     * @param int $chatId
+     * @param int $userId
+     * @return Model
      * @throws \Exception
      */
-    public function initSettings($chatId, $userId){
+    public function initSettings(int $chatId, int $userId): Model
+    {
         try {
-            $chatUserSettings = $this->model::query()->create([
+            $chatUserSettings = ChatUserSettings::query()->create([
                 'chat_room_id' => $chatId,
                 'user_id' => $userId,
             ]);
+
+            return $chatUserSettings;
         } catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.add_data'));
         }
-
-        return $chatUserSettings;
     }
 
     /**
-     * @param $chatId
-     * @param $data
-     * @return \Illuminate\Database\Eloquent\Model
+     * @param int $chatId
+     * @param array $data
+     * @return Model
      * @throws \Exception
      */
     public function updateSetting(int $chatId, array $data): Model

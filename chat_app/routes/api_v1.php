@@ -30,7 +30,7 @@ Route::group(['middleware' => ['auth:api_v1', 'page-data']], function () {
     Route::post('logout', [\App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController::class, 'destroy']);
 
     // Профиль
-    Route::get('user/profile', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'index']);
+    Route::get('page/profile', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'index']);
     Route::put('user/profile/update', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'update']);
     Route::delete('user/profile/remove-avatar', [\App\Http\Controllers\Api\V1\User\ProfileController::class, 'removeAvatar']);
 

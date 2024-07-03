@@ -100,9 +100,8 @@ const search = () => {
 const searchUserRequest = async () => {
   isLoadingSearch.value = true;
   try {
-    const resSearchUserToChat = await searchUserToChat(searchUser.value);
-    users.value = resSearchUserToChat.users;
-    console.log(users.value)
+    const res = await searchUserToChat(searchUser.value);
+    users.value = res;
   }catch (e) {
     users.value = [];
     responseErrorNote(e);

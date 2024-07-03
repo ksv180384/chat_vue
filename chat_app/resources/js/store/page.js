@@ -4,6 +4,7 @@ const initPage = {};
 
 export const usePageStore = defineStore('pageStore', {
   state: () => ({
+    isLoading: false,
     page: initPage,
   }),
   actions: {

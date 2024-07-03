@@ -1,32 +1,26 @@
 <template>
-    <div>
-        <component :is="layout">
-            <router-view :layout="layout"/>
-        </component>
-        <LoadPage :load="load_page"/>
-        <MessageNotification/>
-    </div>
+  <div>
+    <component :is="layout">
+      <router-view :layout="layout"/>
+    </component>
+    <LoadPage :load="loadPage"/>
+    <MessageNotification/>
+  </div>
 </template>
 
-<script>
-
-import {mapGetters} from 'vuex';
+<script setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { usePageStore } from '@/store/page.js';
 
 import LoadPage from '@/components/LoadPage.vue';
 import MessageNotification from '@/components/MessageNotification.vue';
 
-export default {
-    components: {
-        MessageNotification,
-        LoadPage,
-    },
-    computed: {
-        ...mapGetters(['load_page']),
-        layout(){
-            //return this.$route.meta.layout || 'DefaultLayout'
-            return this.$route.meta.layout;
-        }
-    }
-}
+const pageStore = usePageStore();
+const route = useRoute();
+
+const layout = computed(() => route.meta.layout);
+const loadPage = computed(() => pageStore.isLoading);
+
 </script>
 

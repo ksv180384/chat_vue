@@ -1,11 +1,4 @@
 import api from '@/services/api';
-import {
-    deleteChatToChatSocket,
-    createChatToChatSocket,
-    joinUserToChatSocket,
-    laveUserToChatSocket,
-    sendMessageSocket
-} from '@/services/socket_service.js';
 import { pageLoad } from '@/services/service.js';
 
 export const loadChatList = async () => {
@@ -51,7 +44,7 @@ export const searchUserToChat = async (userName) => {
 
 export const deleteChat = async (chatId) => {
     const res = await api.post(`/chat/delete`, { id: chatId });
-    deleteChatToChatSocket(chatId);
+    // deleteChatToChatSocket(chatId);
     return res;
 }
 

@@ -18,6 +18,9 @@ export const useUsersOnlineStore = defineStore('usersOnlineStore', {
     addId(id){
       this.ids = [...this.ids, id];
     },
+    removeId(id){
+      this.ids = this.ids.filter(currentId => currentId !== id);
+    },
     clearData(){
       this.ids = initIds;
     },

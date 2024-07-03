@@ -6,21 +6,25 @@ use App\Http\Controllers\Api\V1\BaseController;
 use App\Models\Chat\ChatUserSettings;
 use App\Models\Chat\ChatRoom;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ChatService
+class ChatService extends Service
 {
 
-    public function __construct(){}
+    public function __construct(){
+        parent::__construct();
+    }
 
     /**
-     * @param $id
-     * @return mixed
+     * @param int $id
+     * @return Model
      * @throws \Exception
      */
-    public function getById($id){
+    public function getById(int $id): Model
+    {
         $chat = ChatRoom::query()->one()->find($id);
 
         if(!$chat){
@@ -32,11 +36,11 @@ class ChatService
 
     /**
      * Добавляем новый чат
-     * @param $data
-     * @return mixed
+     * @param array $data
+     * @return Model
      * @throws \Exception
      */
-    public function create($data)
+    public function create(array $data): Model
     {
         $userId = Auth::id();
 
@@ -48,6 +52,7 @@ class ChatService
                 return $chatRoom;
             }, 3);
             (new ChatUserSettingsService())->initSettings($chatRoom->id, $userId);
+
             return $chatRoom;
         }catch (\Exception $e){
             throw new \Exception(config('app_messages.errors.get_update'));
@@ -56,6 +61,7 @@ class ChatService
 
     /**
      * Получаем ид чатов в которых состоит пользователь
+     * @param int $id
      * @return Collection
      * @throws \Exception
      */
@@ -72,11 +78,11 @@ class ChatService
 
     /**
      * Получаем чаты в которых состоит пользователь
-     * @param $userId
-     * @return mixed
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Collection
      * @throws \Exception
      */
-    public function getByUserId($userId)
+    public function getByUserId(int $userId): \Illuminate\Database\Eloquent\Collection
     {
         $chats = ChatRoom::query()
             ->select('chat_rooms.*')
@@ -98,12 +104,12 @@ class ChatService
 
     /**
      * Удаляем связь пользователя с чатом
-     * @param $chatId
-     * @param $userId
+     * @param int $chatId
+     * @param int $userId
      * @return void
      * @throws \Exception
      */
-    public function lave($chatId, $userId)
+    public function lave(int $chatId, int $userId): void
     {
 
         try {
@@ -122,10 +128,11 @@ class ChatService
     }
 
     /**
-     * Удаляем чат
-     * @param $chatId
+     * @param int $chatId
+     * @return void
+     * @throws \Exception
      */
-    public function delete($chatId)
+    public function delete(int $chatId): void
     {
         try {
             DB::transaction(function () use ($chatId) {

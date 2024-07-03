@@ -6,6 +6,7 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -22,10 +23,10 @@ class UserService extends Service
     /**
      * Поиск пользователя
      * @param string $userName
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return Collection
      * @throws \Exception
      */
-    public function search($userName)
+    public function search(string $userName): Collection
     {
         try{
             $users = User::query()
@@ -41,10 +42,10 @@ class UserService extends Service
     /**
      * Получаем пользователя
      * @param int $id
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return Model
      * @throws \Exception
      */
-    public function getById($id)
+    public function getById(int $id): Model
     {
         try{
             $user = User::query()->find($id);
@@ -58,10 +59,10 @@ class UserService extends Service
      * Обновляем данные пользователя
      * @param User $user
      * @param UpdateUserRequest $request
-     * @return User
+     * @return Model
      * @throws \Exception
      */
-    public function update(User $user, UpdateUserRequest $request)
+    public function update(User $user, UpdateUserRequest $request): Model
     {
         try {
             $user->update([
@@ -87,7 +88,10 @@ class UserService extends Service
      */
     public function removeAvatar(User $user): User
     {
-        try {
+        if(empty($user->avatar)){
+            return  $user;
+        }
+        try {;
             Storage::disk('public')->delete($user->avatar);
             $user->update(['avatar' => null]);
 
@@ -117,7 +121,13 @@ class UserService extends Service
         return $users;
     }
 
-    private function updateAvatar(User $user, UploadedFile $file)
+    /**
+     * @param User $user
+     * @param UploadedFile $file
+     * @return void
+     * @throws \Exception
+     */
+    private function updateAvatar(User $user, UploadedFile $file): void
     {
         $this->removeAvatar($user);
         $path = self::PATH_STORAGE . '/' . $user->id;

@@ -6,58 +6,64 @@ use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\User\UserResource;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends BaseController
 {
-    private $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct()
     {
         parent::__construct();
-        $this->userService = $userService;
     }
 
     /**
      * Профиль пользователя
-     * @return UserResource|\Illuminate\Http\JsonResponse
+     * @param UserService $userService
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(UserService $userService): JsonResponse
     {
         try{
-            $user = $this->userService->getById(Auth::id());
-            return new UserResource($user);
+            $user = $userService->getById(Auth::id());
+
+            return response()->json(new UserResource($user));
         } catch (\Exception $e){
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         }
     }
 
     /**
      * Обновляем данные пользователя
      * @param UpdateUserRequest $request
-     * @return UserResource|\Illuminate\Http\JsonResponse
+     * @param UserService $userService
+     * @return JsonResponse
      */
-    public function update(UpdateUserRequest $request)
+    public function update(UpdateUserRequest $request, UserService $userService): JsonResponse
     {
         try{
-            $user = $this->userService->update(Auth::user(), $request);
-            return new UserResource($user);
+            $currentUser = Auth::user();
+            $user = $userService->update($currentUser, $request);
+            return response()->json(new UserResource($user));
         } catch (\Exception $e){
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
     /**
      * Удаляем аватар
-     * @return UserResource|\Illuminate\Http\JsonResponse
+     * @param UserService $userService
+     * @return UserResource|JsonResponse
      */
-    public function removeAvatar()
+    public function removeAvatar(UserService $userService)
     {
         try{
-            $user = $this->userService->removeAvatar(Auth::user());
-            return new UserResource($user);
+            $currentUser = Auth::user();
+            $user = $userService->removeAvatar($currentUser);
+            return response()->json(new UserResource($user));
         } catch (\Exception $e){
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

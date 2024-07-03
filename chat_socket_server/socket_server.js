@@ -174,7 +174,7 @@ app.post('/user-lave-chat', (req, res) => {
     const roomSocketsKeysList =  io.sockets.adapter.rooms.get(roomName);
 
     // Рассилаем всем пользователям, что пользователь вышел из чата
-    // TODO Рассалка ааждому пользователю его онлайн пользователей с которыми он состоит в чате
+    // TODO Рассалка каждому пользователю его онлайн пользователей с которыми он состоит в чате
     for (let roomSocketsKey of roomSocketsKeysList) {
         const socketItem = io.sockets.sockets.get(roomSocketsKey);
         // Получаем онлайн пользоватеоей которые состоят с пользователем в чате, для пользователей чата, который покинул пользователь

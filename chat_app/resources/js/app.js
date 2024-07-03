@@ -1,10 +1,9 @@
 import './bootstrap';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia'
-import store from '@/store';
 import router from '@/router';
 import BootstrapVue3 from 'bootstrap-vue-3';
-import Toast from "vue-toastification";
+import Toast from 'vue-toastification';
 // Import the CSS or use your own!
 import 'vue-toastification/dist/index.css';
 
@@ -21,7 +20,6 @@ const optionsToast = {
 
 
 createApp(App)
-    .use(store)
     .use(createPinia())
     .use(router)
     .use(BootstrapVue3)

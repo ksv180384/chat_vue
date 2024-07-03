@@ -6,41 +6,48 @@ use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class UserController extends BaseController
 {
-    private $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct()
     {
         parent::__construct();
-        $this->userService = $userService;
     }
 
     /**
-     * @return \Exception|\Illuminate\Http\Resources\Json\ResourceCollection
+     * @return JsonResponse
      */
-    public function index()
+    /**
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
         try {
-            return UserResource::collection(User::all());
+            $users = User::all();
+
+            return response()->json(UserResource::collection($users));
         } catch (\Exception $e){
-            return new \Exception(config('app_messages.errors.update_data'));
+            response()->json(['message' => config('app_messages.errors.update_data')], Response::HTTP_NOT_FOUND);
         }
     }
 
     /**
      * Поиск пользователя
-     * @param $userName
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\ResourceCollection
+     * @param string $userName
+     * @param UserService $userService
+     * @return JsonResponse
      */
-    public function search($userName)
+    public function search(string $userName, UserService $userService)
     {
         try {
-            $user = $this->userService->search($userName);
-            return UserResource::collection($user);
+            $user = $userService->search($userName);
+
+            return response()->json(UserResource::collection($user));
         } catch (\Exception $e){
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

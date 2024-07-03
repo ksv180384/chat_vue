@@ -7,7 +7,10 @@ export const useAuthUserStore = defineStore('authUserStore', {
   }),
   actions: {
     setUser(user){
-      this.auth_data = user;
+      this.auth_data = { ...this.auth_data, ...user };
+    },
+    clearUser(){
+      this.auth_data = initAuthUser;
     },
   }
 });

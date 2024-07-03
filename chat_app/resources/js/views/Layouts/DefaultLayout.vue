@@ -39,7 +39,7 @@ onMounted(async () => {
   await loadChats();
 });
 
-const currentUserId = computed(() => authUser.auth_data.id);
+const currentUserId = computed(() => authUser.auth_data?.id || null);
 const isSocketConnected = computed(() => socketStore.socket.connected);
 
 const loadChats = async () => {
@@ -52,7 +52,7 @@ const loadChats = async () => {
       chats: resChatsList?.map(item => item.id),
     };
 
-    socketStore.socket.connect();
+    await socketStore.socket.connect();
   }catch(e){
     console.error('error load chats', e);
   }

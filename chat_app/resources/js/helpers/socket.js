@@ -1,53 +1,18 @@
 import { io } from 'socket.io-client';
-import store from '@/store';
 // import {userData} from '@/helpers/helpers.js';
 import router from '@/router';
 import { useRoomsStore } from '@/store/chats_rooms.js';
 import { useUsersOnlineStore } from '@/store/users_online.js';
 import { usePageStore } from '@/store/page.js';
-// import { useChatMessagesStore } from '@/store/__chat_messages.js';
-// import {laveUserToChatSocket} from '@/services/socket_service.js';
-import { useAuthUserStore } from '@/store/auth_user.js';
 
-// const connectionOptions =  {
-//   "force new connection" : true,
-//   "reconnectionAttempts": "Infinity", //avoid having user reconnect manually in order to prevent dead clients after a server restart
-//   "timeout" : 10000, //before connect_error and connect_timeout are emitted.
-//   "transports" : ["websocket"],
-//   autoConnect: false,
-// };
 const connectionOptions = {
   forceNew: true,
   reconnectionAttempts: "Infinity",
   timeout: 10000,
   autoConnect: false,
+  transports : ["websocket", "polling"],
 };
 const socket = io('http://localhost:3077', connectionOptions);
-
-// Событие подключения к серверу
-// socket.on('connect', async (data) => {
-//
-//   console.log('@connect', data);
-//
-//   const roomsStore = useRoomsStore();
-//   const chatsList = roomsStore.chats;
-//   if(chatsList.length === 0){
-//     console.log('no chats');
-//   }
-//
-//   // Добавляем доступные комнаты
-//   const rooms = [];
-//   chatsList.forEach((el, i) => {
-//     rooms.push(`chat_${el.id}`);
-//   });
-//
-//   // socket.emit('enterRoom', rooms);
-//
-//   const authUserStore = useAuthUserStore();
-//   const userId = authUserStore.auth_data.id;
-//   // socket.emit('userConnect', userId);
-//   // store.commit('setIsSocketConnect', true);
-// });
 
 // Событие получения сообщения, получают все, кто состоит хоть в одном из чатов с отправителем
 socket.on('createChat', function(data){
@@ -141,8 +106,6 @@ socket.on('removeChat', async (data) => {
   if(currentRoute.name === 'chat' && currentRoute.params.id === chatId){
     router.push('/');
   }
-
-  //laveUserToChatSocket(store.getters["storeUser/id"], chatId);
 });
 
 // При подключении к чату, обратно получаем это событие со всеми пользователями онлайн
@@ -161,13 +124,16 @@ socket.on('userConnect', async (userId) => {
 
 // Когда пользователю отключается от чата, все пользователи (с которыми но состоит в чате) получают это событие
 socket.on('userDisconnect', async (userId) => {
-  store.commit('removeUserOnline', userId);
+  const usersOnlineStore =  useUsersOnlineStore();
+  usersOnlineStore.removeId(userId);
+  // store.commit('removeUserOnline', userId);
 });
 
 // Событие срабатывает при потере соединения с сервером
 socket.on('disconnect', async () => {
-  store.commit('setIsSocketConnect', false);
-  store.commit('setUsersOnline', []);
+  // store.commit('setIsSocketConnect', false);
+  const usersOnlineStore =  useUsersOnlineStore();
+  usersOnlineStore.clearData();
 });
 
 export default socket;

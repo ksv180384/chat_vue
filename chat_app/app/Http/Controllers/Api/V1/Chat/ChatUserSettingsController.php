@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Api\V1\Chat;
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Requests\Chat\ChangeSettingRequest;
 use App\Services\ChatUserSettingsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
-class ChatUserSettingsController  extends BaseController
+class ChatUserSettingsController extends BaseController
 {
 
     public function __construct()
@@ -22,7 +23,7 @@ class ChatUserSettingsController  extends BaseController
      * @param ChatUserSettingsService $chatUserSettingsService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function settingsByUser(int $chatId, ChatUserSettingsService $chatUserSettingsService)
+    public function settingsByUser(int $chatId, ChatUserSettingsService $chatUserSettingsService): JsonResponse
     {
         try {
             $settings = $chatUserSettingsService->getSettings($chatId, Auth::id());
@@ -44,7 +45,7 @@ class ChatUserSettingsController  extends BaseController
         int $chatId,
         ChangeSettingRequest $request,
         ChatUserSettingsService $chatUserSettingsService
-    )
+    ): JsonResponse
     {
         $arRequest = $request->validated();
 

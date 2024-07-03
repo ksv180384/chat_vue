@@ -26,10 +26,7 @@ use Illuminate\Support\Facades\Auth;
 class ChatController extends BaseController
 {
 
-    public function __construct(
-        private ChatService $chatService,
-        private ChatMessageService $chatMessageService
-    )
+    public function __construct()
     {
         parent::__construct();
     }
@@ -40,15 +37,6 @@ class ChatController extends BaseController
      */
     public function index(): JsonResponse
     {
-        /*
-        $userId = Auth::id();
-        try {
-            $chats = $this->chatService->getByUserId($userId);
-            return response()->json(ChatResource::collection($chats));
-        } catch (\Exception $e){
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
-        }
-        */
         return response()->json([]);
     }
 
@@ -106,13 +94,18 @@ class ChatController extends BaseController
     /**
      * Создать чат
      * @param CreateChatRequest $request
+     * @param ChatService $chatService
      * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function store(CreateChatRequest $request, SocketServer $socketServer): JsonResponse
+    public function store(
+        CreateChatRequest $request,
+        ChatService $chatService,
+        SocketServer $socketServer
+    ): JsonResponse
     {
         try {
-            $chatRoom = $this->chatService->create($request->validated());
+            $chatRoom = $chatService->create($request->validated());
             $socketServer->createChat(ChatResource::make($chatRoom));
             return response()->json(ChatResource::make($chatRoom));
         }catch (\Exception $e){
@@ -126,7 +119,10 @@ class ChatController extends BaseController
      * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function join(JoinUserChatRequest $request, SocketServer $socketServer): JsonResponse
+    public function join(
+        JoinUserChatRequest $request,
+        SocketServer $socketServer
+    ): JsonResponse
     {
         try {
             $chatRoom = ChatRoom::findOrFail($request->chat_room_id);
@@ -150,15 +146,20 @@ class ChatController extends BaseController
     /**
      * Покинуть чат
      * @param LaveChatRequest $request
+     * @param ChatService $chatService
      * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function lave(LaveChatRequest $request, SocketServer $socketServer): JsonResponse
+    public function lave(
+        LaveChatRequest $request,
+        ChatService $chatService,
+        SocketServer $socketServer
+    ): JsonResponse
     {
         ['id' => $chatRoomId, 'user_id' => $userId] = $request->validated();
 
         try {
-            $this->chatService->lave($chatRoomId, $userId);
+            $chatService->lave($chatRoomId, $userId);
             $socketServer->userLaveChat($chatRoomId, $userId);
             return response()->json(['message' => 'Вы учпешно покинули чат.']);
         } catch (\Exception $e){
@@ -169,13 +170,18 @@ class ChatController extends BaseController
     /**
      * Удвляем чат
      * @param DeleteChatRequest $request
+     * @param ChatService $chatService
      * @param SocketServer $socketServer
      * @return JsonResponse
      */
-    public function delete(DeleteChatRequest $request, SocketServer $socketServer): JsonResponse
+    public function delete(
+        DeleteChatRequest $request,
+        ChatService $chatService,
+        SocketServer $socketServer
+    ): JsonResponse
     {
         try {
-            $this->chatService->delete($request->id);
+            $chatService->delete($request->id);
             $socketServer->removeChat($request->id);
             return response()->json(['message' => 'Вы учпешно удалили чат.']);
         }catch (\Exception $e){

@@ -1,148 +1,145 @@
 <template>
-    <div>
-        <h1>
-            <router-link to="/"><FontAwesomeIcon icon="caret-left" /></router-link>
-            Профиль <small>{{ email }}</small>
-        </h1>
-        <form @submit.prevent="submit" action="">
-            <div class="d-flex flex-row mt-3">
-                <div class="load-file-block"
-                     :class="{ 'drag-enter': avatar_drag_enter }"
-                >
-                    <div v-if="avatar" class="loaded-avatar">
-                        <img ref="img_avatar"
-                             :alt="name"
-                             :src="avatar_src"
-                        />
-                        <div @click.stop="removeAvatar" class="avatar-delete">
-                            <FontAwesomeIcon icon="trash" />
-                        </div>
-                    </div>
-                    <input ref="inputImg"
-                           @dragenter="dragEnter"
-                           @dragleave="dragLeave"
-                           @drop="drop"
-                           @change="loadImage"
-                           type="file"
-                    />
-                </div>
-                <div class="flex-grow-1">
-                    <div class="form-floating mb-3">
-                        <input v-model="name"
-                               type="text"
-                               class="form-control"
-                               placeholder="Имя"
-                        />
-                        <label>Имя</label>
-                    </div>
-                </div>
+  <div>
+    <h1>
+      <router-link to="/"><FontAwesomeIcon icon="caret-left" /></router-link>
+      Профиль <small>{{ userData.email }}</small>
+    </h1>
+    <form @submit.prevent="submit" action="">
+      <div class="d-flex flex-row mt-3">
+        <div
+          class="load-file-block"
+          :class="{ 'drag-enter': avatarDragEnter }"
+        >
+          <div v-if="avatarSrc" class="loaded-avatar">
+            <img
+              ref="img_avatar"
+              :alt="userData.name"
+              :src="avatarSrc"
+            />
+            <div @click.stop="removeAvatar" class="avatar-delete">
+              <FontAwesomeIcon icon="trash" />
             </div>
-            <div class="mt-3 text-end">
-                <button type="submit" class="btn btn-outline-primary">Сохранить</button>
-            </div>
-        </form>
-    </div>
+          </div>
+          <input
+            ref="refInputImg"
+            type="file"
+            @dragenter="dragEnter"
+            @dragleave="dragLeave"
+            @drop="drop"
+            @change="loadImage"
+          />
+        </div>
+        <div class="flex-grow-1">
+          <div class="form-floating mb-3">
+            <input
+              v-model="formData.name"
+              type="text"
+              class="form-control"
+              placeholder="Имя"
+            />
+            <label>Имя</label>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 text-end">
+        <button type="submit" class="btn btn-outline-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, reactive } from 'vue';
 
-import { mapMutations } from 'vuex';
+import { useAuthUserStore } from '@/store/auth_user.js';
+import { usePageStore } from '@/store/page.js';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faCaretLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 
-import { loadProfileData, saveProfile, deleteAvatar } from '@/services/user_service.js';
+import { saveProfile, deleteAvatar } from '@/services/user_service.js';
 import { responseErrorNote } from '@/helpers/helpers.js';
 
 library.add(faCaretLeft, faTrash);
 
-export default {
-    name: "Profile",
-    components: {
-        FontAwesomeIcon,
-    },
-    data(){
-        return {
-            email: '',
-            name: '',
-            avatar: '',
-            avatar_src: '',
-            image_file: '',
-            avatar_drag_enter: false
-        }
-    },
-    mounted() {
-        this.loadProfile();
-    },
-    methods: {
-        ...mapMutations('storeUser', ['setUser']),
-        async loadProfile(){
-            const profileData = await loadProfileData();
-            this.email = profileData.email;
-            this.name = profileData.name;
-            this.avatar = profileData.avatar;
-            this.avatar_src = profileData.avatar_src;
-        },
-        loadImage(event){
-            if(!event.target.files || event.target.files.length === 0){
-                return true;
-            }
-            this.image_file = event.target.files[0];
-            this.avatar_src = '';
+const authUserStore = useAuthUserStore();
+const pageStore = usePageStore();
+const refInputImg = ref(null);
+const userData = computed(() => pageStore.page || {});
+const avatarSrc = ref(userData.value.avatar ? userData.value.avatar_src : null);
+const avatarDragEnter = ref(false);
+const formData = reactive({
+  name: pageStore.page.name || '',
+  avatar: null,
+});
 
-            const reader = new FileReader();
-            reader.readAsDataURL(this.image_file);
-            reader.onload = function () {
-                this.avatar = reader.result;
-                this.avatar_src = reader.result;
-            }.bind(this);
-        },
-        async submit(event){
-            const formData = new FormData();
-            formData.append('_method', 'PUT');
-            formData.append('name', this.name);
-            formData.append('avatar', this.image_file);
+const dragEnter = () => {
+  avatarDragEnter.value = true;
+}
+const dragLeave = () => {
+  avatarDragEnter.value = false;
+}
+const drop = () => {
+  avatarDragEnter.value = false;
+}
 
-            try {
-                const resSaveProfile = await saveProfile(formData);
-                this.setUser(resSaveProfile.user);
-                this.image_file = '';
-            } catch (e) {
-                responseErrorNote(e);
-            }
-        },
-        dragEnter(){
-            this.avatar_drag_enter = true;
-        },
-        dragLeave(){
-            this.avatar_drag_enter = false;
-        },
-        drop(){
-            this.avatar_drag_enter = false;
-        },
-        async removeAvatar(){
+const loadImage = (event) => {
+  if(!event.target.files || event.target.files.length === 0){
+    return true;
+  }
+  formData.avatar = event.target.files[0];
+  avatarSrc.value = '';
 
-            try{
-                const resDeleteAvatar = await deleteAvatar();
-                this.setUser(resDeleteAvatar.user);
-                this.avatar = '';
-                this.image_file = '';
-                this.$refs.inputImg.value = '';
-            } catch (e) {
-                responseErrorNote(e);
-            }
-        }
-    }
+  const reader = new FileReader();
+  reader.readAsDataURL(formData.avatar);
+  reader.onload = () => {
+    avatarSrc.value = reader.result;
+  };
+}
+
+const submit = async() => {
+  const fData = new FormData();
+  fData.append('_method', 'PUT');
+  fData.append('name', formData.name);
+  fData.append('avatar', formData.avatar || '');
+
+  try {
+    const res = await saveProfile(fData);
+    // this.setUser(resSaveProfile.user);
+    pageStore.page = res;
+    formData.avatar = null;
+    authUserStore.setUser({
+      name: res.name,
+      avatar: res.avatar_src,
+    });
+  } catch (e) {
+    responseErrorNote(e);
+  }
+}
+
+const removeAvatar = async () => {
+
+  try{
+    const res = await deleteAvatar();
+    formData.avatar = null;
+    avatarSrc.value = null;
+    refInputImg.value = '';
+    authUserStore.setUser({
+      avatar: res.avatar_src,
+    });
+  } catch (e) {
+    responseErrorNote(e);
+  }
 }
 </script>
 
 <style scoped>
 h1>small{
-    font-size: 16px;
+  font-size: 16px;
 }
 .drag-enter .loaded-avatar{
-    opacity: .2;
-    transition: all .5s;
+  opacity: .2;
+  transition: all .5s;
 }
 </style>
 

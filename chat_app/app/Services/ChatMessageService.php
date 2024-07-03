@@ -3,27 +3,29 @@
 namespace App\Services;
 
 use App\Models\Chat\ChatMessage;
-use App\Models\Chat\ChatRoom;
 use App\Models\Chat\ChatRoomToUser;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use phpDocumentor\Reflection\Types\Self_;
 
-class ChatMessageService extends Service{
+class ChatMessageService extends Service
+{
 
     const PAGINATE_COUNT = 10;
 
     public function __construct()
     {
         parent::__construct();
-        $this->model = new ChatMessage();
     }
 
     /**
      * Получаем сообщения чата
      * @param $chatId
-     * @return mixed
+     * @return Paginator
      * @throws \Exception
      */
-    public function messagesByChatId($chatId)
+    public function messagesByChatId(int $chatId): Paginator
     {
         try{
             $messages = ChatMessage::query()
@@ -40,16 +42,14 @@ class ChatMessageService extends Service{
 
     /**
      * Добавляем новое сообщение
-     * @param $messageData
-     * @return mixed
+     * @param array $messageData
+     * @return Model
      * @throws \Exception
      */
-    public function create($messageData)
+    public function create(array $messageData): Model
     {
         try{
             $message = ChatMessage::query()->create($messageData);
-//            dd($message);
-//            $message = ChatMessage::query()->list()->find($message->id);
 
             return $message;
         } catch (\Exception $e){
@@ -61,8 +61,10 @@ class ChatMessageService extends Service{
      * Фиксируем прочинанные сообщения чата
      * @param int $userId
      * @param int $chatId
+     * @return void
+     * @throws \Exception
      */
-    public function read($userId, $chatId)
+    public function read(int $userId, int $chatId): void
     {
         try{
             ChatRoomToUser::query()
