@@ -41,7 +41,7 @@ class UpdateUserRequest extends FormRequest
             'name.required' => 'Введите ваше имя.',
             'name.min' => 'Имя не должно быть короче (:min) символов.',
             'avatar.mimes' => 'Разрешенные изображения jpg,png,jpeg.',
-            'avatar.max' => 'Максимальный размер изображения 5 mb',
+            'avatar.max' => 'Максимальный размер изображения 5 mb.',
         ];
     }
 }
