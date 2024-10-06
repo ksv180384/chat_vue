@@ -19,7 +19,7 @@
             </div>
 
             <div class="form-group mt-3">
-              <label class="form-label">Пароль</label>
+              <label class="form-label">Пароль*</label>
               <input
                 v-model="form.password"
                 type="password"
@@ -35,7 +35,7 @@
                 type="checkbox"
                 class="form-check-input"
               />
-              <label class="form-check-label" for="remember">Запомнить</label>
+              <label class="form-check-label" for="remember">Запомнить*</label>
             </div>
 
             <div class="text-center my-3">
